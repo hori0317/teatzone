@@ -4,63 +4,45 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>長照相關資訊｜補助額度速覽＋服務碼別說明</title>
-<meta name="description" content="長照服務額度試算機，快速查詢CMS等級補助額度、計算自付金額與居服薪資。由 hori 製作。">
+  <meta name="description" content="長照服務額度試算機，快速查詢CMS等級補助額度、計算自付金額與居服薪資。由 hori 製作。">
   <link rel="icon" type="image/x-icon" href="YORU.ico" />
   <link rel="stylesheet" href="style.css" />
   <link rel="stylesheet" href="topbar-fixed.css" />
   <!-- 加版本參數避免快取抓舊檔 -->
   <script src="script.js?v=20251104-b2" defer></script>
-</head>
-<body>
-  <header class="topbar">
-    <div class="brand">
-      <a href="index.html" class="logo-link"><img src="org-logo.png" alt="logo" onerror="this.style.opacity=0.2" /></a>
-      <span class="site-title" id="siteTitle">長照相關資訊</span>
-    </div>
-    <nav class="nav-links" aria-label="主選單">
-      <a href="index.html">額度計算機</a>
-      <a href="payroll.html">薪資計算機</a>
-      <a href="care-info.html">長照相關資訊</a>
-      <a href="news.html">最新公告</a>
-      <a href="contact.html">聯繫方式</a>
-      <a href="about.html">關於我們</a>
-    </nav>
-    <div class="actions actions-ghost"></div>
-  </header>
-  <div class="divider"></div>
 
-  <main class="container">
-    <section class="card">
-      <h1 class="card-title">長照相關資訊</h1>
-      <p class="hint">放置碼別解釋、額度表、Q&A…</p>
-    </section>
-  </main>
-
-  <footer id="bottomDock" class="footerbar">
-    <div class="foot"><span class="ok">© hori</span></div>
-  </footer>
-</body>
-</html>
   <style>
+    /* ====== 色票 ====== */
     :root{
-      --wm-text: "@hori版權所有";
-      --wm-size: 36px;
-      --wm-angle: -25deg;
-      --wm-alpha: 0.05;
-      --wm-shift: 120px;
+      --bg:#fff6d5;
+      --card:#fffdf5;
+      --line:#e6dca8;
+      --ink:#2f2f20;
+      --muted:#7a7557;
+      --green:#2e7d32;
+      --orange:#f59e0b;
+      --graybtn:#9ca3af;
+
+      --wm-text:"@hori版權所有";
+      --wm-size:36px;
+      --wm-angle:-25deg;
+      --wm-alpha:.05;
+      --wm-shift:120px;
     }
-    .watermark { position: fixed; inset: 0; pointer-events: none; z-index: 9999; overflow: hidden; }
+
+    /* ====== 浮水印 ====== */
+    .watermark{ position:fixed; inset:0; pointer-events:none; z-index:9999; overflow:hidden; }
     .wm-item{
-      position: absolute; font-weight: 700; font-size: var(--wm-size);
-      color: rgba(0,0,0,var(--wm-alpha)); transform: rotate(var(--wm-angle));
-      white-space: nowrap; user-select: none; will-change: transform;
-      animation: wm-sway var(--dur, 12s) ease-in-out infinite alternate;
+      position:absolute; font-weight:700; font-size:var(--wm-size);
+      color:rgba(0,0,0,var(--wm-alpha)); transform:rotate(var(--wm-angle));
+      white-space:nowrap; user-select:none; will-change:transform;
+      animation:wm-sway var(--dur,12s) ease-in-out infinite alternate;
     }
     @keyframes wm-sway{ 0%{transform:translateX(0) rotate(var(--wm-angle));}
       100%{transform:translateX(var(--wm-shift)) rotate(var(--wm-angle));} }
-    @media print{ .watermark{ opacity:.08; } }
+    @media print{ .watermark{ opacity:.08 } }
 
-    /* 額度速覽表格（保險內嵌，確保本頁一定有） */
+    /* ====== 本頁元件 ====== */
     .info-table{
       width:100%; border-collapse:separate; border-spacing:0;
       background:var(--card); border:1px solid var(--line);
@@ -70,7 +52,6 @@
     .info-table td{ padding:10px; border-top:1px solid var(--line); font-weight:600; }
     .info-table tbody tr:nth-child(even){ background:#fffef9; }
 
-    /* 頁面自己的快捷按鈕（沿用全站風格） */
     .quick-links{ display:flex; gap:10px; flex-wrap:wrap; margin:14px 0 8px; }
     .quick-links a{
       display:inline-block; padding:8px 14px; border-radius:999px;
@@ -78,7 +59,6 @@
     }
     .quick-links a:hover{ filter:brightness(1.02); transform:translateY(-1px); }
 
-    /* 服務碼別說明（手風琴） */
     .accordion{ border:1px solid var(--line); border-radius:12px; overflow:hidden; background:#fff; }
     .acc-item + .acc-item{ border-top:1px solid var(--line); }
     .acc-head{
@@ -86,16 +66,17 @@
       display:grid; grid-template-columns:90px 1fr 120px; gap:10px; align-items:center;
       cursor:pointer; font-weight:800;
     }
-    .acc-head .code{ font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace; }
+    .acc-head .code{ font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,"Liberation Mono",monospace; }
     .acc-head .name{ color:#333; }
-    .acc-head .hint{ color:#7a7557; font-weight:700; text-align:right; }
+    .acc-head .hint{ color:var(--muted); font-weight:700; text-align:right; }
     .acc-body{ display:none; padding:14px 16px; background:#fffef9; line-height:1.7; }
     .acc-body.show{ display:block; }
     .acc-body p{ margin:8px 0; }
     .acc-body .subttl{ font-weight:800; color:#5b5534; margin-top:10px; }
     .acc-body ul{ margin:6px 0 10px 1.2em; padding:0; }
     .acc-body li{ margin:4px 0; }
-    .acc-note{ color:#7a7557; font-size:13px; margin-top:8px; }
+    .acc-note{ color:var(--muted); font-size:13px; margin-top:8px; }
+
     @media (max-width:700px){
       .acc-head{ grid-template-columns:70px 1fr 90px; padding:10px 12px; }
     }
@@ -105,13 +86,13 @@
 <body>
   <!-- 浮水印 -->
   <div class="watermark" aria-hidden="true">
-    <span class="wm-item" style="top:5%; left:5%; --dur:9s;">@hori版權所有</span>
+    <span class="wm-item" style="top:5%; left:5%;  --dur:9s;">@hori版權所有</span>
     <span class="wm-item" style="top:5%; left:35%; --dur:11s;">@hori版權所有</span>
     <span class="wm-item" style="top:5%; left:65%; --dur:10s;">@hori版權所有</span>
     <span class="wm-item" style="top:25%; left:10%; --dur:13s;">@hori版權所有</span>
     <span class="wm-item" style="top:25%; left:40%; --dur:12s;">@hori版權所有</span>
     <span class="wm-item" style="top:25%; left:70%; --dur:14s;">@hori版權所有</span>
-    <span class="wm-item" style="top:50%; left:5%; --dur:10s;">@hori版權所有</span>
+    <span class="wm-item" style="top:50%; left:5%;  --dur:10s;">@hori版權所有</span>
     <span class="wm-item" style="top:50%; left:35%; --dur:11s;">@hori版權所有</span>
     <span class="wm-item" style="top:50%; left:65%; --dur:9s;">@hori版權所有</span>
     <span class="wm-item" style="top:75%; left:10%; --dur:13s;">@hori版權所有</span>
@@ -122,15 +103,30 @@
     <span class="wm-item" style="top:90%; left:75%; --dur:12s;">@hori版權所有</span>
   </div>
 
-  <!-- 共用頂欄注入 -->
-  <div id="__header"></div>
+  <!-- 統一版型：頂部導覽列（本頁不放功能鍵，用隱形占位維持三欄對齊） -->
+  <header class="topbar">
+    <div class="brand">
+      <a href="index.html" class="logo-link" aria-label="回首頁">
+        <img src="org-logo.png" alt="logo" onerror="this.style.opacity=0.2" />
+      </a>
+      <span class="site-title" id="siteTitle">長照相關資訊</span>
+    </div>
 
-  <!-- 原本此頁頂欄右側是「隱形占位」：保留為頁內占位，不動你的版面寬度 -->
-  <div class="actions actions-ghost" aria-hidden="true" style="margin:8px 12px 0;display:flex;gap:8px;justify-content:flex-end;">
-    <button class="btn pill btn-orange" type="button">B單位</button>
-    <button class="btn pill btn-green"  type="button">重置</button>
-    <button class="btn pill btn-gray"   type="button">列印</button>
-  </div>
+    <nav class="nav-links" aria-label="主選單">
+      <a href="index.html">額度計算機</a>
+      <a href="payroll.html">薪資計算機</a>
+      <a href="care-info.html">長照相關資訊</a>
+      <a href="news.html">最新公告</a>
+      <a href="contact.html">聯繫方式</a>
+      <a href="about.html">關於我們</a>
+    </nav>
+
+    <div class="actions actions-ghost" aria-hidden="true">
+      <button class="btn pill btn-orange" type="button" disabled>—</button>
+      <button class="btn pill btn-green"  type="button" disabled>—</button>
+      <button class="btn pill btn-gray"   type="button" disabled>—</button>
+    </div>
+  </header>
 
   <div class="divider"></div>
 
@@ -149,7 +145,7 @@
       </div>
     </section>
 
-    <!-- ======= BA 額度 ======= -->
+    <!-- BA 額度 -->
     <section id="quota-ba" class="card">
       <h2 class="card-title">補助額度速覽（BA 碼）</h2>
       <p class="hint">依 CMS 等級之每月給付額（政府補助比例：一般戶 84%、中低收 95%、低收 100%）。</p>
@@ -167,7 +163,7 @@
       </table>
     </section>
 
-    <!-- ======= GA 額度 ======= -->
+    <!-- GA 額度 -->
     <section class="card">
       <h2 class="card-title">補助額度速覽（GA 碼｜喘息服務）</h2>
       <p class="hint">依 CMS 等級之每月最高補助額度。</p>
@@ -182,7 +178,7 @@
       </table>
     </section>
 
-    <!-- ======= SC 額度 ======= -->
+    <!-- SC 額度 -->
     <section class="card">
       <h2 class="card-title">補助額度速覽（SC 碼｜短期替代照顧）</h2>
       <p class="hint">依 CMS 等級之每月最高補助額度。</p>
@@ -197,7 +193,7 @@
       </table>
     </section>
 
-    <!-- ======= 服務碼別說明（BA碼） ======= -->
+    <!-- 服務碼別說明（BA） -->
     <section id="svcdesc" class="card">
       <h2 class="card-title">服務碼別說明（BA 碼）</h2>
       <p class="hint">以下為 BA01～BA24 之服務說明（依你提供的文件內容整理）。點標題可展開／收起。</p>
@@ -206,7 +202,7 @@
       <div class="acc-note">※ 以上文字由 <code>SERVICE_DESC_BA</code> 物件動態渲染。</div>
     </section>
 
-    <!-- 其它區塊（占位） -->
+    <!-- 其它區塊 -->
     <section id="laws" class="card">
       <h2 class="card-title">法規與作業要點</h2>
       <p class="hint">（放各部會連結、作業要點重點條列…）</p>
@@ -229,38 +225,35 @@
     </div>
   </footer>
 
-  <!-- 共用底欄注入（不影響上面的頁面專屬 footer） -->
-  <div id="__footer"></div>
-
-  <!-- ====== 服務碼別說明資料 ====== -->
+  <!-- 服務碼別說明資料 -->
   <script>
     const SERVICE_DESC_BA = {
-      BA01: { name:"基本身體清潔", html:<p class="subttl">內容</p><ul><li>梳頭修面、穿脫衣服、床上擦澡、床上洗頭、排泄物清理（含會陰、尖翼尿片／倒尿袋或相關協助）。</li><li>床上洗頭與排泄物清理，個案如無需求得不執行。</li></ul><p class="subttl">使用原則</p><ul><li>原則一日一組合；必要時得早晚各一組合。</li><li>與 BA07、BA23 不得同一時段申報。</li><li>得依臨時性需求先提供，並於提供後立即通報社區整合型服務中心，且限當次使用。</li></ul> },
-      BA02: { name:"基本日常照顧", html:<p class="subttl">內容（摘要）</p><ul><li>生活協助：穿脫衣物、床上/下移位、坐/站、倒尿瓶等。</li><li>環境維護：更換床單、簡易清潔等。</li></ul> },
-      BA03:{ name:"測量生命徵象", html:<p>測量血壓、體溫、脈搏或呼吸並紀錄；必要時回報。</p> },
-      BA04:{ name:"協助進食或管灌餵食", html:<p>協助進食（含預約）；管灌需依評估指導。</p> },
-      BA05:{ name:"餐食照顧", html:<p>備餐、餵食、餐後整理等。</p> },
-      BA07:{ name:"協助沐浴及洗頭", html:<p>協助或引導完成全身/部分清潔與洗頭；不得與 BA01 同時段申報。</p> },
-      BA08:{ name:"足部照護", html:<p>依規範評估與執行足部照護。</p> },
-      BA09:{ name:"到宅沐浴-第一型", html:<p>使用到宅沐浴車或等同設備完成淋浴，含安全維護與場域復原。</p> },
-      BA09a:{ name:"到宅沐浴-第二型", html:<p>使用簡易設備或浴室完成安全沐浴；含設備收整。</p> },
-      BA10:{ name:"翻身拍背", html:<p>翻身、叩/拍背或體位變換與護理指導（依指示）。</p> },
-      BA11:{ name:"肢體關節活動", html:<p>被動/主動關節活動與伸展（依指示）。</p> },
-      BA12:{ name:"協助上（下）樓梯", html:<p>協助安全上下樓（含行前評估）。</p> },
-      BA13:{ name:"陪同外出", html:<p>外出工具安排與陪同；每30分鐘為一單位。</p> },
-      BA14:{ name:"陪同就醫", html:<p>掛號（含預約）、就醫陪同、返家後注意事項說明。</p> },
-      BA15:{ name:"家務協助", html:<p>一般家務（環境清潔、洗曬衣物、膳食準備等），以日常生活維持為限。</p> },
-      BA16:{ name:"代購或代領或代送服務", html:<p>購買生活必需品、代領報告、代送文件等。</p> },
-      BA17a:{ name:"人工鼻造管內（非氣管內管）分泌物抽吸", html:<p>依指示於人工鼻造管處理分泌物抽吸並紀錄。</p> },
-      BA17b:{ name:"口腔內（懸垂至氣管之前）分泌物抽吸", html:<p>依指示於口腔內抽吸分泌物，注意無菌與安全。</p> },
-      BA17c:{ name:"尿管及鼻胃管之清潔與固定", html:<p>清潔、固定與更換敷料（依指示）。</p> },
-      BA17d:{ name:"血糖檢驗", html:<p>協助檢測與紀錄。</p> },
-      BA17e:{ name:"依指示置入藥盒", html:<p>依醫囑協助分裝藥盒並衛教。</p> },
-      BA18:{ name:"安全看視", html:<p>風險情境的即時看視與提醒，維持安全。</p> },
-      BA20:{ name:"陪伴服務", html:<p class="subttl">內容</p><ul><li>至案家陪伴看視，日常生活參與、談話互動、收看電視或新聞資訊等非照顧性互動。</li></ul><p class="subttl">使用規定</p><ul><li>以三十分鐘為一單位（次）計算。</li><li>不得與照顧組合表之其他照顧組合併同使用，但可接續使用。</li></ul> },
-      BA22:{ name:"巡視服務", html:<p class="subttl">內容與時段</p><ul><li>於每日 <b>06:00–20:00</b> 至案家探視確認長照對象狀況，並進行簡易協助；<b>至少三次</b>。</li></ul><p class="subttl">使用規定</p><ul><li>不得搭配「照顧組合表」之其他照顧組合。</li><li>個案突發急變等臨時狀況，得臨時提供服務；服務後應立即通知社區整合型服務中心，且<b>限當次使用</b>。</li><li>非戶同址之巡視服務，得核實路程交通時間酌量認列後，依實際所需申報 <b>AA08</b>。</li></ul> },
-      BA23:{ name:"協助洗頭", html:<p class="subttl">內容</p><ul><li>依長照對象需求完成洗頭流程：洗髮、沖洗、擦乾、梳理等（含會陰部清潔除外）。</li></ul><p class="subttl">使用規定</p><ul><li>於床上或浴室（或類似之場所）單獨提供之洗頭服務；同一時段<b>不得併同申報 BA01 或 BA07</b>。</li><li>針對個案家屬照顧經驗較有負荷者，得持續提供衛教與照顧指導。</li><li>得依第二十一條臨時性規定先提供服務，並於提供後立即通知社區整合型服務中心；限當次使用。</li></ul> },
-      BA24:{ name:"協助排泄", html:<p class="subttl">內容</p><ul><li>協助移位或引導至廁所，支持與協助一般大小便。</li><li>尿器/便盆之更換與清理、會陰沖洗、臥床更換尿片。</li><li>尿袋更換與處理、排泄物清理與環境整復。</li><li>個案如無需求，得不執行。</li></ul><p class="subttl">使用規定</p><ul><li>如於執行 <b>BA01</b> 或 <b>BA07</b> 過程中同時執行者，不得另行申報 BA24。</li><li>得依第二十一條臨時性規定先提供服務，並於提供後立即通知社區整合型服務中心；限當次使用。</li></ul> }
+      BA01:{name:"基本身體清潔",html:`<p class="subttl">內容</p><ul><li>梳頭修面、穿脫衣服、床上擦澡、床上洗頭、排泄物清理（含會陰、尖翼尿片／倒尿袋或相關協助）。</li><li>床上洗頭與排泄物清理，個案如無需求得不執行。</li></ul><p class="subttl">使用原則</p><ul><li>原則一日一組合；必要時得早晚各一組合。</li><li>與 BA07、BA23 不得同一時段申報。</li><li>得依臨時性需求先提供，並於提供後立即通報社區整合型服務中心，且限當次使用。</li></ul>`},
+      BA02:{name:"基本日常照顧",html:`<p class="subttl">內容（摘要）</p><ul><li>生活協助：穿脫衣物、床上/下移位、坐/站、倒尿瓶等。</li><li>環境維護：更換床單、簡易清潔等。</li></ul>`},
+      BA03:{name:"測量生命徵象",html:`<p>測量血壓、體溫、脈搏或呼吸並紀錄；必要時回報。</p>`},
+      BA04:{name:"協助進食或管灌餵食",html:`<p>協助進食（含預約）；管灌需依評估指導。</p>`},
+      BA05:{name:"餐食照顧",html:`<p>備餐、餵食、餐後整理等。</p>`},
+      BA07:{name:"協助沐浴及洗頭",html:`<p>協助或引導完成全身/部分清潔與洗頭；不得與 BA01 同時段申報。</p>`},
+      BA08:{name:"足部照護",html:`<p>依規範評估與執行足部照護。</p>`},
+      BA09:{name:"到宅沐浴-第一型",html:`<p>使用到宅沐浴車或等同設備完成淋浴，含安全維護與場域復原。</p>`},
+      BA09a:{name:"到宅沐浴-第二型",html:`<p>使用簡易設備或浴室完成安全沐浴；含設備收整。</p>`},
+      BA10:{name:"翻身拍背",html:`<p>翻身、叩/拍背或體位變換與護理指導（依指示）。</p>`},
+      BA11:{name:"肢體關節活動",html:`<p>被動/主動關節活動與伸展（依指示）。</p>`},
+      BA12:{name:"協助上（下）樓梯",html:`<p>協助安全上下樓（含行前評估）。</p>`},
+      BA13:{name:"陪同外出",html:`<p>外出工具安排與陪同；每30分鐘為一單位。</p>`},
+      BA14:{name:"陪同就醫",html:`<p>掛號（含預約）、就醫陪同、返家後注意事項說明。</p>`},
+      BA15:{name:"家務協助",html:`<p>一般家務（環境清潔、洗曬衣物、膳食準備等），以日常生活維持為限。</p>`},
+      BA16:{name:"代購或代領或代送服務",html:`<p>購買生活必需品、代領報告、代送文件等。</p>`},
+      BA17a:{name:"人工鼻造管內（非氣管內管）分泌物抽吸",html:`<p>依指示於人工鼻造管處理分泌物抽吸並紀錄。</p>`},
+      BA17b:{name:"口腔內（懸垂至氣管之前）分泌物抽吸",html:`<p>依指示於口腔內抽吸分泌物，注意無菌與安全。</p>`},
+      BA17c:{name:"尿管及鼻胃管之清潔與固定",html:`<p>清潔、固定與更換敷料（依指示）。</p>`},
+      BA17d:{name:"血糖檢驗",html:`<p>協助檢測與紀錄。</p>`},
+      BA17e:{name:"依指示置入藥盒",html:`<p>依醫囑協助分裝藥盒並衛教。</p>`},
+      BA18:{name:"安全看視",html:`<p>風險情境的即時看視與提醒，維持安全。</p>`},
+      BA20:{name:"陪伴服務",html:`<p class="subttl">內容</p><ul><li>至案家陪伴看視，日常生活參與、談話互動、收看電視或新聞資訊等非照顧性互動。</li></ul><p class="subttl">使用規定</p><ul><li>以三十分鐘為一單位（次）計算。</li><li>不得與照顧組合表之其他照顧組合併同使用，但可接續使用。</li></ul>`},
+      BA22:{name:"巡視服務",html:`<p class="subttl">內容與時段</p><ul><li>於每日 <b>06:00–20:00</b> 至案家探視確認長照對象狀況，並進行簡易協助；<b>至少三次</b>。</li></ul><p class="subttl">使用規定</p><ul><li>不得搭配「照顧組合表」之其他照顧組合。</li><li>個案突發急變等臨時狀況，得臨時提供服務；服務後應立即通知社區整合型服務中心，且<b>限當次使用</b>。</li><li>非戶同址之巡視服務，得核實路程交通時間酌量認列後，依實際所需申報 <b>AA08</b>。</li></ul>`},
+      BA23:{name:"協助洗頭",html:`<p class="subttl">內容</p><ul><li>依長照對象需求完成洗頭流程：洗髮、沖洗、擦乾、梳理等（含會陰部清潔除外）。</li></ul><p class="subttl">使用規定</p><ul><li>於床上或浴室（或類似之場所）單獨提供之洗頭服務；同一時段<b>不得併同申報 BA01 或 BA07</b>。</li><li>持續提供衛教與照顧指導。</li><li>得依第二十一條臨時性規定先提供服務，並於提供後立即通知社區整合型服務中心；限當次使用。</li></ul>`},
+      BA24:{name:"協助排泄",html:`<p class="subttl">內容</p><ul><li>協助移位或引導至廁所，支持與協助一般大小便。</li><li>尿器/便盆之更換與清理、會陰沖洗、臥床更換尿片。</li><li>尿袋更換與處理、排泄物清理與環境整復。</li><li>個案如無需求，得不執行。</li></ul><p class="subttl">使用規定</p><ul><li>如於執行 <b>BA01</b> 或 <b>BA07</b> 過程中同時執行者，不得另行申報 BA24。</li><li>得依第二十一條臨時性規定先提供服務，並於提供後立即通知社區整合型服務中心；限當次使用。</li></ul>`}
     };
   </script>
 
@@ -269,92 +262,109 @@
     document.addEventListener('DOMContentLoaded', () => {
       const fmt = n => Number(n || 0).toLocaleString('zh-TW');
       const levels = [2,3,4,5,6,7,8];
-      function ready(){ return (typeof cmsQuota==='object')&&(typeof GA_CAP==='object')&&(typeof SC_CAP==='object'); }
+      const ok = () => (typeof cmsQuota==='object') && (typeof GA_CAP==='object') && (typeof SC_CAP==='object');
 
       function renderQuota(){
         const baTbody = document.querySelector('#baQuotaTable tbody'); baTbody.innerHTML='';
         levels.forEach(cms=>{
-          const base=cmsQuota[cms]||0;
-          const tr=document.createElement('tr');
-          tr.innerHTML=
+          const base = cmsQuota[cms] || 0;
+          const tr = document.createElement('tr');
+          tr.innerHTML = `
             <td>CMS${cms}</td>
             <td>${fmt(Math.round(base*0.84))}</td>
             <td>${fmt(Math.round(base*0.95))}</td>
             <td>${fmt(base)}</td>
-            <td>${fmt(base)}</td>;
+            <td>${fmt(base)}</td>`;
           baTbody.appendChild(tr);
         });
-        const gaTbody=document.querySelector('#gaQuotaTable tbody'); gaTbody.innerHTML='';
+
+        const gaTbody = document.querySelector('#gaQuotaTable tbody'); gaTbody.innerHTML='';
         levels.forEach(cms=>{
-          const val=GA_CAP[cms]||0;
-          gaTbody.insertAdjacentHTML('beforeend', <tr><td>CMS${cms}</td><td>${fmt(val)}</td></tr>);
+          const val = GA_CAP[cms] || 0;
+          gaTbody.insertAdjacentHTML('beforeend', `<tr><td>CMS${cms}</td><td>${fmt(val)}</td></tr>`);
         });
-        const scTbody=document.querySelector('#scQuotaTable tbody'); scTbody.innerHTML='';
+
+        const scTbody = document.querySelector('#scQuotaTable tbody'); scTbody.innerHTML='';
         levels.forEach(cms=>{
-          const val=SC_CAP[cms]||0;
-          scTbody.insertAdjacentHTML('beforeend', <tr><td>CMS${cms}</td><td>${fmt(val)}</td></tr>);
+          const val = SC_CAP[cms] || 0;
+          scTbody.insertAdjacentHTML('beforeend', `<tr><td>CMS${cms}</td><td>${fmt(val)}</td></tr>`);
         });
       }
 
       function renderServiceDesc(){
-        const host=document.getElementById('svcAcc'); host.innerHTML='';
+        const host = document.getElementById('svcAcc'); host.innerHTML='';
         Object.keys(SERVICE_DESC_BA).forEach(code=>{
-          const item=SERVICE_DESC_BA[code]||{};
-          const wrap=document.createElement('div');
-          wrap.className='acc-item';
-          wrap.innerHTML=
+          const item = SERVICE_DESC_BA[code] || {};
+          const el = document.createElement('div');
+          el.className = 'acc-item';
+          el.innerHTML = `
             <button class="acc-head" aria-expanded="false">
               <span class="code">${code}</span>
               <span class="name">${item.name||''}</span>
               <span class="hint">點我展開</span>
             </button>
-            <div class="acc-body">${item.html||'<p class="acc-note">（待補文字）</p>'}</div>;
-          host.appendChild(wrap);
+            <div class="acc-body">${item.html||'<p class="acc-note">（待補文字）</p>'}</div>`;
+          host.appendChild(el);
         });
         host.querySelectorAll('.acc-head').forEach(btn=>{
-          btn.addEventListener('click',()=>{
-            const body=btn.nextElementSibling;
-            const open=body.classList.toggle('show');
+          btn.addEventListener('click', ()=>{
+            const body = btn.nextElementSibling;
+            const open = body.classList.toggle('show');
             btn.setAttribute('aria-expanded', open?'true':'false');
-            btn.querySelector('.hint').textContent=open?'點我收起':'點我展開';
+            const hint = btn.querySelector('.hint'); if (hint) hint.textContent = open ? '點我收起' : '點我展開';
           });
         });
       }
 
-      let waited=0;
-      const t=setInterval(()=>{
-        if(ready()||waited>=1000){
-          clearInterval(t);
+      let tries=0;
+      const timer = setInterval(()=>{
+        if (ok() || tries>=1000){
+          clearInterval(timer);
           renderQuota();
           renderServiceDesc();
         }
-        waited+=50;
+        tries+=50;
       },50);
     });
   </script>
 
-  <!-- 導覽目前頁高亮 -->
+  <!-- 導覽高亮＋依檔名切換標題（全站一致邏輯） -->
   <script>
     (function(){
       function normalize(href){
         try{
           const u=new URL(href, location.origin);
           let p=u.pathname.trim();
-          if(p.length>1 && p.endsWith('/')) p=p.slice(0,-1);
+          if (p.length>1 && p.endsWith('/')) p=p.slice(0,-1);
           p=p.replace(/\/(index\.html?)?$/i,'/index').replace(/\.html?$/i,'');
-          const parts=p.split('/'); return (parts[parts.length-1]||'').toLowerCase();
+          const parts=p.split('/');
+          return (parts[parts.length-1]||'').toLowerCase();
         }catch(e){ return ''; }
       }
-      const here=normalize(location.href);
-      document.querySelectorAll('.nav-links a[href]').forEach(a=>{
-        const target=normalize(a.getAttribute('href'));
-        if(target && target===here) a.classList.add('active');
-      });
-    })();
-  </script>
+      const here = normalize(location.href);
 
-  <!-- 防拷（如需關閉可移除） -->
-  <script>
+      // nav 高亮
+      document.querySelectorAll('.nav-links a[href]').forEach(a=>{
+        const target = normalize(a.getAttribute('href'));
+        if (target && target === here) a.classList.add('active');
+      });
+
+      // 依檔名切換站內標題與 <title>
+      const map = {
+        index:'額度計算機',
+        payroll:'薪資計算機',
+        'care-info':'長照相關資訊',
+        news:'最新公告',
+        contact:'聯繫方式',
+        about:'關於我們'
+      };
+      const pageName = map[here] || '長照相關資訊';
+      const st = document.getElementById('siteTitle');
+      if (st) st.textContent = pageName;
+      document.title = `${pageName}｜長照工具`;
+    })();
+
+    // 防拷（可移除）
     document.addEventListener('contextmenu', e => e.preventDefault());
     document.addEventListener('keydown', e => {
       if ((e.ctrlKey || e.metaKey) && ['u','s','p'].includes(e.key.toLowerCase())) e.preventDefault();
@@ -363,8 +373,5 @@
     document.addEventListener('selectstart', e => e.preventDefault());
     document.addEventListener('copy', e => e.preventDefault());
   </script>
-
-  <!-- 共用底欄注入 -->
-  <div id="__footer"></div>
 </body>
 </html>
