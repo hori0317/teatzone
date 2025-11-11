@@ -1,11 +1,9 @@
-/* 固定頂欄（與主題解耦，僅處理定位與層級） */
 .topbar{
-  position: sticky;
-  top: 0;
-  z-index: 10000;          /* 讓選單永遠在最上層 */
+  position:sticky;
+  top:0;
+  z-index:10000;
 }
 
-/* 導覽高亮 */
 .nav-links a.active{
   color:#ff9800;
   border-bottom:2px solid #ff9800;
