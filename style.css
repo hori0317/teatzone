@@ -1,79 +1,44 @@
-:root{
-  --bg:#fff6d5;
-  --card:#fffdf5;
-  --line:#e6dca8;
-  --ink:#2f2f20;
-  --muted:#7a7557;
-  --green:#2e7d32;
-  --orange:#f59e0b;
-  --graybtn:#9ca3af;
-}
-
-/* 全域 */
+/* Reset & base */
+*{box-sizing:border-box}
+html,body{height:100%}
 body{
   margin:0;
-  font-family:-apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans TC", "Microsoft JhengHei";
-  background:var(--bg);
+  font-family:system-ui,-apple-system,"Noto Sans TC",Segoe UI,Roboto,Arial;
   color:var(--ink);
-  line-height:1.6;
-  padding-bottom:80px;
-}
-a{color:var(--green);text-decoration:none;}
-a:hover{text-decoration:underline;}
-
-/* 浮水印 */
-.watermark{
-  position:fixed;
-  inset:0;
-  pointer-events:none;
-  z-index:0;
-  overflow:hidden;
-}
-.wm-item{
-  position:absolute;
-  font-weight:700;
-  font-size:36px;
-  color:rgba(0,0,0,.05);
-  transform:rotate(-25deg);
-  animation:wm-sway 12s ease-in-out infinite alternate;
-}
-@keyframes wm-sway{
-  0%{transform:translateX(0) rotate(-25deg);}
-  100%{transform:translateX(120px) rotate(-25deg);}
+  background:var(--bg);
 }
 
-/* 頂欄 */
+/* Topbar */
 .topbar{
-  display:grid;
-  grid-template-columns:auto 1fr auto;
-  align-items:center;
-  background:#fffdf5;
+  position:sticky; top:0; z-index:50;
+  display:flex; align-items:center; justify-content:space-between;
+  gap:16px; padding:10px 16px;
+  background:var(--bg);
   border-bottom:1px solid var(--line);
-  padding:16px 32px;
-  position:sticky;
-  top:0;
-  z-index:10000;
 }
-.brand{display:flex;align-items:center;gap:10px;}
-.brand img{height:48px;}
-.site-title{font-weight:700;font-size:20px;}
-.nav-links{display:flex;justify-content:center;gap:40px;}
-.nav-links a{color:#333;font-weight:600;}
-.nav-links a:hover{color:#f59e0b;}
-.actions{display:flex;gap:10px;}
-.btn{border:none;border-radius:20px;padding:6px 14px;color:#fff;font-weight:600;cursor:pointer;}
-.btn-orange{background:var(--orange);}
-.btn-green{background:var(--green);}
-.btn-gray{background:var(--graybtn);}
+.brand{display:flex; align-items:center; gap:10px}
+.logo-link img{height:38px; width:auto; display:block}
+.site-title{font-weight:800; letter-spacing:.05em; color:var(--ink)}
 
-/* 卡片 */
-.container{max-width:1200px;margin:auto;padding:20px;}
-.grid-3{display:grid;grid-template-columns:1.15fr 0.95fr 1.15fr;gap:12px;}
-.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:20px;box-shadow:0 1px 2px rgba(0,0,0,.05);}
-.card-title{font-size:18px;font-weight:700;margin-bottom:10px;}
-.qrbox{display:flex;gap:12px;align-items:center;margin-top:10px;}
-.qr-left img{width:80px;height:80px;object-fit:contain;}
-.qr-right p{margin:2px 0;}
-.bold{font-weight:700;}
-.orange{color:var(--orange);}
-.footerbar{background:#fffdf5;border-top:1px solid var(--line);padding:10px 0;text-align:center;font-weight:600;color:#333;}
+/* Nav */
+.nav-links{display:flex; gap:28px; align-items:center; flex-wrap:wrap}
+.nav-links a{
+  text-decoration:none; color:var(--ink); font-weight:700; position:relative; padding:8px 4px;
+}
+.nav-links a.active{color:var(--orange)}
+.nav-links a.active::after{
+  content:""; position:absolute; left:0; right:0; bottom:-6px; height:3px;
+  background:var(--orange); border-radius:3px;
+}
+
+/* Actions */
+.actions{display:flex; gap:10px; align-items:center}
+.actions-ghost{min-width:120px}
+
+/* Buttons */
+.btn{border:0; padding:8px 14px; border-radius:8px; font-weight:700; cursor:pointer; background:#eee}
+.btn:hover{filter:brightness(.98)}
+.pill{border-radius:999px}
+.btn-orange{background:var(--orange); color:#fff}
+.btn-green{background:var(--green); color:#fff}
+.btn-gray{background:var(--graybtn); color:#fff}
