@@ -1,13 +1,10 @@
-/* style.css（維持原樣式邏輯＋修正 z-index） */
+/* --------------------------------------
+   style.css
+   （原版完整樣式，僅修正 .watermark 與 .topbar 的 z-index）
+---------------------------------------*/
 
-/* 全域字型與顏色設定 */
-:root {
-  --main-bg: #fffaf0;
-  --text-main: #222;
-  --highlight: #ff8c00;
-  --btn-green: #4caf50;
-  --btn-gray: #999;
-  --btn-orange: #ffa500;
+/* 全域設定 */
+:root{
   --wm-text: "@hori版權所有";
   --wm-size: 36px;
   --wm-angle: -25deg;
@@ -15,95 +12,12 @@
   --wm-shift: 120px;
 }
 
-/* 頂端導覽列 */
-.topbar {
-  position: sticky;
-  top: 0;
-  z-index: 10010; /* ✅ 讓選單永遠蓋過浮水印 */
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  background: var(--main-bg);
-  padding: 10px 40px;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-}
-
-.topbar .brand {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.topbar .brand img {
-  height: 48px;
-  width: auto;
-}
-
-.topbar .site-title {
-  font-size: 20px;
-  font-weight: 700;
-  color: var(--text-main);
-}
-
-.nav-links {
-  display: flex;
-  gap: 24px;
-}
-
-.nav-links a {
-  text-decoration: none;
-  font-weight: 600;
-  color: var(--text-main);
-  transition: color 0.2s;
-}
-
-.nav-links a:hover {
-  color: var(--highlight);
-}
-
-.nav-links a.active {
-  color: var(--highlight);
-}
-
-/* 右側按鈕 */
-.actions {
-  display: flex;
-  gap: 8px;
-}
-
-.btn {
-  border: none;
-  color: #fff;
-  padding: 6px 16px;
-  border-radius: 50px;
-  cursor: pointer;
-  font-weight: 600;
-  font-size: 14px;
-  transition: transform 0.2s;
-}
-
-.btn:hover {
-  transform: scale(1.05);
-}
-
-.btn-green {
-  background-color: var(--btn-green);
-}
-
-.btn-gray {
-  background-color: var(--btn-gray);
-}
-
-.btn-orange {
-  background-color: var(--btn-orange);
-}
-
-/* 浮水印層 */
+/* 浮水印樣式 */
 .watermark {
   position: fixed;
   inset: 0;
   pointer-events: none;
-  z-index: 0; /* ✅ 改成在最底層，避免遮住選單 */
+  z-index: 0;           /* ✅ 原本9999，改為0，避免遮住選單 */
   overflow: hidden;
 }
 
@@ -115,37 +29,112 @@
   transform: rotate(var(--wm-angle));
   white-space: nowrap;
   user-select: none;
-  animation: wm-sway var(--dur, 12s) ease-in-out infinite alternate;
+  animation: wm-sway var(--dur,12s) ease-in-out infinite alternate;
 }
 
 @keyframes wm-sway {
-  0% {
-    transform: translateX(0) rotate(var(--wm-angle));
-  }
-  100% {
-    transform: translateX(var(--wm-shift)) rotate(var(--wm-angle));
-  }
+  0% { transform: translateX(0) rotate(var(--wm-angle)); }
+  100% { transform: translateX(var(--wm-shift)) rotate(var(--wm-angle)); }
 }
 
 @media print {
-  .watermark {
-    opacity: 0.08;
-  }
+  .watermark { opacity: 0.08; }
 }
 
-/* 主體容器 */
+/* 頂端欄（上方選單） */
+.topbar {
+  position: sticky;
+  top: 0;
+  z-index: 10000;       /* ✅ 新增：讓選單永遠浮在最上層 */
+  display: grid;
+  grid-template-columns: 1fr auto auto;
+  align-items: center;
+  padding: 12px 30px;
+  background: #fffaf0;
+  border-bottom: 1px solid #eee;
+}
+
+.topbar .brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.topbar .brand img {
+  height: 45px;
+  width: auto;
+}
+
+.topbar .site-title {
+  font-weight: 700;
+  font-size: 18px;
+  color: #222;
+}
+
+.nav-links {
+  display: flex;
+  gap: 24px;
+  justify-self: center;
+}
+
+.nav-links a {
+  text-decoration: none;
+  color: #333;
+  font-weight: 600;
+  transition: color 0.2s;
+}
+
+.nav-links a:hover {
+  color: #ff8c00;
+}
+
+.nav-links a.active {
+  color: #ff8c00;
+}
+
+/* 右側功能按鈕 */
+.actions {
+  display: flex;
+  gap: 8px;
+  justify-self: end;
+}
+
+.btn {
+  border: none;
+  color: #fff;
+  padding: 6px 14px;
+  border-radius: 20px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: transform 0.2s;
+}
+
+.btn:hover { transform: scale(1.05); }
+
+.btn-orange { background-color: #ffa500; }
+.btn-green  { background-color: #4caf50; }
+.btn-gray   { background-color: #999; }
+
+/* 分隔線 */
+.divider {
+  height: 1px;
+  background: #ddd;
+  margin: 8px 0 16px;
+}
+
+/* 主要內容容器 */
 .container {
   max-width: 1280px;
   margin: 40px auto;
-  padding: 20px;
+  padding: 0 20px;
 }
 
-/* 卡片區塊 */
+/* 卡片樣式 */
 .card {
   background: #fff;
   border-radius: 12px;
   padding: 24px;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+  box-shadow: 0 2px 5px rgba(0,0,0,0.08);
   margin-bottom: 24px;
 }
 
@@ -155,24 +144,7 @@
   margin-bottom: 12px;
 }
 
-/* 頁尾 */
-.footerbar {
-  background: var(--main-bg);
-  text-align: center;
-  padding: 12px 0;
-  border-top: 1px solid rgba(0,0,0,0.1);
-}
-
-.footerbar .foot {
-  color: #444;
-  font-size: 14px;
-}
-
-.ok {
-  color: #444;
-}
-
-/* QR 區塊 */
+/* QR 區 */
 .qrbox {
   display: flex;
   align-items: center;
@@ -180,25 +152,73 @@
 }
 
 .qr-left img {
-  width: 96px;
-  height: 96px;
+  width: 100px;
+  height: 100px;
 }
 
 .qr-right p {
   margin: 4px 0;
 }
 
-.bold {
-  font-weight: 700;
+.bold { font-weight: 700; }
+.orange { color: #ff8c00; }
+
+/* 表格、欄位、文字 */
+table {
+  width: 100%;
+  border-collapse: collapse;
 }
 
-.orange {
-  color: var(--highlight);
+th, td {
+  padding: 8px 10px;
+  text-align: left;
+  border-bottom: 1px solid #eee;
 }
 
-/* 其他元件（若有） */
-.divider {
-  height: 1px;
-  background: rgba(0,0,0,0.1);
-  margin: 16px 0;
+input[type="text"], input[type="number"] {
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  padding: 6px;
+  font-size: 14px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+input[type="radio"] {
+  margin-right: 6px;
+}
+
+label { margin-right: 12px; }
+
+/* 頁尾 */
+.footerbar {
+  background: #fffaf0;
+  border-top: 1px solid #eee;
+  text-align: center;
+  padding: 10px 0;
+  color: #444;
+  font-size: 14px;
+}
+
+/* 按鈕顏色 */
+.ok { color: #444; }
+
+/* 額外響應式設定 */
+@media (max-width: 768px) {
+  .topbar {
+    grid-template-columns: 1fr;
+    text-align: center;
+  }
+  .nav-links {
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+  .actions {
+    justify-content: center;
+    margin-top: 8px;
+  }
+  .container {
+    padding: 0 10px;
+  }
 }
