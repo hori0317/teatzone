@@ -267,7 +267,7 @@
         </div>
         <div class="card" style="padding:14px;">
           <div class="row-mid" style="margin-bottom:10px;">
-            <span class="pill-note">自動依「拆薪後薪資」抓 ≤ 薪資的最大投保級距</span>
+            <span class="pill-note">自動依「拆薪後薪資」抓 ≥ 薪資的最大投保級距</span>
           </div>
           <table class="tbl">
             <thead>
@@ -304,7 +304,7 @@
   <!-- 底部資訊條 -->
   <footer id="bottomDock" class="footerbar">
     <div class="foot">
-      <span class="ok">※ 以上勞／健保金額為員工自付部分的參考表（可改）。不同公司可能採用不同的投保級距，請以實際投保為準。</span>
+      <span class="ok">※ 每年 <b>2 月</b> 和 <b>8 月</b> 調整投保級距，並於次月 <b>1 號</b> 生效。</span>
     </div>
   </footer>
 
@@ -471,12 +471,13 @@
           sel.appendChild(opt);
         });
       }
-      function findGradeBySalary(sal){
-        const list = INS_TABLE.map(r=>r.grade).sort((a,b)=>a-b);
-        let g = list[0];
-        for (const v of list){ if (v <= sal) g = v; else break; }
-        return g;
-      }
+function findGradeBySalary(sal){
+  const list = INS_TABLE.map(r=>r.grade).sort((a,b)=>a-b);
+  for (const v of list){
+    if (sal <= v) return v;  // 找到第一個「大於等於薪資」的級距
+  }
+  return list[list.length-1]; // 超過最高級距時用最後一級
+}
       function getRow(grade){
         return INS_TABLE.find(r=>r.grade===grade) || INS_TABLE[0];
       }
