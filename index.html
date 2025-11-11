@@ -4,105 +4,66 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>額度計算機</title>
-<meta name="description" content="長照服務額度計算機，快速查詢CMS等級補助額度、計算自付金額與居服薪資。由 hori 製作。">
+  <meta name="description" content="長照服務額度計算機，快速查詢CMS等級補助額度、計算自付金額與居服薪資。由 hori 製作。">
 
   <link rel="icon" type="image/x-icon" href="YORU.ico" />
   <link rel="stylesheet" href="style.css" />
-  <!-- 新增：統一頂部導覽版型（放在 style.css 之後，以便覆寫 .topbar/.nav-links 等） -->
   <link rel="stylesheet" href="topbar-fixed.css" />
   <script src="script.js" defer></script>
-
-  <!-- ✅ 浮水印樣式（保留你原本的設定） -->
-  <style>
-    :root{
-      --wm-text: "@hori版權所有";
-      --wm-size: 36px;
-      --wm-angle: -25deg;
-      --wm-alpha: 0.05;     /* 調整透明度 */
-      --wm-shift: 120px;    /* 左右擺幅 */
-    }
-
-    .watermark {
-      position: fixed;
-      inset: 0;
-      pointer-events: none;
-      z-index: 9999;
-      overflow: hidden;
-    }
-
-    .topbar { z-index: 10000; position: sticky; top: 0; }
-
-    .wm-item{
-      position: absolute;
-      font-weight: 700;
-      font-size: var(--wm-size);
-      color: rgba(0,0,0,var(--wm-alpha));
-      transform: rotate(var(--wm-angle));
-      white-space: nowrap;
-      user-select: none;
-      will-change: transform;
-      animation: wm-sway var(--dur, 12s) ease-in-out infinite alternate;
-    }
-
-    @keyframes wm-sway{
-      0%   { transform: translateX(0) rotate(var(--wm-angle)); }
-      100% { transform: translateX(var(--wm-shift)) rotate(var(--wm-angle)); }
-    }
-
-    @media print{
-      .watermark { opacity: 0.08; } /* 改 display:none; 即可關掉列印浮水印 */
-    }
-  </style>
 </head>
+
 <body>
   <!-- ✅ 浮水印（鋪滿整頁） -->
   <div class="watermark" aria-hidden="true">
-    <!-- 上方 -->
     <span class="wm-item" style="top:5%; left:5%;  --dur:9s;">@hori版權所有</span>
     <span class="wm-item" style="top:5%; left:35%; --dur:11s;">@hori版權所有</span>
     <span class="wm-item" style="top:5%; left:65%; --dur:10s;">@hori版權所有</span>
-
-    <!-- 中上 -->
     <span class="wm-item" style="top:25%; left:10%; --dur:13s;">@hori版權所有</span>
     <span class="wm-item" style="top:25%; left:40%; --dur:12s;">@hori版權所有</span>
     <span class="wm-item" style="top:25%; left:70%; --dur:14s;">@hori版權所有</span>
-
-    <!-- 中段 -->
     <span class="wm-item" style="top:50%; left:5%;  --dur:10s;">@hori版權所有</span>
     <span class="wm-item" style="top:50%; left:35%; --dur:11s;">@hori版權所有</span>
     <span class="wm-item" style="top:50%; left:65%; --dur:9s;">@hori版權所有</span>
-
-    <!-- 下方 -->
     <span class="wm-item" style="top:75%; left:10%; --dur:13s;">@hori版權所有</span>
     <span class="wm-item" style="top:75%; left:40%; --dur:12s;">@hori版權所有</span>
     <span class="wm-item" style="top:75%; left:70%; --dur:10s;">@hori版權所有</span>
-
-    <!-- 最底 -->
     <span class="wm-item" style="top:90%; left:15%; --dur:11s;">@hori版權所有</span>
     <span class="wm-item" style="top:90%; left:45%; --dur:10s;">@hori版權所有</span>
     <span class="wm-item" style="top:90%; left:75%; --dur:12s;">@hori版權所有</span>
   </div>
 
-  <!-- 共用頂欄注入 -->
-  <div id="__header"></div>
+  <!-- ✅ 頂部導覽列（共用） -->
+  <header class="topbar">
+    <div class="brand">
+      <a href="index.html" class="logo-link" aria-label="回首頁">
+        <img src="org-logo.png" alt="logo" onerror="this.style.opacity=0.2" />
+      </a>
+      <span class="site-title">長照相關資訊</span>
+    </div>
 
-  <!-- 原本 header 右側功能鍵（保留於頁內，不動你的按鈕邏輯） -->
-  <div class="actions" style="display:flex;gap:8px;justify-content:flex-end;margin:8px 12px 0;">
-    <!-- A/B 單位切換（B 時會隱藏 C 碼、薪資不計 C） -->
-    <button class="btn pill btn-orange" id="btnUnitToggle" type="button" data-unit="B">B單位</button>
-    <button class="btn pill btn-green" id="btnReset" type="button">重置</button>
-    <button class="btn pill btn-gray" type="button" onclick="window.print()">列印</button>
-  </div>
+    <nav class="nav-links" aria-label="主選單">
+      <a href="index.html">額度計算機</a>
+      <a href="payroll.html">薪資計算機</a>
+      <a href="care-info.html">長照相關資訊</a>
+      <a href="news.html">最新公告</a>
+      <a href="contact.html">聯繫方式</a>
+      <a href="about.html">關於我們</a>
+    </nav>
 
+    <div class="actions">
+      <button class="btn pill btn-orange" id="btnUnitToggle" type="button" data-unit="B">B單位</button>
+      <button class="btn pill btn-green" id="btnReset" type="button">重置</button>
+      <button class="btn pill btn-gray" id="btnPrint" type="button" onclick="window.print()">列印</button>
+    </div>
+  </header>
   <div class="divider"></div>
 
+  <!-- ✅ 主內容 -->
   <main class="container">
-    <!-- 三欄卡片 -->
     <section class="grid-3">
-      <!-- 左：居服薪資(6/4) -->
+      <!-- 左 -->
       <div class="card">
         <h2 class="card-title">居服薪資(6/4)</h2>
-
         <div class="row space-between">
           <span class="hint warn" id="addonHint">請儲存加成次數</span>
           <button class="btn btn-green" id="btnSaveAddons" type="button">儲存</button>
@@ -115,21 +76,18 @@
           </div>
           <div id="addonRows" class="addon-body"></div>
         </div>
-
-        <!-- 顯示居服員薪資 -->
         <div id="caregiverSalary" style="margin-top:10px;font-weight:800;text-align:right;color:#2e7d32;">
           居服員薪資合計：0 元
         </div>
       </div>
 
-      <!-- 中：基本資料 -->
+      <!-- 中 -->
       <div class="card">
         <h2 class="card-title">基本資料</h2>
-
         <div class="form-row">
           <label>身分類別：</label>
           <div class="chips">
-            <label class="chip"><input type="radio" name="idty" id="id-normal" value="一般戶" checked> 一般戶</label>
+            <label class="chip"><input type="radio" name="idty" value="一般戶" checked> 一般戶</label>
             <label class="chip"><input type="radio" name="idty" value="中低收入戶"> 中低收</label>
             <label class="chip"><input type="radio" name="idty" value="低收入戶"> 低收</label>
           </div>
@@ -138,7 +96,7 @@
         <div class="form-row">
           <label>CMS 等級：</label>
           <div class="cms">
-            <label><input type="radio" name="cms" id="cms2" value="2" checked><span>2</span></label>
+            <label><input type="radio" name="cms" value="2" checked><span>2</span></label>
             <label><input type="radio" name="cms" value="3"><span>3</span></label>
             <label><input type="radio" name="cms" value="4"><span>4</span></label>
             <label><input type="radio" name="cms" value="5"><span>5</span></label>
@@ -166,7 +124,7 @@
           </div>
         </div>
         <div id="warnSCfg" class="note warn">未勾選外籍看護，SC 目前不可用。</div>
-                <!-- 小廣告 / QR -->
+
         <div class="qrbox">
           <div class="qr-left">
             <img src="qrcode.png" alt="QR" onerror="this.style.opacity=0.2" />
@@ -180,43 +138,37 @@
         </div>
       </div>
 
-      <!-- 右：個案額度及自付額 -->
+      <!-- 右 -->
       <div class="card">
         <h2 class="card-title">個案額度及自付額</h2>
-
         <div class="kv">
           <div class="kv-row"><span>額度總計：</span><b id="sumGrantBA">0</b></div>
           <div class="kv-row"><span>剩餘額度：</span><b id="sumRemainBA">0</b></div>
           <div id="overMain" class="note warn hidden">已超過 BA 額度</div>
           <hr>
-
           <div class="kv-row"><span>GA 額度：</span><b id="sumGrantGA">0</b></div>
           <div class="kv-row"><span>剩餘額度：</span><b id="sumRemainGA">0</b></div>
           <div id="overGA" class="note warn hidden">已超過 GA 額度</div>
           <hr>
-
           <div class="kv-row"><span>SC 額度：</span><b id="sumGrantSC">0</b></div>
           <div class="kv-row"><span>剩餘額度：</span><b id="sumRemainSC">0</b></div>
           <div id="overSC" class="note warn hidden">已超過 SC 額度</div>
           <hr>
-
           <div class="kv-row"><span>部分負擔：</span><b id="sumCopay">0</b></div>
           <div class="kv-row"><span>自付總計：</span><b id="sumSelfpay">0</b></div>
-
           <div class="kv-row optional"><span>政府補助：</span><b id="sumGovSubsidy">0</b></div>
           <div class="kv-row optional"><span>總金額：</span><b id="sumGrand">0</b></div>
         </div>
       </div>
     </section>
 
-    <!-- 服務表格（JS 產生） -->
     <section class="card service-card">
       <h2 class="card-title">服務項目</h2>
       <div id="tables"></div>
     </section>
   </main>
 
-  <!-- 底部資訊條（固定） -->
+  <!-- ✅ 底部資訊條 -->
   <footer id="bottomDock" class="footerbar">
     <div class="foot">
       <span>BA 剩餘：<b id="sumRemainBA_foot">0</b></span>
@@ -228,23 +180,32 @@
     </div>
   </footer>
 
-  <!-- 共用底欄注入（不影響上面的頁面專屬 footer） -->
-  <div id="__footer"></div>
+  <!-- ✅ 導覽高亮 -->
+  <script>
+  (function(){
+    function norm(href){
+      try{
+        const u=new URL(href, location.origin);
+        let p=u.pathname.replace(/\/(index\.html?)?$/i,'/index').replace(/\.html?$/i,'');
+        return p.split('/').pop().toLowerCase();
+      }catch(e){return '';}
+    }
+    const here=norm(location.href);
+    document.querySelectorAll('.nav-links a[href]').forEach(a=>{
+      if(norm(a.getAttribute('href'))===here) a.classList.add('active');
+    });
+  })();
+  </script>
 
-  <!-- 共用載入 -->
-  <script src="include.js"></script>
-  <script src="common.js"></script>
-
-<script>
-/* 禁止右鍵與檢視原始碼 */
-document.addEventListener('contextmenu', e => e.preventDefault());
-document.addEventListener('keydown', e => {
-  if ((e.ctrlKey || e.metaKey) && ['u','s','p'].includes(e.key.toLowerCase())) e.preventDefault();
-  if (e.key === 'F12') e.preventDefault();
-});
-/* 禁止選取與複製 */
-document.addEventListener('selectstart', e => e.preventDefault());
-document.addEventListener('copy', e => e.preventDefault());
-</script>
+  <!-- ✅ 防止檢視原始碼 -->
+  <script>
+  document.addEventListener('contextmenu', e => e.preventDefault());
+  document.addEventListener('keydown', e => {
+    if ((e.ctrlKey || e.metaKey) && ['u','s','p'].includes(e.key.toLowerCase())) e.preventDefault();
+    if (e.key === 'F12') e.preventDefault();
+  });
+  document.addEventListener('selectstart', e => e.preventDefault());
+  document.addEventListener('copy', e => e.preventDefault());
+  </script>
 </body>
 </html>
