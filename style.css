@@ -1,4 +1,4 @@
-/* ===================== 色票（你原本的變數） ===================== */
+/* ===================== 色票 ===================== */
 :root{
   --bg:#fff6d5;        /* 背景主色（柔米） */
   --card:#fffdf5;      /* 卡片背景 */
@@ -12,146 +12,146 @@
 
 /* ===================== Reset & base ===================== */
 *{ box-sizing:border-box; }
-html,body{ height:100%; }
+html,body{ height:100%; margin:0; padding:0; }
 body{
-  margin:0;
-  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Noto Sans TC","Microsoft JhengHei","PingFang TC",system-ui,sans-serif;
+  font-family:"Noto Sans TC",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Microsoft JhengHei","PingFang TC",system-ui,sans-serif;
   color:var(--ink);
   background:var(--bg);
-  line-height:1.5;
-  padding-bottom: var(--dock-h, 56px);
+  font-size:16px;
+  line-height:1.62;
+  letter-spacing:0.2px;
+  padding-bottom:var(--dock-h,56px);
 }
 a{ color:var(--green); text-decoration:none; }
 a:hover{ text-decoration:underline; }
 .hidden{ display:none !important; }
 
 /* ===================== 浮水印 ===================== */
-.watermark{
-  position:fixed; inset:0; pointer-events:none; z-index:0; overflow:hidden;
-}
+.watermark{ position:fixed; inset:0; pointer-events:none; z-index:0; overflow:hidden; }
 .wm-item{
-  position:absolute;
-  font-weight:800;
-  font-size:36px;
-  color:rgba(0,0,0,.05);
-  transform:rotate(-25deg);
-  white-space:nowrap;
-  user-select:none;
+  position:absolute; font-weight:800; font-size:36px; color:rgba(0,0,0,.05);
+  transform:rotate(-25deg); white-space:nowrap; user-select:none;
   animation:wm-sway var(--dur,12s) ease-in-out infinite alternate;
 }
-@keyframes wm-sway{
-  0%{ transform:translateX(0) rotate(-25deg); }
-  100%{ transform:translateX(var(--wm-shift,120px)) rotate(-25deg); }
-}
+@keyframes wm-sway{0%{transform:translateX(0) rotate(-25deg);}100%{transform:translateX(var(--wm-shift,120px)) rotate(-25deg);}}
 @media print{ .watermark{ opacity:.08; } }
 
-/* ===================== 頂部列（固定） ===================== */
+/* ===================== 頂部列 ===================== */
 .topbar{
   position:sticky; top:0; z-index:1000;
   display:grid; grid-template-columns:auto 1fr auto;
   align-items:center;
-  padding:16px 32px;
+  padding:18px 32px;
   background:rgba(255,253,245,.9);
   backdrop-filter:blur(6px);
   border-bottom:1px solid var(--line);
-  overflow-x:auto;
-  -webkit-overflow-scrolling:touch;
+  overflow-x:auto; -webkit-overflow-scrolling:touch;
 }
-.brand{ display:flex; align-items:center; gap:16px; font-weight:700; letter-spacing:1px; min-width:max-content; white-space:nowrap; }
-.brand img{ height:60px; width:auto; transition:transform .3s ease; display:block; }
-.brand img:hover{ transform:scale(1.08); }
-.site-title{ font-size:20px; font-weight:700; margin-right:28px; white-space:nowrap; color:var(--ink); }
+.brand{ display:flex; align-items:center; gap:16px; font-weight:700; letter-spacing:.4px; min-width:max-content; white-space:nowrap; }
+.brand img{ height:56px; width:auto; transition:transform .25s ease; display:block; }
+.brand img:hover{ transform:scale(1.06); }
+.site-title{ font-size:20px; font-weight:800; margin-right:28px; white-space:nowrap; color:var(--ink); }
 
-/* 導覽列（全站置中、一致外觀） */
-.nav-links{
-  grid-column:2;
-  display:flex; justify-content:center; align-items:center;
-  gap:40px; white-space:nowrap;
-}
+/* 導覽列 */
+.nav-links{ grid-column:2; display:flex; justify-content:center; align-items:center; gap:40px; white-space:nowrap; }
 .nav-links a{
-  text-decoration:none; color:#333; font-weight:600;
-  position:relative; /* 給 ::after 底線定位 */
-  padding:8px 4px; transition:color .2s, transform .2s;
+  text-decoration:none; color:#2b2b2b; font-weight:800; padding:4px 2px;
+  transition:color .2s, transform .2s;
 }
 .nav-links a:hover{ color:var(--orange); transform:translateY(-1px); }
-
-/* ✅ 修正：只用 ::after 畫底線，避免與其他樣式疊成「雙底線」 */
-.nav-links a.active{ color:var(--orange); }
-.nav-links a.active::after{
-  content:""; position:absolute; left:0; right:0; bottom:-6px;
-  height:3px; background:var(--orange); border-radius:3px;
+.nav-links a.active{
+  color:var(--orange);
+  border-bottom:2px solid var(--orange);
+  padding-bottom:2px;
 }
 
-/* 右側按鈕（預留寬度讓選單在所有頁面置中一致） */
-.actions{ grid-column:3; justify-self:end; display:flex; gap:10px; white-space:nowrap; }
+/* 右側按鈕 */
+.actions{ grid-column:3; justify-self:end; display:flex; gap:12px; white-space:nowrap; }
 .actions-ghost{ min-width:320px; height:1px; }
-
-/* 分隔 */
 .divider{ height:10px; }
 
-/* ===================== 底部資訊條（固定） ===================== */
+/* ===================== 底部資訊條 ===================== */
 .footerbar{
   position:sticky; bottom:0; z-index:1000;
   background:rgba(255,253,245,.9);
   backdrop-filter:blur(6px);
   border-top:1px solid var(--line);
-  padding:10px 18px;
-  padding-bottom:max(10px, env(safe-area-inset-bottom));
+  padding:12px 20px;
+  padding-bottom:max(12px, env(safe-area-inset-bottom));
 }
-.foot{ display:flex; justify-content:center; align-items:center; gap:20px; flex-wrap:wrap; font-weight:600; text-align:center; }
+.foot{ display:flex; justify-content:center; align-items:center; gap:22px; flex-wrap:wrap; font-weight:700; text-align:center; }
 .foot .ok{ color:var(--green); }
 .foot .warn{ color:#b00020; }
 
 /* ===================== 容器與卡片 ===================== */
 .container{ max-width:1220px; margin:0 auto; padding:20px 24px; }
-.grid-3 { display:grid; grid-template-columns:1.15fr 0.95fr 1.15fr; gap:0px; }
+.grid-3{ display:grid; grid-template-columns:1.15fr 0.95fr 1.15fr; gap:0; }
 .card{
   background:var(--card);
   border:1px solid var(--line);
-  border-radius:12px; padding:20px;
+  border-radius:12px;
+  padding:20px;
   box-shadow:0 1px 2px rgba(0,0,0,.05);
   height:100%;
 }
 .card-title{ margin:0 0 12px 0; font-size:18px; font-weight:800; }
 
 /* ===================== 元件 ===================== */
-.btn{ border:none; cursor:pointer; padding:8px 14px; border-radius:10px; font-weight:700; color:#fff; background:var(--green); }
+.btn{ border:none; cursor:pointer; padding:10px 16px; border-radius:12px; font-weight:800; color:#fff; background:var(--green); }
 .btn:hover{ filter:brightness(1.05); }
 .btn:active{ transform:translateY(1px); }
-.btn.pill{ border-radius:999px; padding:8px 16px; }
+.btn.pill{ border-radius:999px; padding:10px 18px; }
 .btn-green{ background:var(--green); color:#fff; }
 .btn-orange{ background:var(--orange); color:#fff; }
 .btn-gray{ background:var(--graybtn); color:#fff; }
 
-.row{ display:flex; align-items:center; gap:10px; }
+.row{ display:flex; align-items:center; gap:12px; }
 .space-between{ justify-content:space-between; }
-.hint{ color:var(--muted); font-size:13px; }
+.hint{ color:var(--muted); font-size:14px; }
 .note.warn,.hint.warn{ color:#b00020; }
 .text-right{ text-align:right; }
 .bold{ font-weight:800; }
 .orange{ color:var(--orange); }
 
-/* ===================== 基本資料區 ===================== */
-.form-row{ display:flex; align-items:center; gap:10px; margin:12px 0; font-size:15px; }
-.form-row > label{ flex:0 0 90px; white-space:nowrap; }
-.form-row .chips, .form-row .cms{ flex:1 1 auto; display:flex; gap:8px; flex-wrap:nowrap; min-width:0; }
+/* ===================== 表單 ===================== */
+.form-row{
+  display:flex; align-items:center; gap:14px;
+  margin:14px 0; font-size:1rem;
+}
+.form-row > label{
+  flex:0 0 100px; white-space:nowrap; font-weight:800; color:#3a3827;
+}
+.form-row .chips, .form-row .cms{
+  flex:1 1 auto; display:flex; gap:10px; flex-wrap:wrap; min-width:0;
+}
 .form-row input[type="number"], .form-row input[type="text"]{
-  height:34px; font-size:15px; border-radius:6px; width:100px; padding:2px 6px;
+  height:36px; font-size:1rem; border-radius:10px;
+  width:140px; padding:6px 10px;
   border:1px solid var(--line); background:#fffdf6;
 }
 
-/* 選項外觀 */
-.chips{ display:flex; gap:8px; }
-.chip{ display:inline-flex; align-items:center; gap:6px; padding:5px 10px; border:1px solid var(--line); border-radius:999px; background:#fff; font-size:14px; cursor:pointer; user-select:none; }
+/* ===================== 選項樣式 ===================== */
+.chips{ display:flex; gap:10px; }
+.chip{
+  display:inline-flex; align-items:center; gap:8px;
+  padding:7px 12px; border:1px solid var(--line);
+  border-radius:999px; background:#fff;
+  font-size:.95rem; cursor:pointer; user-select:none; font-weight:700;
+}
 .chip input{ transform:translateY(1px); }
 
 .cms{ display:flex; gap:8px; }
-.cms label{ display:inline-flex; align-items:center; gap:4px; background:#fff; border:1px solid var(--line); border-radius:12px; padding:5px 8px; font-size:14px; }
+.cms label{
+  display:inline-flex; align-items:center; gap:6px;
+  background:#fff; border:1px solid var(--line);
+  border-radius:12px; padding:7px 10px;
+  font-size:.95rem; font-weight:800;
+}
 .cms input{ transform:translateY(1px); }
 
-/* ===================== 左卡：AA 加成區 ===================== */
-.addon{ margin-top:8px; border:1px solid var(--line); border-radius:10px; overflow:hidden; }
-.addon-head, .addon-row{ display:grid; grid-template-columns:1fr 160px; align-items:center; }
+/* ===================== AA 加成區 ===================== */
+.addon{ margin-top:10px; border:1px solid var(--line); border-radius:12px; overflow:hidden; }
+.addon-head,.addon-row{ display:grid; grid-template-columns:1fr 160px; align-items:center; }
 .addon-head{ background:#faf6e4; border-bottom:1px solid var(--line); font-weight:800; padding:10px 16px; }
 .addon-row{ padding:10px 16px; border-top:1px dashed var(--line); }
 .addon-row:first-child{ border-top:none; }
@@ -163,79 +163,40 @@ a:hover{ text-decoration:underline; }
 /* ===================== 服務表格 ===================== */
 #tables { width:100%; }
 #tables table {
-  width:100%; border-collapse:separate; border-spacing:0; background:#fff; border:1px solid var(--line);
+  width:100%; border-collapse:separate; border-spacing:0;
+  background:#fff; border:1px solid var(--line);
   border-radius:12px; overflow:hidden;
 }
 #tables thead th {
   position:sticky; top:0; z-index:5;
-  background:#f6f1d9; color:#584f2a; padding:12px 18px; border-bottom:1px solid var(--line); font-weight:800;
+  background:#f6f1d9; color:#584f2a;
+  padding:14px 16px; border-bottom:1px solid var(--line); font-weight:800;
 }
 #tables th:first-child, #tables td:first-child { text-align:left; padding-left:18px; }
 #tables th:nth-child(2), #tables th:nth-child(3), #tables th:nth-child(4), #tables th:nth-child(5), #tables th:nth-child(6){ width:140px; text-align:center; }
 #tables td:nth-child(2), #tables td:nth-child(3), #tables td:nth-child(4), #tables td:nth-child(5), #tables td:nth-child(6){ text-align:center; vertical-align:middle; }
-#tables tbody td { padding:12px 18px; border-top:1px solid var(--line); vertical-align:middle; }
+#tables tbody td { padding:12px 16px; border-top:1px solid var(--line); vertical-align:middle; }
 #tables tbody tr:nth-child(even){ background:#fffef9; }
-#tables input[type="number"] { width:70px; height:36px; font-size:15px; text-align:center; margin:0 auto; display:block; }
+#tables input[type="number"] { width:74px; height:34px; font-size:1rem; text-align:center; margin:0 auto; display:block; }
 
-/* ===================== 平板與手機優化 ===================== */
+/* ===================== 手機優化 ===================== */
 @media (max-width:860px){
   .grid-3{ grid-template-columns:1fr; gap:14px; }
-  .card{ padding:14px; }
+  .card{ padding:18px; }
   .topbar{ padding:14px 16px; }
   .footerbar{ padding-bottom:max(10px, env(safe-area-inset-bottom)); }
-
-  /* 表格可水平捲動，避免字被擠壓 */
-  #tables{ overflow-x:auto; -webkit-overflow-scrolling:touch; padding-bottom:calc(var(--dock-h,56px) + 14px); }
+  #tables{ overflow-x:auto; -webkit-overflow-scrolling:touch; padding-bottom:calc(var(--dock-h,56px)+14px); }
   #tables table{ min-width:780px; table-layout:fixed; }
-  #tables th,#tables td{ padding:10px 12px; font-size:14px; line-height:1.2; white-space:nowrap; }
+  #tables th,#tables td{ padding:10px 12px; font-size:14px; line-height:1.4; white-space:nowrap; }
   #tables input[type="number"]{ width:58px; height:32px; font-size:14px; }
   .foot{ gap:12px; font-size:14px; }
 }
-
-/* ✅ 手機（≤560px）：導覽可滑、表單滿版、避免壓縮 */
-@media (max-width:560px){
-  .topbar{ padding:10px 12px; }
-
-  /* 導覽列做水平滑動，保持一致位置與間距 */
-  .nav-links{
-    justify-content:flex-start;
-    overflow-x:auto; -webkit-overflow-scrolling:touch;
-    gap:24px; padding:6px 2px 10px;
-    scroll-snap-type:x proximity;
-  }
-  .nav-links a{ scroll-snap-align:center; padding:10px 2px; }
-  .nav-links a.active::after{ bottom:-4px; }
-
-  .actions{ gap:8px }
-  .btn{ padding:9px 14px; border-radius:12px }
-  .actions-ghost{ min-width:auto }
-
-  /* 表單輸入滿版，避免被擠小 */
-  .form-row{ flex-wrap:wrap }
-  .form-row > label{ flex:0 0 auto; }
-  .form-row input[type="text"],
-  .form-row input[type="number"]{ width:100% }
-
-  /* AA 加成區欄寬微調 */
-  .addon-head, .addon-row{ grid-template-columns:1fr 120px }
-
-  /* QR 區塊直向堆疊 */
-  .qrbox{ display:flex; flex-direction:column; gap:10px }
-  .qr-left img{ width:96px; height:96px }
-
-  /* 表格更保守，左右滑動 */
-  #tables table{ min-width:560px }
-
-  /* 浮水印淡一點，避免干擾閱讀 */
-  .wm-item{ font-size:28px; opacity:.04 }
-}
-
 @media print{
   .topbar,.footerbar{ display:none !important; }
   body{ padding:0; background:#fff; }
   #tables thead th{ position:static; }
 }
 
-/* ===================== 禁止選取/拖曳（你原本的） ===================== */
+/* ===================== 禁止選取/拖曳 ===================== */
 * { -webkit-user-select:none; -moz-user-select:none; -ms-user-select:none; user-select:none; }
 img, a img { -webkit-user-drag:none; user-drag:none; }
