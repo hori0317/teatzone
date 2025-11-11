@@ -3,28 +3,40 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>最新公告</title>
+  <title>最新公告｜長照工具</title>
+  <meta name="description" content="單位公告與更新資訊。">
   <link rel="icon" type="image/x-icon" href="YORU.ico" />
-  <link rel="stylesheet" href="common.css" />
-  <meta name="description" content="機構最新公告、排班異動、制度更新與下載。">
+  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="topbar-fixed.css" />
+  <script src="script.js" defer></script>
 </head>
 <body>
-  <div id="__header"></div>
+  <header class="topbar">
+    <div class="brand">
+      <a href="index.html" class="logo-link"><img src="org-logo.png" alt="logo" onerror="this.style.opacity=0.2" /></a>
+      <span class="site-title" id="siteTitle">最新公告</span>
+    </div>
+    <nav class="nav-links" aria-label="主選單">
+      <a href="index.html">額度計算機</a>
+      <a href="payroll.html">薪資計算機</a>
+      <a href="care-info.html">長照相關資訊</a>
+      <a href="news.html">最新公告</a>
+      <a href="contact.html">聯繫方式</a>
+      <a href="about.html">關於我們</a>
+    </nav>
+    <div class="actions actions-ghost"></div>
+  </header>
+  <div class="divider"></div>
 
   <main class="container">
     <section class="card">
-      <h1 class="card-title" style="font-size:22px;">最新公告</h1>
-      <p class="hint">此頁為骨架，未來可串 JSON/表單做動態公告。</p>
-
-      <article class="card" style="margin-top:10px;">
-        <h2 class="card-title">[範例] 113 年 X 月 X 日制度更新</h2>
-        <p>內容…</p>
-      </article>
+      <h1 class="card-title">最新公告</h1>
+      <p class="hint">公告列表區塊</p>
     </section>
   </main>
 
-  <div id="__footer"></div>
-  <script src="common.js"></script>
-  <script src="include.js"></script>
+  <footer id="bottomDock" class="footerbar">
+    <div class="foot"><span class="ok">© hori</span></div>
+  </footer>
 </body>
 </html>
