@@ -75,12 +75,12 @@ const serviceData = {
 
 /* 額度 */
 const cmsQuota = { 2:10020, 3:15460, 4:18580, 5:24100, 6:28070, 7:32090, 8:36180 };
-const GA_CAP   = { 2:32340, 3:32340, 4:32340, 5:32340, 6:32340, 7:48510, 8:48510 };
-const SC_CAP   = { 2:87780, 3:87780, 4:87780, 5:87780, 6:87780, 7:71610, 8:71610 };
+const GA_CAP = { 2:32340, 3:32340, 4:32340, 5:32340, 6:32340, 7:48510, 8:48510 };
+const SC_CAP = { 2:87780, 3:87780, 4:87780, 5:87780, 6:87780, 7:71610, 8:71610 };
 
 /* 狀態 */
 let currentUnit = localStorage.getItem("unit") || ($("#btnUnitToggle")?.dataset.unit || "B");
-const lastCalc  = { gov_inc:0, self_inc:0, gov_exC:0, self_exC:0 };
+const lastCalc = { gov_inc:0, self_inc:0, gov_exC:0, self_exC:0 };
 
 /* 初始化 */
 document.addEventListener('DOMContentLoaded', () => {
@@ -92,7 +92,10 @@ document.addEventListener('DOMContentLoaded', () => {
   updateSCAvailability();
   updateResults();
 
-  $("#btnSaveAddons")?.addEventListener("click", ()=>{ saveAddons(); updateResults(); });
+  $("#btnSaveAddons")?.addEventListener("click", ()=>{
+    saveAddons();
+    updateResults();
+  });
   $("#btnReset")?.addEventListener("click", resetAll);
 
   adjustTopbarPadding();
@@ -101,15 +104,20 @@ document.addEventListener('DOMContentLoaded', () => {
   window.addEventListener('orientationchange', ()=>{ adjustTopbarPadding(); adjustDockPadding(); });
 
   const dock = document.getElementById('bottomDock');
-  if(window.ResizeObserver && dock){ new ResizeObserver(()=>adjustDockPadding()).observe(dock); }
+  if(window.ResizeObserver && dock){
+    new ResizeObserver(()=>adjustDockPadding()).observe(dock);
+  }
   const topbar = document.querySelector('.topbar');
-  if(window.ResizeObserver && topbar){ new ResizeObserver(()=>adjustTopbarPadding()).observe(topbar); }
+  if(window.ResizeObserver && topbar){
+    new ResizeObserver(()=>adjustTopbarPadding()).observe(topbar);
+  }
 });
 
 /* AA 區 */
 function renderAddons(){
   const saved = JSON.parse(localStorage.getItem("addons")||"{}");
-  const host = $("#addonRows"); if(!host) return;
+  const host = $("#addonRows");
+  if(!host) return;
   host.innerHTML="";
   ADDONS.forEach(a=>{
     const row = document.createElement("div");
@@ -118,7 +126,8 @@ function renderAddons(){
       <div>${a.code}</div>
       <div class="addon-inputs">
         <input type="number" id="${a.code}_count" value="${toInt(saved[`${a.code}_count`])}" min="0" step="1" />
-      </div>`;
+      </div>
+    `;
     host.appendChild(row);
   });
 }
@@ -128,28 +137,28 @@ function saveAddons(){
     data[`${a.code}_count`] = toInt($(`#${a.code}_count`)?.value);
   });
   localStorage.setItem("addons", JSON.stringify(data));
-  const hint=$("#addonHint"); if(hint){ hint.textContent="已儲存加成次數"; hint.classList.remove("warn"); }
+  const hint=$("#addonHint");
+  if(hint){
+    hint.textContent="已儲存加成次數";
+    hint.classList.remove("warn");
+  }
 }
 
 /* 產表（C 與其餘邏輯不同） */
 function renderTables(){
-  const container = $("#tables"); if(!container) return;
+  const container = $("#tables");
+  if(!container) return;
   container.innerHTML="";
-  const titles = {
-    BA:"BA碼（照顧服務）",
-    BD:"BD碼（社區服務）",
-    C :"C碼（專業服務｜一包制）",
-    GA:"GA碼（喘息服務）",
-    SC:"SC碼（居家短照服務）"
-  };
+  const titles = { BA:"BA碼（照顧服務）", BD:"BD碼（社區服務）", C :"C碼（專業服務｜一包制）", GA:"GA碼（喘息服務）", SC:"SC碼（居家短照服務）" };
 
   Object.keys(serviceData).forEach(code=>{
     const groupBox = document.createElement("div");
     groupBox.dataset.group = code;
 
-    const h3=document.createElement("h3"); h3.textContent=titles[code];
-    const table=document.createElement("table");
+    const h3=document.createElement("h3");
+    h3.textContent=titles[code];
 
+    const table=document.createElement("table");
     if(code === "C"){
       table.innerHTML = `
         <thead><tr>
@@ -158,9 +167,10 @@ function renderTables(){
           <th>每月組數</th>
           <th>總金額</th>
         </tr></thead>
-        <tbody></tbody>`;
+        <tbody></tbody>
+      `;
     }else{
-      table.innerHTML=`
+      table.innerHTML= `
         <thead><tr>
           <th style="min-width:260px">服務項目</th>
           <th>單價</th>
@@ -169,34 +179,37 @@ function renderTables(){
           <th>總次數</th>
           <th>總金額</th>
         </tr></thead>
-        <tbody></tbody>`;
+        <tbody></tbody>
+      `;
     }
 
     const tbody=table.querySelector("tbody");
-
     serviceData[code].forEach((item,i)=>{
       const tr=document.createElement("tr");
-      tr.dataset.manual = "0";
-      tr.dataset.use    = "0";
-      tr.dataset.code   = item.code;
+      tr.dataset.manual = "0"; // 0=自動；1=手動
+      tr.dataset.use = "0";    // 最終使用次數（或 C 的組數）
+      tr.dataset.code = item.code;
 
       if(code === "C"){
-        tr.dataset.cmode = "1";
+        tr.dataset.cmode = "1"; // 標記為 C 組
 
-        const tdItem  = document.createElement("td");
+        const tdItem = document.createElement("td");
         const tdPrice = document.createElement("td");
-        const tdGrp   = document.createElement("td");
-        const tdAmt   = document.createElement("td");
+        const tdGrp = document.createElement("td");
+        const tdAmt = document.createElement("td");
 
-        tdItem.textContent  = `${item.code} ${item.name}`;
-        tdPrice.className   = "cell-price";
+        tdItem.textContent = `${item.code} ${item.name}`;
+        tdPrice.className = "cell-price";
         tdPrice.textContent = (Number(item.price)||0).toLocaleString();
-        tdAmt.className     = "cell-amount";
-        tdAmt.textContent   = "0";
+        tdAmt.className = "cell-amount";
+        tdAmt.textContent = "0";
 
         const gInp = document.createElement("input");
         gInp.className = "inp-c-groups";
-        gInp.type = "number"; gInp.min="0"; gInp.step="1"; gInp.value="0";
+        gInp.type = "number";
+        gInp.min="0";
+        gInp.step="1";
+        gInp.value="0";
         const onCGroupChange = ()=>{
           tr.dataset.use = String(toInt(gInp.value));
           updateOneRow(code, i);
@@ -204,44 +217,42 @@ function renderTables(){
         };
         gInp.addEventListener("input", onCGroupChange);
         gInp.addEventListener("change", onCGroupChange);
+
         tdGrp.appendChild(gInp);
-
-        tr.appendChild(tdItem);
-        tr.appendChild(tdPrice);
-        tr.appendChild(tdGrp);
-        tr.appendChild(tdAmt);
-
+        tr.appendChild(tdItem); tr.appendChild(tdPrice); tr.appendChild(tdGrp); tr.appendChild(tdAmt);
       }else{
         tr.dataset.cmode = "0";
 
-        const tdItem  = document.createElement("td");
+        const tdItem = document.createElement("td");
         const tdPrice = document.createElement("td");
-        const tdWk    = document.createElement("td");
-        const tdMon   = document.createElement("td");
-        const tdTot   = document.createElement("td");
-        const tdAmt   = document.createElement("td");
+        const tdWk = document.createElement("td");
+        const tdMon = document.createElement("td");
+        const tdTot = document.createElement("td");
+        const tdAmt = document.createElement("td");
 
-        tdItem.textContent  = `${item.code} ${item.name}`;
-        tdPrice.className   = "cell-price";
+        tdItem.textContent = `${item.code} ${item.name}`;
+        tdPrice.className = "cell-price";
         tdPrice.textContent = (Number(item.price)||0).toLocaleString();
 
-        const week  = document.createElement("input");
+        const week = document.createElement("input");
         const month = document.createElement("input");
         const total = document.createElement("input");
-        week.className="inp-week";  week.type="number";  week.min="0"; week.step="1"; week.value="0";
+        week.className="inp-week"; week.type="number"; week.min="0"; week.step="1"; week.value="0";
         month.className="inp-month"; month.type="number"; month.value="0"; month.readOnly = true;
         total.className="inp-total"; total.type="number"; total.min="0"; total.step="1"; total.value="0";
 
+        // 週次變動 → 月次=ceil(週*4.5)，總次=月次、回同步
         const onWeekChange = ()=>{
           const w = toInt(week.value);
           const m = Math.ceil(w * WEEKS_PER_MONTH);
-          month.value       = m;
-          total.value       = m;
+          month.value = m;
+          total.value = m;
           tr.dataset.manual = "0";
-          tr.dataset.use    = String(m);
+          tr.dataset.use = String(m);
           updateOneRow(code, i);
           updateResults();
         };
+        // 總次自由改：manual=1；直到再次改週次才重設
         const onTotalChange = ()=>{
           tr.dataset.manual = "1";
           const t = toInt(total.value);
@@ -249,27 +260,16 @@ function renderTables(){
           updateOneRow(code, i);
           updateResults();
         };
-
         week.addEventListener("input", onWeekChange);
         week.addEventListener("change", onWeekChange);
         total.addEventListener("input", onTotalChange);
         total.addEventListener("change", onTotalChange);
 
-        tdWk.appendChild(week);
-        tdMon.appendChild(month);
-        tdTot.appendChild(total);
+        tdWk.appendChild(week); tdMon.appendChild(month); tdTot.appendChild(total);
+        tdAmt.className="cell-amount"; tdAmt.textContent="0";
 
-        tdAmt.className="cell-amount";
-        tdAmt.textContent="0";
-
-        tr.appendChild(tdItem);
-        tr.appendChild(tdPrice);
-        tr.appendChild(tdWk);
-        tr.appendChild(tdMon);
-        tr.appendChild(tdTot);
-        tr.appendChild(tdAmt);
+        tr.appendChild(tdItem); tr.appendChild(tdPrice); tr.appendChild(tdWk); tr.appendChild(tdMon); tr.appendChild(tdTot); tr.appendChild(tdAmt);
       }
-
       tbody.appendChild(tr);
     });
 
@@ -278,27 +278,29 @@ function renderTables(){
     container.appendChild(groupBox);
   });
 
-  applyUnitEffects();
+  applyUnitEffects(); // B 單位隱藏 C / BD / BA09/BA09a
 }
 
-/* 單列金額 */
+/* 單列金額（只讀 data-use） */
 function updateOneRow(code, idx){
   const tIndex = Object.keys(serviceData).indexOf(code);
-  const table  = document.querySelectorAll("#tables table")[tIndex];
+  const table = document.querySelectorAll("#tables table")[tIndex];
   if(!table) return;
-  const tr     = table.tBodies[0].rows[idx];
+  const tr = table.tBodies[0].rows[idx];
   if(!tr) return;
-
-  const price  = Number(serviceData[code][idx].price) || 0;
-  const use    = toInt(tr.dataset.use);
-  const cell   = tr.querySelector(".cell-amount");
+  const price = Number(serviceData[code][idx].price) || 0;
+  const use = toInt(tr.dataset.use);
+  const cell = tr.querySelector(".cell-amount");
   if(cell) cell.textContent = (price * use).toLocaleString();
 }
 
 /* 條件輸入 */
 function bindHeaderInputs(){
   document.querySelectorAll("input[name='idty'], input[name='cms'], input[name='foreign']")
-    .forEach(el=>el.addEventListener("change", ()=>{ updateSCAvailability(); updateResults(); }));
+    .forEach(el=>el.addEventListener("change", ()=>{
+      updateSCAvailability();
+      updateResults();
+    }));
   $("#keepQuota")?.addEventListener("input", updateResults);
 }
 
@@ -315,19 +317,20 @@ function updateSCAvailability(){
   if(warn){ !hasForeign ? warn.classList.remove("hidden") : warn.classList.add("hidden"); }
 }
 
-/* 統計 */
+/* 統計（含 C / 排 C 兩組；不主動覆寫使用者的 total） */
 function updateResults(){
   let sumBA=0, sumGA=0, sumSC=0, sumC=0;
-
   const tables = document.querySelectorAll("#tables table");
   const groups = Object.keys(serviceData);
 
   groups.forEach((g, idx) => {
-    const tbody = tables[idx]?.tBodies[0]; if(!tbody) return;
+    const tbody = tables[idx]?.tBodies[0];
+    if(!tbody) return;
     [...tbody.rows].forEach((tr, i) => {
       const price = Number(serviceData[g][i].price) || 0;
       let use = toInt(tr.dataset.use);
 
+      // 初次（use=0 且非 C）：依週→月種初值一次
       if(tr.dataset.cmode!=="1" && !use){
         const w = toInt(tr.querySelector(".inp-week")?.value);
         const m = Math.ceil(w * WEEKS_PER_MONTH);
@@ -340,21 +343,22 @@ function updateResults(){
       }
 
       const amt = price * use;
-
-      if (tr.dataset.cmode === "1"){ sumBA += amt; sumC += amt; }
-      else if (g==="GA") sumGA += amt;
-      else if (g==="SC") sumSC += amt;
-      else sumBA += amt;
+      if (tr.dataset.cmode === "1"){
+        sumBA += amt;
+        sumC  += amt;
+      } else if (g==="GA") sumGA += amt;
+      else if (g==="SC")  sumSC += amt;
+      else                sumBA += amt;
 
       const cell=tr.querySelector(".cell-amount");
       if(cell) cell.textContent = amt.toLocaleString();
     });
   });
 
+  // 身分/額度
   const idtyRaw = (document.querySelector("input[name='idty']:checked")||{}).value || "一般戶";
-  const cms  = toInt((document.querySelector("input[name='cms']:checked")||{}).value || 2);
+  const cms = toInt((document.querySelector("input[name='cms']:checked")||{}).value || 2);
   const keep = Math.max(0, toInt($("#keepQuota")?.value));
-
   const rateMap = { "一般戶":0.16, "中低收入戶":0.05, "低收入戶":0 };
   const rate = rateMap[idtyRaw] ?? 0.16;
 
@@ -367,49 +371,52 @@ function updateResults(){
     const allowGA = Math.min(ga, grantGA);
     const allowSC = Math.min(sc, grantSC);
     const subsidyBase = allowBA + allowGA + allowSC;
+
     const overBA = Math.max(0, ba - grantBA);
     const overGA = Math.max(0, ga - grantGA);
     const overSC = Math.max(0, sc - grantSC);
+
     const copay = Math.round(subsidyBase * rate);
-    const gov   = subsidyBase - copay;
-    const self  = copay + overBA + overGA + overSC;
+    const gov = subsidyBase - copay;
+    const self = copay + overBA + overGA + overSC;
     const grand = gov + self;
     return {allowBA,allowGA,allowSC,overBA,overGA,overSC,copay,gov,self,grand};
   };
 
-  const inc = calc(sumBA, sumGA, sumSC);
-  const exC = calc(sumBA - sumC, sumGA, sumSC);
+  const inc = calc(sumBA, sumGA, sumSC);        // 含 C
+  const exC = calc(sumBA - sumC, sumGA, sumSC); // 排 C（B 單位薪資用）
 
-  setText("#sumGrantBA", grantBA);
+  // 顯示（採含 C）
+  $("#grantQuota") && ($("#grantQuota").value = grantBA.toLocaleString());
   const rBA = Math.max(0, grantBA - inc.allowBA);
   const rGA = Math.max(0, grantGA - inc.allowGA);
   const rSC = Math.max(0, grantSC - inc.allowSC);
+
+  setText("#sumGrantBA", grantBA);
   setText("#sumRemainBA", rBA);
   setText("#sumGrantGA", grantGA);
   setText("#sumRemainGA", rGA);
   setText("#sumGrantSC", grantSC);
   setText("#sumRemainSC", rSC);
-
   setText("#sumRemainBA_foot", rBA);
   setText("#sumRemainGA_foot", rGA);
   setText("#sumRemainSC_foot", rSC);
-
   setText("#sumCopay", inc.copay);
   setText("#sumSelfpay", inc.self);
   setText("#sumGovSubsidy", inc.gov);
   setText("#sumGrand", inc.grand);
-
   setText("#sumGovSubsidy_foot", inc.gov);
   setText("#sumSelfpay_foot", inc.self);
   setText("#sumGrand_foot", inc.grand);
-
   toggle("#overMain", inc.overBA>0);
   toggle("#overGA",   inc.overGA>0);
   toggle("#overSC",   inc.overSC>0);
 
-  lastCalc.gov_inc = inc.gov;   lastCalc.self_inc = inc.self;
-  lastCalc.gov_exC = exC.gov;   lastCalc.self_exC = exC.self;
-
+  // 薪資（含C／排C）
+  lastCalc.gov_inc = inc.gov;
+  lastCalc.self_inc = inc.self;
+  lastCalc.gov_exC = exC.gov;
+  lastCalc.self_exC = exC.self;
   updateCaregiverSalary();
 }
 
@@ -420,18 +427,17 @@ function updateCaregiverSalary(){
   Object.keys(AA_PRICE).forEach(c=>{
     aaTotal += toInt(saved[`${c}_count`]) * AA_PRICE[c];
   });
-
-  const baseGov  = (currentUnit==="B") ? lastCalc.gov_exC  : lastCalc.gov_inc;
-  const baseSelf = (currentUnit==="B") ? lastCalc.self_exC : lastCalc.self_inc;
+  const baseGov = (currentUnit==="B") ? lastCalc.gov_exC : lastCalc.gov_inc;
+  const baseSelf= (currentUnit==="B") ? lastCalc.self_exC: lastCalc.self_inc;
   const total=Math.round((aaTotal + baseGov + baseSelf) * 0.6);
-
   const target=$("#caregiverSalary");
   if(target) target.textContent=`居服員薪資合計：${total.toLocaleString()} 元`;
 }
 
 /* A/B 切換：B 隱藏 C、BD、BA09/BA09a；薪資不含 C */
 function bindUnitToggle(){
-  const btn=$("#btnUnitToggle"); if(!btn) return;
+  const btn=$("#btnUnitToggle");
+  if(!btn) return;
   btn.addEventListener("click", ()=>{
     currentUnit = (currentUnit==="A") ? "B" : "A";
     localStorage.setItem("unit", currentUnit);
@@ -440,8 +446,9 @@ function bindUnitToggle(){
   });
 }
 
-/* 單位效果 */
+/* ★ 單位效果（本版重寫） */
 function applyUnitEffects(){
+  // 按鈕外觀與文字
   const btn = $("#btnUnitToggle");
   if (btn){
     btn.textContent = `${currentUnit}單位`;
@@ -450,11 +457,13 @@ function applyUnitEffects(){
     btn.classList.add(currentUnit === "A" ? "btn-green" : "btn-orange");
   }
 
+  // C 組：B 隱藏、A 顯示
   const cBox = document.querySelector('[data-group="C"]');
   if (cBox){
     currentUnit === "B" ? cBox.classList.add("hidden") : cBox.classList.remove("hidden");
   }
 
+  // ★ BD 組：B 隱藏並歸零；A 顯示並解鎖
   const bdBox = document.querySelector('[data-group="BD"]');
   if (bdBox){
     if (currentUnit === "B"){
@@ -462,8 +471,7 @@ function applyUnitEffects(){
       bdBox.querySelectorAll("tbody tr").forEach(tr=>{
         tr.dataset.use = "0";
         tr.querySelectorAll("input").forEach(inp=>{
-          inp.value = 0;
-          inp.disabled = true;
+          inp.value = 0; inp.disabled = true;
         });
         const cell = tr.querySelector(".cell-amount");
         if (cell) cell.textContent = "0";
@@ -474,6 +482,7 @@ function applyUnitEffects(){
     }
   }
 
+  // ★ BA09 / BA09a：僅 A 單位可用；B 單位隱藏並歸零鎖定
   const baTable = document.querySelector('[data-group="BA"] table');
   if (baTable){
     const rows = baTable.tBodies[0]?.rows || [];
@@ -485,10 +494,10 @@ function applyUnitEffects(){
       if (currentUnit === "B"){
         tr.classList.add("hidden");
         tr.dataset.use = "0";
-        const week  = tr.querySelector(".inp-week");
+        const week = tr.querySelector(".inp-week");
         const month = tr.querySelector(".inp-month");
         const total = tr.querySelector(".inp-total");
-        if (week)  { week.value  = 0; week.disabled  = true; }
+        if (week)  { week.value = 0; week.disabled = true; }
         if (month) { month.value = 0; }
         if (total) { total.value = 0; total.disabled = true; }
         const cell = tr.querySelector(".cell-amount");
@@ -502,9 +511,18 @@ function applyUnitEffects(){
 }
 
 /* 小工具 */
-function setText(sel, num){ const el=$(sel); if(!el) return; el.textContent = Number(num).toLocaleString(); }
-function toggle(sel, show){ const el=$(sel); if(!el) return; show ? el.classList.remove("hidden") : el.classList.add("hidden"); }
-function resetAll(){ localStorage.removeItem("addons"); location.reload(); }
+function setText(sel, num){
+  const el=$(sel); if(!el) return;
+  el.textContent = Number(num).toLocaleString();
+}
+function toggle(sel, show){
+  const el=$(sel); if(!el) return;
+  show ? el.classList.remove("hidden") : el.classList.add("hidden");
+}
+function resetAll(){
+  localStorage.removeItem("addons");
+  location.reload();
+}
 
 /* 避位 */
 function adjustDockPadding(){
@@ -520,21 +538,18 @@ function adjustTopbarPadding(){
   document.documentElement.style.setProperty('--topbar-h', h + 'px');
 }
 
-/* 導覽高亮（補強單頁直開）*/
+/* ---- 導覽：依當前網址自動高亮（支援 /page 與 page.html） ---- */
 (function(){
   function norm(href){
     try{
       const u = new URL(href, location.origin);
       let p = u.pathname.trim();
       if (p.length > 1 && p.endsWith('/')) p = p.slice(0, -1);
-      p = p.replace(/\/(index\.html?)?$/i, '/index')
-           .replace(/\.html?$/i, '');
+      p = p.replace(/\/(index\.html?)?$/i, '/index').replace(/\.html?$/i, '');
       const parts = p.split('/');
-      const last  = parts[parts.length - 1];
+      const last = parts[parts.length - 1];
       return last.toLowerCase();
-    }catch(e){
-      return '';
-    }
+    }catch(e){ return ''; }
   }
   const here = norm(location.href);
   document.querySelectorAll('.nav-links a[href]').forEach(a=>{
