@@ -62,13 +62,27 @@ a:hover{ text-decoration:underline; }
 .brand img:hover{ transform:scale(1.08); }
 .site-title{ font-size:20px; font-weight:700; margin-right:28px; white-space:nowrap; color:var(--ink); }
 
-/* 導覽列 */
-.nav-links{ grid-column:2; display:flex; justify-content:center; align-items:center; gap:40px; white-space:nowrap; }
-.nav-links a{ text-decoration:none; color:#333; font-weight:600; transition:color .2s, transform .2s; white-space:nowrap; }
+/* 導覽列（全站置中、一致外觀） */
+.nav-links{
+  grid-column:2;
+  display:flex; justify-content:center; align-items:center;
+  gap:40px; white-space:nowrap;
+}
+.nav-links a{
+  text-decoration:none; color:#333; font-weight:600;
+  position:relative; /* 給 ::after 底線定位 */
+  padding:8px 4px; transition:color .2s, transform .2s;
+}
 .nav-links a:hover{ color:var(--orange); transform:translateY(-1px); }
-.nav-links a.active{ color:var(--orange); border-bottom: 2px solid var(--orange); padding-bottom: 2px; }
 
-/* 右側按鈕 */
+/* ✅ 修正：只用 ::after 畫底線，避免與其他樣式疊成「雙底線」 */
+.nav-links a.active{ color:var(--orange); }
+.nav-links a.active::after{
+  content:""; position:absolute; left:0; right:0; bottom:-6px;
+  height:3px; background:var(--orange); border-radius:3px;
+}
+
+/* 右側按鈕（預留寬度讓選單在所有頁面置中一致） */
 .actions{ grid-column:3; justify-self:end; display:flex; gap:10px; white-space:nowrap; }
 .actions-ghost{ min-width:320px; height:1px; }
 
@@ -163,18 +177,59 @@ a:hover{ text-decoration:underline; }
 #tables tbody tr:nth-child(even){ background:#fffef9; }
 #tables input[type="number"] { width:70px; height:36px; font-size:15px; text-align:center; margin:0 auto; display:block; }
 
-/* ===================== 手機優化 ===================== */
+/* ===================== 平板與手機優化 ===================== */
 @media (max-width:860px){
   .grid-3{ grid-template-columns:1fr; gap:14px; }
   .card{ padding:14px; }
   .topbar{ padding:14px 16px; }
   .footerbar{ padding-bottom:max(10px, env(safe-area-inset-bottom)); }
+
+  /* 表格可水平捲動，避免字被擠壓 */
   #tables{ overflow-x:auto; -webkit-overflow-scrolling:touch; padding-bottom:calc(var(--dock-h,56px) + 14px); }
   #tables table{ min-width:780px; table-layout:fixed; }
   #tables th,#tables td{ padding:10px 12px; font-size:14px; line-height:1.2; white-space:nowrap; }
   #tables input[type="number"]{ width:58px; height:32px; font-size:14px; }
   .foot{ gap:12px; font-size:14px; }
 }
+
+/* ✅ 手機（≤560px）：導覽可滑、表單滿版、避免壓縮 */
+@media (max-width:560px){
+  .topbar{ padding:10px 12px; }
+
+  /* 導覽列做水平滑動，保持一致位置與間距 */
+  .nav-links{
+    justify-content:flex-start;
+    overflow-x:auto; -webkit-overflow-scrolling:touch;
+    gap:24px; padding:6px 2px 10px;
+    scroll-snap-type:x proximity;
+  }
+  .nav-links a{ scroll-snap-align:center; padding:10px 2px; }
+  .nav-links a.active::after{ bottom:-4px; }
+
+  .actions{ gap:8px }
+  .btn{ padding:9px 14px; border-radius:12px }
+  .actions-ghost{ min-width:auto }
+
+  /* 表單輸入滿版，避免被擠小 */
+  .form-row{ flex-wrap:wrap }
+  .form-row > label{ flex:0 0 auto; }
+  .form-row input[type="text"],
+  .form-row input[type="number"]{ width:100% }
+
+  /* AA 加成區欄寬微調 */
+  .addon-head, .addon-row{ grid-template-columns:1fr 120px }
+
+  /* QR 區塊直向堆疊 */
+  .qrbox{ display:flex; flex-direction:column; gap:10px }
+  .qr-left img{ width:96px; height:96px }
+
+  /* 表格更保守，左右滑動 */
+  #tables table{ min-width:560px }
+
+  /* 浮水印淡一點，避免干擾閱讀 */
+  .wm-item{ font-size:28px; opacity:.04 }
+}
+
 @media print{
   .topbar,.footerbar{ display:none !important; }
   body{ padding:0; background:#fff; }
