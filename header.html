@@ -1,9 +1,7 @@
 <header class="topbar">
   <div class="brand">
-    <a href="https://github.com/hori07/longterm-care-calculator/tree/main" target="_blank" class="logo-link" aria-label="LOGO">
-      <img src="org-logo.png" alt="logo" onerror="this.style.opacity=0.2" />
-    </a>
-    <span class="site-title">長照工具集</span>
+    <a href="index.html" class="logo-link"><img src="org-logo.png" alt="logo"></a>
+    <span class="site-title">長照相關資訊</span>
   </div>
 
   <nav class="nav-links">
@@ -15,8 +13,10 @@
     <a href="about.html">關於我們</a>
   </nav>
 
-  <!-- 共用頂欄不放功能鍵，避免影響各頁原本樣式/邏輯 -->
-  <div class="actions actions-ghost" aria-hidden="true">
-    <button class="btn pill btn-gray" type="button" disabled>—</button>
+  <div class="actions">
+    <button class="btn pill btn-orange">B單位</button>
+    <button class="btn pill btn-green">重置</button>
+    <button class="btn pill btn-gray" onclick="window.print()">列印</button>
   </div>
 </header>
+<div class="divider"></div>
