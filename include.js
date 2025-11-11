@@ -1,16 +1,16 @@
 <script>
-(async function injectPartials(){
-  async function inject(sel, url){
-    const host = document.querySelector(sel);
-    if (!host) return;
+(async function(){
+  async function inject(id, url){
+    const el = document.getElementById(id);
+    if(!el) return;
     try{
-      const res = await fetch(url, { cache: 'no-store' });
-      host.innerHTML = await res.text();
+      const res = await fetch(url, { cache: 'no-cache' });
+      el.innerHTML = await res.text();
     }catch(e){
-      host.innerHTML = '<div class="hint warn">載入失敗：'+(e.message||e)+'</div>';
+      el.innerHTML = '<div style="color:#b00020;font-weight:700;">無法載入 '+url+'</div>';
     }
   }
-  await inject('#site-header','header.html');
-  await inject('#site-footer','footer.html');
+  await inject('__header', 'header.html');
+  await inject('__footer', 'footer.html');
 })();
 </script>
