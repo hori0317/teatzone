@@ -10,7 +10,37 @@
   <link rel="stylesheet" href="topbar-fixed.css" />
   <!-- 加版本參數避免快取抓舊檔 -->
   <script src="script.js?v=20251104-b2" defer></script>
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <a href="index.html" class="logo-link"><img src="org-logo.png" alt="logo" onerror="this.style.opacity=0.2" /></a>
+      <span class="site-title" id="siteTitle">長照相關資訊</span>
+    </div>
+    <nav class="nav-links" aria-label="主選單">
+      <a href="index.html">額度計算機</a>
+      <a href="payroll.html">薪資計算機</a>
+      <a href="care-info.html">長照相關資訊</a>
+      <a href="news.html">最新公告</a>
+      <a href="contact.html">聯繫方式</a>
+      <a href="about.html">關於我們</a>
+    </nav>
+    <div class="actions actions-ghost"></div>
+  </header>
+  <div class="divider"></div>
 
+  <main class="container">
+    <section class="card">
+      <h1 class="card-title">長照相關資訊</h1>
+      <p class="hint">放置碼別解釋、額度表、Q&A…</p>
+    </section>
+  </main>
+
+  <footer id="bottomDock" class="footerbar">
+    <div class="foot"><span class="ok">© hori</span></div>
+  </footer>
+</body>
+</html>
   <style>
     :root{
       --wm-text: "@hori版權所有";
