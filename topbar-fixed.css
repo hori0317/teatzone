@@ -41,10 +41,22 @@ body{margin:0; color:var(--ink); background:#fffaf0;}
   font-weight:700; padding:8px 0; position:relative;
 }
 .nav-links a.active{color:var(--orange)}
+/* 修正版：只畫一條底線 */
 .nav-links a.active::after{
-  content:""; position:absolute; left:12%; right:12%; bottom:-6px;
-  height:3px; background:var(--orange); border-radius:3px;
+  content:""; 
+  position:absolute; 
+  left:12%; right:12%; bottom:-6px;
+  height:2.5px; 
+  background:var(--orange); 
+  border-radius:3px;
 }
+
+/* 移除舊版重疊底線（如果 style.css 內也有 active 下劃線樣式，可強制關閉） */
+.nav-links a.active{
+  text-decoration:none !important;
+  border-bottom:none !important;
+}
+
 
 /* 右側動作區：為了對齊，寬度固定，避免每頁按鈕不同而擠壓 */
 .actions{display:flex; gap:10px; align-items:center; justify-content:flex-end; min-width:220px;}
