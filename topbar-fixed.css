@@ -1,11 +1,61 @@
-.topbar{
-  position:sticky;
-  top:0;
-  z-index:10000;
+/* ===== 共用：頂欄固定版面，所有頁面載入這一份 ===== */
+:root{
+  --inner-max: 1160px;      /* 內層寬度，所有頁面一致 */
+  --nav-width: 720px;        /* 導覽列固定寬度，確保位置不變 */
+  --ink:#2f2f20; --orange:#f59e0b; --line:#e6dca8; --bg:#fff6d5;
 }
 
-.nav-links a.active{
-  color:#ff9800;
-  border-bottom:2px solid #ff9800;
-  padding-bottom:2px;
+*{box-sizing:border-box}
+html,body{height:100%}
+body{margin:0; color:var(--ink); background:#fffaf0;}
+
+/* 頂欄外層（黏上方） */
+.topbar{
+  position:sticky; top:0; z-index:1000;
+  background:#fffaf0; border-bottom:1px solid var(--line);
 }
+
+/* 內層：寬度固定，置中 */
+.topbar .inner{
+  max-width:var(--inner-max);
+  margin:0 auto;
+  padding:10px 16px;
+  display:flex; align-items:center; justify-content:space-between;
+  gap:16px;
+}
+
+/* 品牌區 */
+.brand{display:flex; align-items:center; gap:10px; min-width:220px;}
+.logo-link img{height:38px; width:auto; display:block}
+.site-title{font-weight:800; letter-spacing:.05em}
+
+/* 中間導覽列：寬度固定 + 6 等分網格（位置就不會漂） */
+.nav-wrap{display:flex; justify-content:center; flex:1;}
+.nav-links{
+  width:var(--nav-width);            /* 固定寬度，所有頁一致 */
+  display:grid; grid-template-columns:repeat(6,1fr);
+  place-items:center; gap:0;         /* 六等分置中 */
+}
+.nav-links a{
+  text-decoration:none; color:var(--ink);
+  font-weight:700; padding:8px 0; position:relative;
+}
+.nav-links a.active{color:var(--orange)}
+.nav-links a.active::after{
+  content:""; position:absolute; left:12%; right:12%; bottom:-6px;
+  height:3px; background:var(--orange); border-radius:3px;
+}
+
+/* 右側動作區：為了對齊，寬度固定，避免每頁按鈕不同而擠壓 */
+.actions{display:flex; gap:10px; align-items:center; justify-content:flex-end; min-width:220px;}
+.btn{border:0; padding:8px 14px; border-radius:8px; font-weight:700; cursor:pointer; background:#eee}
+.pill{border-radius:999px}
+.btn-orange{background:#f59e0b; color:#fff}
+.btn-green{background:#2e7d32; color:#fff}
+.btn-gray{background:#9ca3af; color:#fff}
+
+/* 分隔線（頂欄下方） */
+.divider{height:8px}
+
+/* 版心容器（主內容也統一寬度） */
+.container{max-width:var(--inner-max); margin:0 auto; padding:16px}
