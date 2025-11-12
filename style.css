@@ -400,7 +400,7 @@ img,a img{-webkit-user-drag:none;user-drag:none;}
 }
 
 /* =========================================================
-   ▼ Nav 目前頁：微微上浮＋橘文字＋底線（無底色、無陰影）
+   ▼ Nav 目前頁：微上浮＋橘文字＋深色底線（無底色、無陰影）
 ========================================================= */
 .nav-links a{
   position: relative;
@@ -409,6 +409,7 @@ img,a img{-webkit-user-drag:none;user-drag:none;}
   transition: color .18s ease, transform .18s ease;
 }
 
+/* 底線偽元素 */
 .nav-links a::after{
   content:"";
   position:absolute;
@@ -419,23 +420,26 @@ img,a img{-webkit-user-drag:none;user-drag:none;}
   border-radius:2px;
   transform:scaleX(0);
   opacity:0;
-  transition: transform .18s ease, opacity .18s ease;
+  transition: transform .18s ease, opacity .18s ease, background-color .18s ease;
   transform-origin:left center;
 }
 
+/* ★ 當前頁面樣式 */
 .nav-links a.active{
-  color: var(--orange);
-  background: transparent;
-  box-shadow: none;
-  transform: translateY(-2px);
+  color: var(--orange);        /* 純橘文字 */
+  background: transparent;     /* 無底色 */
+  box-shadow: none;            /* 無陰影 */
+  transform: translateY(-2px); /* 微微上浮 */
 }
 
+/* ★ 深色底線（接近字體主色調） */
 .nav-links a.active::after{
-  background: var(--orange);
+  background: var(--ink);      /* 深墨色底線 */
   transform: scaleX(1);
   opacity: 1;
 }
 
+/* 動畫減少偏好 */
 @media (prefers-reduced-motion: reduce){
   .nav-links a{ transition:none; }
   .nav-links a::after{ transition:none; }
