@@ -23,7 +23,7 @@
    全域
 ===================== */
 *{ box-sizing:border-box; }
-html,body{ height:100%; overflow-x:hidden; overflow-y:hidden; } /* ✅ 移除上下滾輪 */
+html,body{ height:100%; }
 body{
   margin:0;
   font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Noto Sans TC","Microsoft JhengHei","PingFang TC",system-ui,sans-serif;
@@ -77,10 +77,6 @@ a:hover{ text-decoration:underline; }
   align-items:center;
   gap:24px;
   white-space:nowrap;
-  overflow-x:auto;         /* ✅ 僅保留橫向滾輪 */
-  overflow-y:hidden;       /* ✅ 移除上下滾輪 */
-  -webkit-overflow-scrolling:touch;
-  min-width:0;             /* ✅ 關鍵：允許 grid-item 溢出觸發滾輪 */
 }
 .nav-links a{
   text-decoration:none;
@@ -165,6 +161,107 @@ a:hover{ text-decoration:underline; }
 .btn-orange{ background:var(--orange); color:#fff; }
 .btn-gray{ background:var(--graybtn); color:#fff; }
 
+.row{ display:flex; align-items:center; gap:10px; }
+.space-between{ justify-content:space-between; }
+.hint{ color:var(--muted); font-size:13px; }
+.note.warn,.hint.warn{ color:var(--warn); }
+
+.kv .kv-row{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:6px 0;
+  font-weight:600;
+}
+
+/* =====================
+   基本資料區
+===================== */
+.form-row{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  margin:12px 0;
+  font-size:15px;
+}
+.form-row > label{
+  flex:0 0 90px;
+  white-space:nowrap;
+}
+.form-row .chips,
+.form-row .cms{
+  flex:1 1 auto;
+  display:flex;
+  gap:8px;
+  flex-wrap:nowrap;
+  min-width:0;
+}
+.form-row input[type="number"],
+.form-row input[type="text"]{
+  height:34px;
+  font-size:15px;
+  border-radius:6px;
+  width:100px;
+  padding:2px 6px;
+}
+
+.chips{ display:flex; gap:8px; }
+.chip{
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  padding:5px 10px;
+  border:1px solid var(--line);
+  border-radius:999px;
+  background:#fff;
+  font-size:14px;
+  cursor:pointer;
+  user-select:none;
+}
+.chip input{ transform:translateY(1px); }
+
+.cms{ display:flex; gap:8px; }
+.cms label{
+  display:inline-flex; align-items:center; gap:4px;
+  background:#fff; border:1px solid var(--line);
+  border-radius:12px; padding:5px 8px; font-size:14px;
+}
+.cms input{ transform:translateY(1px); }
+
+.note.warn{ margin-top:8px; font-size:13px; }
+
+@media (max-width:860px){
+  .form-row{ flex-wrap:wrap; }
+  .form-row > label{ flex:0 0 100%; }
+  .form-row .chips, .form-row .cms{ flex-wrap:wrap; }
+}
+
+/* =====================
+   左卡：AA 加成區
+===================== */
+.addon{ margin-top:8px; border:1px solid var(--line); border-radius:10px; overflow:hidden; }
+.addon-head, .addon-row{ display:grid; grid-template-columns:1fr 160px; align-items:center; }
+.addon-head{ background:#faf6e4; border-bottom:1px solid var(--line); font-weight:800; padding:10px 16px; }
+.addon-row{ padding:10px 16px; border-top:1px dashed var(--line); }
+.addon-row:first-child{ border-top:none; }
+.addon-row .addon-inputs{ display:flex; justify-content:flex-end; }
+.addon-row input[type="number"]{ width:90px; }
+.text-right{ text-align:right; }
+.addon-head span:last-child{ text-align:right; padding-right:18px; }
+
+/* QR 區 */
+.qrbox{ margin-top:16px; display:flex; gap:16px; align-items:center; }
+.qr-left img{ width:84px; height:84px; object-fit:contain; border-radius:10px; border:1px solid var(--line); background:#fff; }
+.qr-right p{ margin:4px 0; }
+.qr-right .bold{ font-weight:800; }
+.qr-right .orange{ color:var(--orange); font-weight:700; }
+
+.card .qrbox {
+  margin-top: 20px;
+  border-top: 1px dashed var(--line);
+  padding-top: 14px;
+}
+
 /* =====================
    服務表格（修正版）
 ===================== */
@@ -247,6 +344,21 @@ a:hover{ text-decoration:underline; }
 }
 
 /* =====================
+   手機優化
+===================== */
+@media (max-width:860px){
+  .grid-3{ grid-template-columns:1fr; gap:14px; }
+  .card{ padding:14px; }
+  .topbar{ padding-top:max(10px, env(safe-area-inset-top)); }
+  .footerbar{ padding-bottom:max(10px, env(safe-area-inset-bottom)); }
+  #tables{ overflow-x:auto; -webkit-overflow-scrolling:touch; padding-bottom:calc(var(--dock-h) + 14px); }
+  #tables table{ min-width:780px; table-layout:fixed; }
+  #tables th,#tables td{ padding:10px 12px; font-size:14px; line-height:1.2; white-space:nowrap; }
+  #tables input[type="number"]{ width:58px; height:32px; font-size:14px; }
+  .foot{ gap:12px; font-size:14px; }
+}
+
+/* =====================
    禁止選取文字與拖曳圖片
 ===================== */
 *{-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none;}
@@ -267,17 +379,17 @@ img,a img{-webkit-user-drag:none;user-drag:none;}
   grid-template-columns:auto 1fr auto;
   align-items:center;
   padding:16px 32px;
-  overflow:visible;
+  overflow:visible;                 /* ★ 取消 topbar 自身滾軸 */
 }
 .brand{ grid-column:1; }
 .nav-links{
   grid-column:2;
   justify-content:center;
   gap:40px;
-  overflow-x:auto;
-  overflow-y:hidden;
+  overflow-x:auto;                  /* ★ 僅保留橫向滾輪 */
+  overflow-y:hidden;                /* ★ 移除上下滾輪 */
   -webkit-overflow-scrolling:touch;
-  min-width:0;   /* ✅ 讓橫向滾輪能正常出現 */
+  min-width:0;                      /* ★ 關鍵：允許縮小，overflow 才會生效 */
 }
 .actions{
   grid-column:3;
