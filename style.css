@@ -69,29 +69,56 @@ a:hover{ text-decoration:underline; }
   white-space:nowrap;
 }
 
-/* 導覽列：中間置中 */
+/* 導覽列：間距靠 gap，不用 a 的左右 padding，讓底線等長於文字 */
 .nav-links{
-  flex:1 1 auto;
   display:flex;
   justify-content:center;
   align-items:center;
-  gap:24px;
+  gap:24px;                 /* 你原本的間距 */
   white-space:nowrap;
 }
+
+/* 基礎狀態 */
 .nav-links a{
-  position: relative;
-  display: inline-block;          /* ★ 關鍵修正：用 inline-block 才會畫底線 */
-  text-decoration: none;
+  position:relative;
+  display:inline-block;     /* 關鍵：inline-block 比較穩 */
+  padding:0 0 6px;          /* 只留下方 padding，避免左右 padding 讓底線變長 */
+  line-height:1.2;
   color:#333;
   font-weight:600;
-  line-height:1.2;
-  padding:4px 8px;
+  text-decoration:none;     /* 關閉通用底線 */
   transition:color .2s, transform .2s;
   white-space:nowrap;
 }
+
+/* 你的全域 a:hover 會加底線，這裡蓋掉避免雙底線 */
 .nav-links a:hover{
   color:#ff9800;
+  text-decoration:none;
   transform:translateY(-1px);
+}
+
+/* 當前頁籤：上浮 + 與文字等長底線（用偽元素畫） */
+.nav-links a.active{
+  color:#ff9800;
+  transform:translateY(-2px);     /* 往上 */
+}
+.nav-links a.active::after{
+  content:"";
+  position:absolute;
+  left:0;
+  bottom:0;                       /* 貼底 */
+  width:100%;                     /* 與文字同寬（因為沒有左右 padding）*/
+  height:2px;
+  background:#ff9800;
+  border-radius:1px;
+}
+
+/* hover 不要把 active 的上浮與底線吃掉 */
+.nav-links a.active:hover{
+  color:#ff9800;
+  transform:translateY(-2px);
+  text-decoration:none;
 }
 
 /* 右側按鈕區 */
