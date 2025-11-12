@@ -436,40 +436,34 @@ img,a img{-webkit-user-drag:none;user-drag:none;}
   .nav-links{ gap:20px; }
   .actions-ghost{ min-width:0; }
 }
-/* === Nav Active：強制底線＋微浮起（高優先度覆蓋版） === */
+/* --- 導覽高亮：提高指定度避免被舊規則覆蓋 --- */
 .topbar .nav-links a{
-  position: relative !important;
-  display: inline-block !important;
-  padding: 10px 8px 16px !important;           /* 底部留空間放底線 */
+  position: relative;
+  display: inline-block;
+  padding: 8px 6px 14px;
   font-weight: 700;
-  transition: color .2s, transform .2s;
+  transition: color .2s ease, transform .2s ease;
 }
 
 .topbar .nav-links a::after{
-  content: "" !important;
-  position: absolute;
-  left: 0; right: 0;
-  bottom: 6px;                                  /* 底線與字距 */
-  height: 3px;                                  /* 底線粗細 */
-  background: #ff9800;
-  border-radius: 2px;
+  content:"";
+  position:absolute;
+  left:0; right:0;
+  bottom:4px;
+  height:3px;
+  background:#ff9800;
+  border-radius:2px;
   transform: scaleX(0);
   transform-origin: left;
   transition: transform .25s ease;
-  pointer-events: none;
 }
 
-/* 滑過時可預覽底線（想低調可刪掉這段） */
-.topbar .nav-links a:hover{
-  color: #ff9800 !important;
-}
-.topbar .nav-links a:hover::after{
-  transform: scaleX(1);
-}
+/* 滑過僅變色（可自行拿掉浮起） */
+.topbar .nav-links a:hover{ color:#ff9800; }
 
-/* 目前頁：變橘＋顯示底線＋微浮起 */
+/* 目前頁：變橘＋顯示底線（含微浮起） */
 .topbar .nav-links a.active{
-  color: #ff9800 !important;
+  color:#ff9800 !important;
   transform: translateY(-1px);
 }
 .topbar .nav-links a.active::after{
