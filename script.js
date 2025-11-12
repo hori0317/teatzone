@@ -5,6 +5,10 @@
  * - 產表時每列加入 tr.dataset.code = item.code
  * - C 組 tr.dataset.cmode = "1"（供統計排 C 用）
  * - applyUnitEffects()：B 單位隱藏並歸零 BA09/BA09a 與整個 BD 組；A 單位恢復
+ * 
+ * 2025-11-12 修正：
+ * (1) updateSCAvailability() 在非外籍時，同步把 SC 各列 dataset.use 歸零並更新金額欄
+ * (2) 導覽列自動高亮在子路徑環境改用 location.href 當 URL base，避免 GitHub Pages 子路徑比不到
  **********************/
 
 /* 公用 */
@@ -304,15 +308,26 @@ function bindHeaderInputs(){
   $("#keepQuota")?.addEventListener("input", updateResults);
 }
 
-/* SC 只能外籍看護用 */
+/* SC 只能外籍看護用（修正版：非外籍時同步歸零 dataset.use 與金額欄） */
 function updateSCAvailability(){
   const scBox = document.querySelector('[data-group="SC"]');
   if(!scBox) return;
   const hasForeign = (document.querySelector("input[name='foreign']:checked")||{}).value === "1";
-  scBox.querySelectorAll("input").forEach(inp=>{
-    inp.disabled = !hasForeign;
-    if(!hasForeign) inp.value = 0;
+
+  scBox.querySelectorAll("tbody tr").forEach(tr=>{
+    tr.querySelectorAll("input").forEach(inp=>{
+      inp.disabled = !hasForeign;
+      if(!hasForeign) inp.value = 0;
+    });
+
+    // ★ 關鍵：無外籍 → 直接把 dataset.use 歸零，並同步金額格，避免計算殘留
+    if(!hasForeign){
+      tr.dataset.use = "0";
+      const cell = tr.querySelector(".cell-amount");
+      if (cell) cell.textContent = "0";
+    }
   });
+
   const warn=$("#warnSCfg");
   if(warn){ !hasForeign ? warn.classList.remove("hidden") : warn.classList.add("hidden"); }
 }
@@ -538,7 +553,7 @@ function adjustTopbarPadding(){
   document.documentElement.style.setProperty('--topbar-h', h + 'px');
 }
 
-/* ---- 導覽：依當前網址自動高亮（支援多頁 + 錨點） ---- */
+/* ---- 導覽：依當前網址自動高亮（支援多頁 + 錨點；修正版：子路徑 friendly） ---- */
 (function(){
   function normPath(pathname){
     // 移除結尾斜線 → 把 / 或 /index.html 視為 /index → 去掉 .html
@@ -563,16 +578,16 @@ function adjustTopbarPadding(){
       let active = false;
 
       if (raw.startsWith('#')){
-        // 單頁錨點：僅當前 hash 完全相同才亮（避免全部 # 錨點同時亮）
+        // 單頁錨點：僅當前 hash 完全相同才亮
         active = (raw.toLowerCase() === hereHash && hereHash !== '');
       } else {
-        // 多頁：以檔名比對（/page、/page.html、/ 皆可）
         try{
-          const url = new URL(raw, location.origin);
+          // ★ 用 location.href 當 base，正確處理子路徑（例如 GitHub Pages 的 /user/repo/）
+          const url = new URL(raw, location.href);
           const targetPath = normPath(url.pathname);
           active = (targetPath === herePath) ||
                    (targetPath === 'index' && (herePath === '' || herePath === 'index'));
-        }catch(e){
+        }catch{
           // 相對連結 fallback
           const hrefClean = raw.replace(/^\.\//,'').replace(/\.html?$/i,'').replace(/\/$/,'') || 'index';
           active = (hrefClean.toLowerCase() === herePath);
