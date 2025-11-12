@@ -36,6 +36,12 @@ body{
 a{ color:var(--green); text-decoration:none; }
 a:hover{ text-decoration:underline; }
 
+/* 鎖住整頁水平捲動，避免整個畫面被拖走 */
+html, body { overflow-x: clip; }
+@supports not (overflow-x: clip){
+  html, body { overflow-x: hidden; }
+}
+
 /* =====================
    頂部列（固定）
 ===================== */
@@ -391,20 +397,26 @@ img,a img{-webkit-user-drag:none;user-drag:none;}
   html, body { overflow-x: clip; }
   @supports not (overflow-x: clip){ html, body { overflow-x: hidden; } }
 
-  .topbar{ overflow-x:hidden !important; }
+  /* 讓頂欄別把捲軸吃掉，容許裡面的 nav 顯示水平捲軸 */
+  .topbar{ overflow-x:visible !important; }
 
   .nav-links{
     display:flex !important;
     flex-wrap:nowrap !important;
-    justify-content:center;
+    justify-content:flex-start;     /* 從左開始排，右側不會被吃掉 */
     align-items:center;
-    overflow-x:auto !important;   /* ← 縮小時才出現滾輪 */
-    overflow-y:hidden !important;
+    gap:24px;
+
+    width:100%;
     max-width:100%;
     min-width:0;
+
+    overflow-x:auto !important;     /* ← 縮小時才出現滾輪 */
+    overflow-y:hidden !important;
+
     -webkit-overflow-scrolling:touch;
     scrollbar-gutter:stable both-edges;
-    gap:24px;
+    touch-action: pan-x;
   }
   .nav-links a{ flex:0 0 auto; white-space:nowrap; }
 
