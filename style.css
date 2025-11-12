@@ -372,17 +372,17 @@ img,a img{-webkit-user-drag:none;user-drag:none;}
   grid-template-columns:auto 1fr auto;
   align-items:center;
   padding:16px 32px;
-  overflow:visible;                 /* ★ 取消 topbar 自身滾軸 */
+  overflow:visible;
 }
 .brand{ grid-column:1; }
 .nav-links{
   grid-column:2;
   justify-content:center;
   gap:40px;
-  overflow-x:auto;                  /* ★ 僅保留橫向滾輪 */
-  overflow-y:hidden;                /* ★ 移除上下滾輪 */
+  overflow-x:auto;
+  overflow-y:hidden;
   -webkit-overflow-scrolling:touch;
-  min-width:0;                      /* ★ 關鍵：允許縮小，overflow 才會生效 */
+  min-width:0;
 }
 .actions{
   grid-column:3;
@@ -400,19 +400,20 @@ img,a img{-webkit-user-drag:none;user-drag:none;}
 }
 
 /* =========================================================
-   ▼ Nav 目前頁面上浮 + 橘色底線（替代舊的 .nav-links a.active 底線）
+   ▼ Nav 目前頁：微微上浮＋橘文字＋底線（無底色、無陰影）
 ========================================================= */
 .nav-links a{
   position: relative;
   padding: 6px 10px;
-  border-radius: 10px;
-  transition: transform .18s ease, box-shadow .18s ease, background-color .18s ease;
+  border-radius: 6px;
+  transition: color .18s ease, transform .18s ease;
 }
+
 .nav-links a::after{
   content:"";
   position:absolute;
   left:12px; right:12px;
-  bottom:-6px;
+  bottom:-4px;
   height:2px;
   background:transparent;
   border-radius:2px;
@@ -421,17 +422,20 @@ img,a img{-webkit-user-drag:none;user-drag:none;}
   transition: transform .18s ease, opacity .18s ease;
   transform-origin:left center;
 }
+
 .nav-links a.active{
-  color: var(--green);
-  transform: translateY(-3px);
-  background: rgba(46,125,50,.08);
-  box-shadow: 0 6px 14px rgba(0,0,0,.06);
+  color: var(--orange);
+  background: transparent;
+  box-shadow: none;
+  transform: translateY(-2px);
 }
+
 .nav-links a.active::after{
   background: var(--orange);
   transform: scaleX(1);
   opacity: 1;
 }
+
 @media (prefers-reduced-motion: reduce){
   .nav-links a{ transition:none; }
   .nav-links a::after{ transition:none; }
