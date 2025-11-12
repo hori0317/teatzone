@@ -553,52 +553,73 @@ function adjustTopbarPadding(){
   document.documentElement.style.setProperty('--topbar-h', h + 'px');
 }
 
-/* ---- 導覽：依當前網址自動高亮（支援多頁 + 錨點；修正版：子路徑 friendly） ---- */
+/* ---- 導覽：自動高亮（子路徑/查詢字串/結尾斜線/索引頁都吃） ---- */
 (function(){
-  function normPath(pathname){
-    // 移除結尾斜線 → 把 / 或 /index.html 視為 /index → 去掉 .html
-    let p = String(pathname || '/').trim();
-    if (p.length > 1 && p.endsWith('/')) p = p.slice(0, -1);
-    p = p.replace(/\/(index\.html?)?$/i, '/index').replace(/\.html?$/i, '');
-    const seg = p.split('/').pop() || 'index';
-    return seg.toLowerCase();
-  }
+  // 取最後一段檔名作為「頁鍵」；/、/index.html 都視為 index
+  const pageKeyFromPath = (p) => {
+    try{
+      let path = String(p || '/').split('?')[0];
+      if (path.length > 1 && path.endsWith('/')) path = path.slice(0, -1);
+      path = path.replace(/\/(index\.html?)?$/i, '/index').replace(/\.html?$/i, '');
+      const seg = path.split('/').pop();
+      return (seg || 'index').toLowerCase();
+    }catch{ return 'index'; }
+  };
 
-  function setActiveNav(){
-    const herePath = normPath(location.pathname);
-    const hereHash = (location.hash || '').toLowerCase();
+  const markActive = () => {
+    const here = new URL(location.href);
+    const hereKey = pageKeyFromPath(here.pathname);
 
-    // 先清除舊的 active
-    document.querySelectorAll('.nav-links a.active').forEach(a=>a.classList.remove('active'));
+    // 先清空
+    document.querySelectorAll('.nav-links a.active').forEach(a => a.classList.remove('active'));
 
-    document.querySelectorAll('.nav-links a[href]').forEach(a=>{
-      const raw = (a.getAttribute('href') || '').trim();
-      if (!raw) return;
+    const links = Array.from(document.querySelectorAll('.nav-links a[href]'));
+    let hit = null;
 
-      let active = false;
-
-      if (raw.startsWith('#')){
-        // 單頁錨點：僅當前 hash 完全相同才亮
-        active = (raw.toLowerCase() === hereHash && hereHash !== '');
-      } else {
-        try{
-          // ★ 用 location.href 當 base，正確處理子路徑（例如 GitHub Pages 的 /user/repo/）
-          const url = new URL(raw, location.href);
-          const targetPath = normPath(url.pathname);
-          active = (targetPath === herePath) ||
-                   (targetPath === 'index' && (herePath === '' || herePath === 'index'));
-        }catch{
-          // 相對連結 fallback
-          const hrefClean = raw.replace(/^\.\//,'').replace(/\.html?$/i,'').replace(/\/$/,'') || 'index';
-          active = (hrefClean.toLowerCase() === herePath);
+    // 第一輪：嚴格比對「路徑鍵」
+    for (const a of links){
+      try{
+        const u = new URL(a.getAttribute('href'), location.href);
+        const key = pageKeyFromPath(u.pathname);
+        if (key === hereKey || (key === 'index' && (hereKey === '' || hereKey === 'index'))){
+          hit = a; break;
         }
+      }catch{/* ignore */}
+    }
+
+    // 第二輪：比對完整 pathname（處理一樣的目錄層級）
+    if (!hit){
+      for (const a of links){
+        try{
+          const u = new URL(a.getAttribute('href'), location.href);
+          const ap = u.pathname.replace(/\/index\.html?$/i, '/').replace(/\/+$/,'/');
+          const hp = here.pathname.replace(/\/index\.html?$/i, '/').replace(/\/+$/,'/');
+          if (ap === hp){ hit = a; break; }
+        }catch{/* ignore */}
       }
+    }
 
-      if (active) a.classList.add('active');
-    });
-  }
+    // 第三輪：寬鬆 startsWith（如 /tools 與 /tools/sub）
+    if (!hit){
+      for (const a of links){
+        try{
+          const u = new URL(a.getAttribute('href'), location.href);
+          const ap = u.pathname.replace(/\/index\.html?$/i, '/');
+          const hp = here.pathname.replace(/\/index\.html?$/i, '/');
+          if (ap !== '/' && hp.startsWith(ap)){ hit = a; break; }
+        }catch{/* ignore */}
+      }
+    }
 
-  window.addEventListener('DOMContentLoaded', setActiveNav);
-  window.addEventListener('hashchange', setActiveNav);
-  window.addEventListener('popstate', setActiveNav); // 處理前進/後退
+    // 第四輪：hash 導覽（單頁錨點）
+    if (!hit && here.hash){
+      hit = document.querySelector(`.nav-links a[href='${here.hash}']`);
+    }
+
+    if (hit) hit.classList.add('active');
+  };
+
+  window.addEventListener('DOMContentLoaded', markActive);
+  window.addEventListener('hashchange', markActive);
+  window.addEventListener('popstate',  markActive);
 })();
