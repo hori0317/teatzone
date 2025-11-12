@@ -36,7 +36,7 @@ body{
 a{ color:var(--green); text-decoration:none; }
 a:hover{ text-decoration:underline; }
 
-/* 鎖住整頁水平捲動，避免整個畫面被拖走 */
+/* 鎖住整頁水平捲動 */
 html, body { overflow-x: clip; }
 @supports not (overflow-x: clip){
   html, body { overflow-x: hidden; }
@@ -77,7 +77,7 @@ html, body { overflow-x: clip; }
   white-space:nowrap;
 }
 
-/* 導覽列：中間置中（寬版不顯示滾輪） */
+/* 導覽列（中間置中；寬版不顯示滾輪） */
 .nav-links{
   grid-column:2;
   display:flex;
@@ -391,76 +391,49 @@ img,a img{-webkit-user-drag:none;user-drag:none;}
 }
 
 /* =====================
-   ✅ 只在頁面縮小時顯示橫向滾輪
+   ✅ 修正縮小時選單擠在一起＋橫向捲動
 ===================== */
+.nav-links{
+  display:flex !important;
+  flex-wrap:nowrap !important;
+  white-space:nowrap !important;
+}
+
+/* 選單項目固定間距、不被壓扁 */
+.nav-links > a,
+.nav-links > * > a{
+  display:inline-block;
+  flex:0 0 auto;
+  padding:6px 10px;
+  line-height:1.2;
+  white-space:nowrap;
+}
+
+/* 相鄰項目強制間距（保險機制） */
+.nav-links > a + a,
+.nav-links > * + *{
+  margin-left:24px;
+}
+
+/* <ul><li><a> 結構保險 */
+.nav-links li{ list-style:none; flex:0 0 auto; }
+.nav-links li + li{ margin-left:24px; }
+
+/* 縮小時開啟橫向捲軸 */
 @media (max-width:1100px){
-  html, body { overflow-x: clip; }
-  @supports not (overflow-x: clip){ html, body { overflow-x: hidden; } }
-
-  /* 讓頂欄別把捲軸吃掉，容許裡面的 nav 顯示水平捲軸 */
   .topbar{ overflow-x:visible !important; }
-
   .nav-links{
-    display:flex !important;
-    flex-wrap:nowrap !important;
-    justify-content:flex-start;     /* 從左開始排，右側不會被吃掉 */
-    align-items:center;
-    gap:24px;
-
+    justify-content:flex-start;
+    overflow-x:auto !important;
+    overflow-y:hidden !important;
     width:100%;
     max-width:100%;
     min-width:0;
-
-    overflow-x:auto !important;     /* ← 縮小時才出現滾輪 */
-    overflow-y:hidden !important;
-
     -webkit-overflow-scrolling:touch;
     scrollbar-gutter:stable both-edges;
     touch-action: pan-x;
   }
-  .nav-links a{ flex:0 0 auto; white-space:nowrap; }
-
-  /* 美化滾輪 */
   .nav-links::-webkit-scrollbar{ height:8px; }
-  .nav-links::-webkit-scrollbar-track{ background:#f0ead2; }
-  .nav-links::-webkit-scrollbar-thumb{ background:#cdbf86; border-radius:8px; }
-}
-/* ==== Nav 擠在一起修復：避免被壓縮＋保證間距（請貼在 style.css 最末） ==== */
-
-/* 任何寬度都禁止項目縮小，並讓每個項目是獨立方塊 */
-.nav-links > *{
-  flex: 0 0 auto;              /* ← 不縮小、不換行 */
-}
-
-/* 讓 <a> 本身有可視的間距，不會緊貼 */
-.nav-links a{
-  display: inline-block;       /* ← 讓 padding 生效 */
-  padding: 6px 10px;           /* ← 左右內距，別省略 */
-  line-height: 1.2;
-}
-
-/* gap 的保險：少數環境 gap 失效時，改用 margin 退場機制 */
-.nav-links{ gap: 24px; }       /* 主要來源 */
-@supports not (gap: 1rem){
-  .nav-links > * + *{ margin-left: 24px; }  /* 後備間距 */
-}
-
-/* 只在縮小時才橫向捲動，且從左開始排，避免被置中後「吃掉」右邊 */
-@media (max-width:1100px){
-  .topbar{ overflow-x: visible !important; }    /* 讓捲軸真的看得到 */
-  .nav-links{
-    justify-content: flex-start;                /* 從左開始排 */
-    overflow-x: auto !important;                /* 出現水平捲軸 */
-    overflow-y: hidden !important;
-    width: 100%;
-    max-width: 100%;
-    min-width: 0;
-    -webkit-overflow-scrolling: touch;
-    scrollbar-gutter: stable both-edges;
-    touch-action: pan-x;
-  }
-  .nav-links a{ white-space: nowrap; }          /* 文字單行、不換行 */
-  .nav-links::-webkit-scrollbar{ height: 8px; }
   .nav-links::-webkit-scrollbar-track{ background:#f0ead2; }
   .nav-links::-webkit-scrollbar-thumb{ background:#cdbf86; border-radius:8px; }
 }
