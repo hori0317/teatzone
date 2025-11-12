@@ -36,7 +36,7 @@ body{
 a{ color:var(--green); text-decoration:none; }
 a:hover{ text-decoration:underline; }
 
-/* 鎖住整頁水平滾動，避免整個畫面被拖走 */
+/* 鎖住整頁水平捲動，避免整個畫面被拖走 */
 html, body { overflow-x: clip; }
 @supports not (overflow-x: clip){
   html, body { overflow-x: hidden; }
@@ -47,7 +47,6 @@ html, body { overflow-x: clip; }
 ===================== */
 .topbar{
   position:sticky; top:0; z-index:1000;
-  /* 以 grid 三欄排列 */
   display:grid;
   grid-template-columns:auto 1fr auto;
   align-items:center;
@@ -55,17 +54,15 @@ html, body { overflow-x: clip; }
   background:rgba(255,253,245,.9);
   backdrop-filter:blur(6px);
   border-bottom:1px solid var(--line);
-
-  /* 僅允許內部內容溢位裁切，由 nav 自己滾 */
-  overflow-x:hidden;
+  overflow-x:hidden; /* 頂欄不溢出 */
 }
+
+/* 品牌區 */
 .brand{
   grid-column:1;
   display:flex; align-items:center; gap:16px;
   font-weight:700; letter-spacing:1px;
   flex:0 0 auto;
-
-  /* 允許縮小，避免撐寬 */
   min-width:0;
   white-space:nowrap;
 }
@@ -74,30 +71,30 @@ html, body { overflow-x: clip; }
   transition:transform .3s ease;
 }
 .brand img:hover{ transform:scale(1.08); }
-
 .site-title{
   font-size:20px; font-weight:700;
   margin-right:28px;
   white-space:nowrap;
 }
 
-/* 導覽列：中間置中，自身可橫向滾動 */
+/* 導覽列：可橫向捲動並顯示滾輪 */
 .nav-links{
   grid-column:2;
-  flex:1 1 auto;
   display:flex;
   justify-content:center;
   align-items:center;
   gap:40px;
   white-space:nowrap;
 
-  /* 讓導覽列自己水平滾，不影響整頁 */
-  overflow-x:auto;
+  overflow-x:auto !important;
   overflow-y:hidden;
+  max-width:100%;
+  min-width:0;
   -webkit-overflow-scrolling:touch;
-  min-width:0; /* 關鍵：允許縮小，overflow 才會生效 */
+  scrollbar-gutter: stable both-edges;
 }
 .nav-links a{
+  flex:0 0 auto;
   text-decoration:none;
   color:#333;
   font-weight:600;
@@ -109,6 +106,14 @@ html, body { overflow-x: clip; }
   transform:translateY(-1px);
 }
 
+/* 美化水平捲軸 */
+.nav-links::-webkit-scrollbar{ height:8px; }
+.nav-links::-webkit-scrollbar-track{ background:#f0ead2; }
+.nav-links::-webkit-scrollbar-thumb{
+  background:#cdbf86;
+  border-radius:8px;
+}
+
 /* 右側按鈕區 */
 .actions{
   grid-column:3;
@@ -118,8 +123,6 @@ html, body { overflow-x: clip; }
   gap:10px;
   flex:0 0 auto;
   white-space:nowrap;
-
-  /* 允許縮小，避免撐寬 */
   min-width:0;
 }
 .divider{ height:10px; }
@@ -287,7 +290,7 @@ html, body { overflow-x: clip; }
 }
 
 /* =====================
-   服務表格（修正版）
+   服務表格
 ===================== */
 .service-card h3 {
   margin:24px 0 10px 2px;
@@ -340,7 +343,7 @@ html, body { overflow-x: clip; }
 .cell-price, .cell-amount { text-align:center; }
 
 /* =====================
-   浮水印（恢復）
+   浮水印
 ===================== */
 .watermark{
   position: fixed;
@@ -380,13 +383,11 @@ html, body { overflow-x: clip; }
   #tables th,#tables td{ padding:10px 12px; font-size:14px; line-height:1.2; white-space:nowrap; }
   #tables input[type="number"]{ width:58px; height:32px; font-size:14px; }
   .foot{ gap:12px; font-size:14px; }
-
-  /* 行動端導覽間距縮小 */
   .nav-links{ gap:20px; }
 }
 
 /* =====================
-   禁止選取文字與拖曳圖片
+   禁止選取與拖曳
 ===================== */
 *{-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none;}
 img,a img{-webkit-user-drag:none;user-drag:none;}
@@ -398,8 +399,16 @@ img,a img{-webkit-user-drag:none;user-drag:none;}
   padding-bottom:2px;
 }
 
-/* 佔位元素避免撐寬版面 */
+/* 佔位元素避免撐寬 */
 .actions-ghost{
   min-width:0;
   height:1px;
+}
+
+/* 讓滾動體驗更自然 */
+.nav-links{
+  scroll-snap-type: x proximity;
+}
+.nav-links a{
+  scroll-snap-align: start;
 }
