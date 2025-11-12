@@ -379,13 +379,15 @@ img,a img{-webkit-user-drag:none;user-drag:none;}
   grid-template-columns:auto 1fr auto;
   align-items:center;
   padding:16px 32px;
+  overflow:visible;                 /* ★ 取消 topbar 自身滾軸 */
 }
 .brand{ grid-column:1; }
 .nav-links{
   grid-column:2;
   justify-content:center;
   gap:40px;
-  overflow-x:auto;
+  overflow-x:auto;                  /* ★ 僅保留橫向滾輪 */
+  overflow-y:hidden;                /* ★ 移除上下滾輪 */
   -webkit-overflow-scrolling:touch;
 }
 .actions{
