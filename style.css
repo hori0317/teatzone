@@ -17,13 +17,6 @@
 
   --topbar-h:56px;
   --dock-h:56px;
-
-  /* 浮水印變數 */
-  --wm-text:"@hori版權所有";
-  --wm-size:36px;
-  --wm-angle:-25deg;
-  --wm-alpha:.05;
-  --wm-shift:120px;
 }
 
 /* =====================
@@ -44,44 +37,18 @@ a{ color:var(--green); text-decoration:none; }
 a:hover{ text-decoration:underline; }
 
 /* =====================
-   浮水印（固定＋左右緩慢擺動）
-===================== */
-.watermark{
-  position:fixed; inset:0; pointer-events:none; z-index:0; overflow:hidden;
-}
-.wm-item{
-  position:absolute;
-  font-weight:800;
-  font-size:var(--wm-size);
-  color:rgba(0,0,0,var(--wm-alpha));
-  transform:rotate(var(--wm-angle));
-  white-space:nowrap;
-  user-select:none;
-  will-change:transform;
-  animation:wm-sway var(--dur,12s) ease-in-out infinite alternate;
-}
-@keyframes wm-sway{
-  0%{ transform:translateX(0) rotate(var(--wm-angle)); }
-  100%{ transform:translateX(var(--wm-shift)) rotate(var(--wm-angle)); }
-}
-@media print{ .watermark{ opacity:.08; } }
-
-/* =====================
    頂部列（固定）
 ===================== */
 .topbar{
   position:sticky; top:0; z-index:1000;
-  display:grid !important;
-  grid-template-columns:auto 1fr auto;
-  align-items:center;
-  padding:14px 24px;
+  display:flex; align-items:center; justify-content:space-between;
+  padding:12px 24px;
   background:rgba(255,253,245,.9);
   backdrop-filter:blur(6px);
   border-bottom:1px solid var(--line);
-
-  /* ✅ 防止上下滾輪 */
-  overflow-x:visible;
-  overflow-y:hidden;
+  flex-wrap:nowrap;
+  overflow-x:auto;
+  -webkit-overflow-scrolling:touch;
 }
 .brand{
   display:flex; align-items:center; gap:16px;
@@ -93,9 +60,9 @@ a:hover{ text-decoration:underline; }
 .brand img{
   height:60px; width:auto;
   transition:transform .3s ease;
-  display:block;
 }
 .brand img:hover{ transform:scale(1.08); }
+
 .site-title{
   font-size:20px; font-weight:700;
   margin-right:28px;
@@ -104,17 +71,12 @@ a:hover{ text-decoration:underline; }
 
 /* 導覽列：中間置中 */
 .nav-links{
-  grid-column:2;
+  flex:1 1 auto;
   display:flex;
   justify-content:center;
   align-items:center;
-  gap:40px;
+  gap:24px;
   white-space:nowrap;
-
-  /* ✅ 只允許橫向滑動，禁止垂直滾輪 */
-  overflow-x:auto;
-  overflow-y:hidden;
-  -webkit-overflow-scrolling:touch;
 }
 .nav-links a{
   text-decoration:none;
@@ -122,35 +84,20 @@ a:hover{ text-decoration:underline; }
   font-weight:600;
   transition:color .2s, transform .2s;
   white-space:nowrap;
-  position:relative;
-  padding:8px 4px;
 }
 .nav-links a:hover{
-  color:var(--orange);
+  color:#ff9800;
   transform:translateY(-1px);
 }
-/* 導覽：目前頁面高亮 */
-.nav-links a.active{ color:var(--orange); }
-.nav-links a.active::after{
-  content:"";
-  position:absolute; left:0; right:0; bottom:-6px;
-  height:3px; background:var(--orange); border-radius:3px;
-}
-
-/* ✅ 隱藏橫向滾動條（仍可滑動） */
-.nav-links{ scrollbar-width:none; }
-.nav-links::-webkit-scrollbar{ height:0; }
 
 /* 右側按鈕區 */
 .actions{
-  grid-column:3;
   display:flex;
   align-items:center;
   gap:10px;
-  justify-self:end;
+  flex:0 0 auto;
   white-space:nowrap;
 }
-.actions-ghost{ min-width:320px; height:1px; }
 .divider{ height:10px; }
 
 /* =====================
@@ -161,7 +108,7 @@ a:hover{ text-decoration:underline; }
   background:rgba(255,253,245,.9);
   backdrop-filter:blur(6px);
   border-top:1px solid var(--line);
-  padding:10px 16px;
+  padding:10px 18px;
   padding-bottom:max(10px, env(safe-area-inset-bottom));
 }
 .foot{
@@ -177,16 +124,9 @@ a:hover{ text-decoration:underline; }
 .foot .warn{ color:var(--warn); }
 
 /* =====================
-   容器與卡片（縮小左右空白）
+   容器與卡片
 ===================== */
-.container{
-  max-width:1360px;
-  margin:0 auto;
-  padding:18px 20px;
-}
-@media (min-width:1600px){
-  .container{ max-width:1440px; }
-}
+.container{ max-width:1220px; margin:0 auto; padding:20px 24px; }
 .grid-3 {
   display:grid;
   grid-template-columns:1.15fr 0.95fr 1.15fr;
@@ -225,9 +165,14 @@ a:hover{ text-decoration:underline; }
 .space-between{ justify-content:space-between; }
 .hint{ color:var(--muted); font-size:13px; }
 .note.warn,.hint.warn{ color:var(--warn); }
-.text-right{ text-align:right; }
-.bold{ font-weight:800; }
-.orange{ color:var(--orange); }
+
+.kv .kv-row{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:6px 0;
+  font-weight:600;
+}
 
 /* =====================
    基本資料區
@@ -258,11 +203,8 @@ a:hover{ text-decoration:underline; }
   border-radius:6px;
   width:100px;
   padding:2px 6px;
-  border:1px solid var(--line);
-  background:#fffdf6;
 }
 
-/* 選項外觀 */
 .chips{ display:flex; gap:8px; }
 .chip{
   display:inline-flex;
@@ -288,7 +230,6 @@ a:hover{ text-decoration:underline; }
 
 .note.warn{ margin-top:8px; font-size:13px; }
 
-/* 手機寬度時允許換行 */
 @media (max-width:860px){
   .form-row{ flex-wrap:wrap; }
   .form-row > label{ flex:0 0 100%; }
@@ -305,7 +246,8 @@ a:hover{ text-decoration:underline; }
 .addon-row:first-child{ border-top:none; }
 .addon-row .addon-inputs{ display:flex; justify-content:flex-end; }
 .addon-row input[type="number"]{ width:90px; }
-.salary-total{ margin-top:10px; font-weight:800; text-align:right; color:var(--green); }
+.text-right{ text-align:right; }
+.addon-head span:last-child{ text-align:right; padding-right:18px; }
 
 /* QR 區 */
 .qrbox{ margin-top:16px; display:flex; gap:16px; align-items:center; }
@@ -313,11 +255,22 @@ a:hover{ text-decoration:underline; }
 .qr-right p{ margin:4px 0; }
 .qr-right .bold{ font-weight:800; }
 .qr-right .orange{ color:var(--orange); font-weight:700; }
-.card .qrbox{ margin-top:20px; border-top:1px dashed var(--line); padding-top:14px; }
+
+.card .qrbox {
+  margin-top: 20px;
+  border-top: 1px dashed var(--line);
+  padding-top: 14px;
+}
 
 /* =====================
    服務表格
 ===================== */
+.service-card h3 {
+  margin:24px 0 10px 2px;
+  font-size:16px;
+  font-weight:800;
+  color:#6b6544;
+}
 #tables { width:100%; }
 #tables table {
   width:100%;
@@ -337,16 +290,22 @@ a:hover{ text-decoration:underline; }
   padding:12px 18px;
   border-bottom:1px solid var(--line);
   font-weight:800;
+  text-align:center;
 }
 #tables th:first-child,
 #tables td:first-child {
   text-align:left;
   padding-left:18px;
 }
-#tables td {
+#tables td,
+#tables th {
+  text-align:center;
+  vertical-align:middle;
+  font-variant-numeric: tabular-nums;
+}
+#tables tbody td {
   padding:12px 18px;
   border-top:1px solid var(--line);
-  vertical-align:middle;
 }
 #tables tbody tr:nth-child(even){ background:#fffef9; }
 #tables input[type="number"] {
@@ -356,48 +315,24 @@ a:hover{ text-decoration:underline; }
   margin:0 auto;
   display:block;
 }
+.cell-price,
+.cell-amount {
+  text-align:center;
+}
 
 /* =====================
-   手機／平板優化
+   手機優化
 ===================== */
 @media (max-width:860px){
   .grid-3{ grid-template-columns:1fr; gap:14px; }
   .card{ padding:14px; }
-  .topbar{ padding:14px 16px; }
+  .topbar{ padding-top:max(10px, env(safe-area-inset-top)); }
   .footerbar{ padding-bottom:max(10px, env(safe-area-inset-bottom)); }
-
-  #tables{
-    overflow-x:auto;
-    -webkit-overflow-scrolling:touch;
-    padding-bottom:calc(var(--dock-h) + 14px);
-    display:block;
-  }
-  #tables table{
-    min-width:780px;
-    table-layout:fixed;
-    width:max-content;
-  }
-  #tables th,#tables td{
-    padding:10px 12px;
-    font-size:14px;
-    line-height:1.2;
-    white-space:nowrap;
-  }
+  #tables{ overflow-x:auto; -webkit-overflow-scrolling:touch; padding-bottom:calc(var(--dock-h) + 14px); }
+  #tables table{ min-width:780px; table-layout:fixed; }
+  #tables th,#tables td{ padding:10px 12px; font-size:14px; line-height:1.2; white-space:nowrap; }
   #tables input[type="number"]{ width:58px; height:32px; font-size:14px; }
   .foot{ gap:12px; font-size:14px; }
-}
-@media (max-width:560px){
-  .nav-links{ gap:24px; padding:6px 2px 10px; }
-  .nav-links a{ padding:10px 2px; }
-  .actions-ghost{ min-width:0; }
-  .form-row{ flex-wrap:wrap }
-  .form-row > label{ flex:0 0 auto; }
-  .form-row input[type="text"],
-  .form-row input[type="number"]{ width:100% }
-  .addon-head, .addon-row{ grid-template-columns:1fr 120px }
-  .qrbox{ flex-direction:column; gap:10px }
-  .qr-left img{ width:96px; height:96px }
-  #tables table{ min-width:560px; }
 }
 
 /* =====================
@@ -422,4 +357,74 @@ a:hover{ text-decoration:underline; }
 img, a img {
   -webkit-user-drag:none;
   user-drag:none;
+}
+
+/* === 手機板表格：維持單行、允許橫向滑動 === */
+#tables {
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  display: block;
+}
+#tables table {
+  width: max-content;
+  min-width: 100%;
+  border-collapse: collapse;
+  table-layout: auto;
+}
+#tables th,
+#tables td {
+  white-space: nowrap !important;
+  padding: 6px 10px;
+}
+
+/* 第一欄靠左，其餘置中 */
+#tables th:first-child,
+#tables td:first-child { text-align:left; }
+
+/* 手機版縮放 */
+@media (max-width:600px){
+  #tables th,#tables td{ font-size:14px; line-height:1.3; padding:6px 8px; }
+}
+@media (max-width:420px){
+  #tables th,#tables td{ font-size:13px; padding:5px 6px; }
+}
+
+/* 導覽高亮 */
+.nav-links a.active{
+  color:#ff9800;
+  border-bottom:2px solid #ff9800;
+  padding-bottom:2px;
+}
+
+/* =========================================================
+   ▼ Topbar 對齊修正 & 導覽間距升級
+========================================================= */
+.topbar{
+  display:grid !important;
+  grid-template-columns:auto 1fr auto;
+  align-items:center;
+  padding:16px 32px;
+}
+.brand{ grid-column:1; }
+.nav-links{
+  grid-column:2;
+  justify-content:center;
+  gap:40px;
+  overflow-x:auto;
+  -webkit-overflow-scrolling:touch;
+}
+.actions{
+  grid-column:3;
+  justify-self:end;
+  display:flex; gap:10px; white-space:nowrap;
+}
+.actions-ghost{
+  min-width:320px;
+  height:1px;
+}
+@media (max-width:860px){
+  .topbar{ padding:14px 16px; }
+  .nav-links{ gap:20px; }
+  .actions-ghost{ min-width:0; }
 }
