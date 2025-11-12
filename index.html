@@ -9,6 +9,25 @@
   <link rel="stylesheet" href="style.css" />
   <link rel="stylesheet" href="topbar-fixed.css" />
   <script src="script.js" defer></script>
+
+  <!-- 版面覆寫：三欄→二欄；基本資料較寬，個案額度及自付額稍微加寬 -->
+  <style>
+    /* 若原本 style.css 內有 grid-3，這裡新增 grid-2 作為新排版 */
+    .grid-2{
+      display: grid;
+      grid-template-columns: 2.2fr 1.3fr; /* 基本資料更寬；右欄也比等分略寬一些 */
+      gap: var(--gap, 16px);
+      align-items: start;
+    }
+    @media (max-width: 1024px){
+      .grid-2{ grid-template-columns: 1.8fr 1.2fr; }
+    }
+    @media (max-width: 860px){
+      .grid-2{ grid-template-columns: 1fr; }
+    }
+    /* 防止隱藏占位容器佔空間 */
+    #addonPlaceholders{ display:none; }
+  </style>
 </head>
 <body>
   <div class="watermark" aria-hidden="true">
@@ -53,21 +72,8 @@
   <div class="divider"></div>
 
   <main class="container">
-    <!-- 你的額度計算機 UI（沿用既有 script.js 功能） -->
-    <section class="grid-3">
-      <div class="card">
-        <h2 class="card-title">居服薪資(6/4)</h2>
-        <div class="row space-between">
-          <span class="hint warn" id="addonHint">請儲存加成次數</span>
-          <button class="btn btn-green" id="btnSaveAddons" type="button">儲存</button>
-        </div>
-        <div class="addon">
-          <div class="addon-head"><span>項目</span><span class="text-right">次數</span></div>
-          <div id="addonRows" class="addon-body"></div>
-        </div>
-        <div id="caregiverSalary" style="margin-top:10px;font-weight:800;text-align:right;color:#2e7d32;">居服員薪資合計：0 元</div>
-      </div>
-
+    <!-- 兩欄版：移除「居服薪資(6/4)」整欄；保留「基本資料」與「個案額度及自付額」 -->
+    <section class="grid-2">
       <div class="card">
         <h2 class="card-title">基本資料</h2>
         <div class="form-row">
@@ -187,5 +193,13 @@
     document.addEventListener('selectstart', e => e.preventDefault());
     document.addEventListener('copy', e => e.preventDefault());
   </script>
+
+  <!-- 隱藏占位：提供舊腳本可能會查找的ID，避免報錯；不會顯示在畫面 -->
+  <div id="addonPlaceholders" aria-hidden="true">
+    <span id="addonHint"></span>
+    <button id="btnSaveAddons" type="button"></button>
+    <div id="addonRows"></div>
+    <div id="caregiverSalary"></div>
+  </div>
 </body>
 </html>
