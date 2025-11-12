@@ -72,9 +72,9 @@ a:hover{ text-decoration:underline; }
 .topbar{
   position:sticky; top:0; z-index:1000;
   display:grid !important;
-  grid-template-columns:auto 1fr auto; /* 左：品牌｜中：導覽｜右：按鈕或佔位 */
+  grid-template-columns:auto 1fr auto;
   align-items:center;
-  padding:14px 24px;                 /* 左右縮一點 */
+  padding:14px 24px;
   background:rgba(255,253,245,.9);
   backdrop-filter:blur(6px);
   border-bottom:1px solid var(--line);
@@ -106,7 +106,7 @@ a:hover{ text-decoration:underline; }
   display:flex;
   justify-content:center;
   align-items:center;
-  gap:40px;                         /* 桌機寬鬆、但不會擠 */
+  gap:40px;
   white-space:nowrap;
   overflow-x:auto;
   -webkit-overflow-scrolling:touch;
@@ -124,7 +124,6 @@ a:hover{ text-decoration:underline; }
   color:var(--orange);
   transform:translateY(-1px);
 }
-/* 導覽：目前頁面高亮（單底線版本，避免雙底線） */
 .nav-links a.active{ color:var(--orange); }
 .nav-links a.active::after{
   content:"";
@@ -132,7 +131,7 @@ a:hover{ text-decoration:underline; }
   height:3px; background:var(--orange); border-radius:3px;
 }
 
-/* 右側按鈕區（或佔位，確保置中對齊） */
+/* 右側按鈕區 */
 .actions{
   grid-column:3;
   display:flex;
@@ -142,7 +141,7 @@ a:hover{ text-decoration:underline; }
   white-space:nowrap;
 }
 .actions-ghost{
-  min-width:320px;   /* 與有三顆按鈕的頁面對齊 */
+  min-width:320px;
   height:1px;
 }
 .divider{ height:10px; }
@@ -155,7 +154,7 @@ a:hover{ text-decoration:underline; }
   background:rgba(255,253,245,.9);
   backdrop-filter:blur(6px);
   border-top:1px solid var(--line);
-  padding:10px 16px;                 /* 左右縮一點 */
+  padding:10px 16px;
   padding-bottom:max(10px, env(safe-area-inset-bottom));
 }
 .foot{
@@ -174,14 +173,14 @@ a:hover{ text-decoration:underline; }
    容器與卡片（縮小左右空白）
 ===================== */
 .container{
-  max-width:1360px;                 /* 原 1220 → 1360 */
+  max-width:1360px;
   margin:0 auto;
-  padding:18px 20px;                /* 原 20px 24px → 18px 20px */
+  padding:18px 20px;
 }
 @media (min-width:1600px){
   .container{ max-width:1440px; }
 }
-.grid-3 {
+.grid-3{
   display:grid;
   grid-template-columns:1.15fr 0.95fr 1.15fr;
   gap:0px;
@@ -194,7 +193,6 @@ a:hover{ text-decoration:underline; }
   box-shadow:0 1px 2px rgba(0,0,0,.05);
   height:100%;
 }
-.card-title{ margin:0 0 12px 0; font-size:18px; font-weight:800; }
 
 /* =====================
    元件
@@ -233,7 +231,7 @@ a:hover{ text-decoration:underline; }
   margin:12px 0;
   font-size:15px;
 }
-.form-row > label{
+.form-row>label{
   flex:0 0 90px;
   white-space:nowrap;
 }
@@ -282,18 +280,17 @@ a:hover{ text-decoration:underline; }
 
 .note.warn{ margin-top:8px; font-size:13px; }
 
-/* 手機寬度時允許換行 */
 @media (max-width:860px){
   .form-row{ flex-wrap:wrap; }
-  .form-row > label{ flex:0 0 100%; }
-  .form-row .chips, .form-row .cms{ flex-wrap:wrap; }
+  .form-row>label{ flex:0 0 100%; }
+  .form-row .chips,.form-row .cms{ flex-wrap:wrap; }
 }
 
 /* =====================
    左卡：AA 加成區
 ===================== */
 .addon{ margin-top:8px; border:1px solid var(--line); border-radius:10px; overflow:hidden; }
-.addon-head, .addon-row{ display:grid; grid-template-columns:1fr 160px; align-items:center; }
+.addon-head,.addon-row{ display:grid; grid-template-columns:1fr 160px; align-items:center; }
 .addon-head{ background:#faf6e4; border-bottom:1px solid var(--line); font-weight:800; padding:10px 16px; }
 .addon-row{ padding:10px 16px; border-top:1px dashed var(--line); }
 .addon-row:first-child{ border-top:none; }
@@ -312,8 +309,8 @@ a:hover{ text-decoration:underline; }
 /* =====================
    服務表格（桌機）
 ===================== */
-#tables { width:100%; }
-#tables table {
+#tables{ width:100%; }
+#tables table{
   width:100%;
   border-collapse:separate;
   border-spacing:0;
@@ -322,7 +319,7 @@ a:hover{ text-decoration:underline; }
   border-radius:12px;
   overflow:hidden;
 }
-#tables thead th {
+#tables thead th{
   position:sticky;
   top:0;
   z-index:5;
@@ -333,17 +330,17 @@ a:hover{ text-decoration:underline; }
   font-weight:800;
 }
 #tables th:first-child,
-#tables td:first-child {
+#tables td:first-child{
   text-align:left;
   padding-left:18px;
 }
-#tables td {
+#tables td{
   padding:12px 18px;
   border-top:1px solid var(--line);
   vertical-align:middle;
 }
 #tables tbody tr:nth-child(even){ background:#fffef9; }
-#tables input[type="number"] {
+#tables input[type="number"]{
   width:70px; height:36px;
   font-size:15px;
   text-align:center;
@@ -352,15 +349,13 @@ a:hover{ text-decoration:underline; }
 }
 
 /* =====================
-   手機／平板優化（避免擠、可橫向滑動）
+   手機／平板優化
 ===================== */
 @media (max-width:860px){
   .grid-3{ grid-template-columns:1fr; gap:14px; }
   .card{ padding:14px; }
   .topbar{ padding:14px 16px; }
   .footerbar{ padding-bottom:max(10px, env(safe-area-inset-bottom)); }
-
-  /* 表格可水平捲動，避免字被擠壓 */
   #tables{
     overflow-x:auto;
     -webkit-overflow-scrolling:touch;
@@ -382,34 +377,6 @@ a:hover{ text-decoration:underline; }
   .foot{ gap:12px; font-size:14px; }
 }
 
-/* 更窄手機（≤560px）：導覽可滑、表單滿版 */
-@media (max-width:560px){
-  .nav-links{ gap:24px; padding:6px 2px 10px; }
-  .nav-links a{ padding:10px 2px; }
-  .actions-ghost{ min-width:0; }
-
-  .form-row{ flex-wrap:wrap }
-  .form-row > label{ flex:0 0 auto; }
-  .form-row input[type="text"],
-  .form-row input[type="number"]{ width:100% }
-
-  .addon-head, .addon-row{ grid-template-columns:1fr 120px }
-
-  .qrbox{ flex-direction:column; gap:10px }
-  .qr-left img{ width:96px; height:96px }
-
-  /* 表格更保守，左右滑動 */
-  #tables table{ min-width:560px; table-layout:auto; }
-}
-
-/* 超窄手機（微調字級與欄寬） */
-@media (max-width: 600px) {
-  #tables th, #tables td { font-size:14px; line-height:1.3; padding:6px 8px; }
-}
-@media (max-width: 420px) {
-  #tables th, #tables td { font-size:13px; padding:5px 6px; }
-}
-
 /* =====================
    列印
 ===================== */
@@ -423,63 +390,101 @@ a:hover{ text-decoration:underline; }
 /* =====================
    禁止選取文字與拖曳圖片
 ===================== */
-* {
+*{
   -webkit-user-select:none;
   -moz-user-select:none;
   -ms-user-select:none;
   user-select:none;
 }
-img, a img {
+img,a img{
   -webkit-user-drag:none;
   user-drag:none;
 }
 
 /* =========================================================
-   ▼▼▼ 修補區（append-only，不刪你原本的任何規則）
-   - 僅橫向滾動、移除縱向
-   - 當前標籤上浮＋底線（border-bottom）
-   - 單價／總金額等非首欄置中、等寬數字
+   ▼▼▼ 修補區
 ========================================================= */
-
-/* 1) 導覽列：只允許橫向捲動、移除縱向捲動 */
-.topbar,
-.nav-links{
-  overflow-x: auto !important;
-  overflow-y: hidden !important;
-  -webkit-overflow-scrolling: touch;
+.topbar,.nav-links{
+  overflow-x:auto !important;
+  overflow-y:hidden !important;
+  -webkit-overflow-scrolling:touch;
 }
-
-/* 2) 當前標籤：穩定的「上浮 + 底線」 */
 .nav-links a{
-  position: relative !important;
-  display: inline-flex !important;
-  align-items: center;
-  padding: 8px 4px 10px !important;               /* 為底線留空間 */
-  border-bottom: 2px solid transparent !important;/* 用底邊作為底線 */
-  transition: color .2s, transform .2s, border-color .2s !important;
+  position:relative !important;
+  display:inline-flex !important;
+  align-items:center;
+  padding:8px 4px 10px !important;
+  border-bottom:2px solid transparent !important;
+  transition:color .2s, transform .2s, border-color .2s !important;
 }
-.nav-links a:hover{
-  transform: translateY(-1px) !important;
-}
+.nav-links a:hover{ transform:translateY(-1px) !important; }
 .nav-links a.active{
-  color: var(--orange) !important;
-  transform: translateY(-1.5px) !important;       /* 微微上浮 */
-  border-bottom-color: var(--orange) !important;   /* 顯示底線 */
+  color:var(--orange) !important;
+  transform:translateY(-1.5px) !important;
+  border-bottom-color:var(--orange) !important;
 }
-
-/* 3) 表格對齊：第 1 欄靠左，其餘欄置中 + 等寬數字 */
 #tables th:first-child,
 #tables td:first-child{
-  text-align: left !important;
-  padding-left: 18px !important;
+  text-align:left !important;
+  padding-left:18px !important;
 }
 #tables th:not(:first-child),
 #tables td:not(:first-child){
-  text-align: center !important;
-  font-variant-numeric: tabular-nums !important;
+  text-align:center !important;
+  font-variant-numeric:tabular-nums !important;
 }
 #tables input[type="number"]{
-  text-align: center !important;
-  margin: 0 auto !important;
-  display: block !important;
+  text-align:center !important;
+  margin:0 auto !important;
+  display:block !important;
 }
+
+/* =========================================================
+   ▼▼▼ 卡片文字樣式：版本2 風格（append-only）
+========================================================= */
+.card-title{
+  font-size:18px;
+  font-weight:800;
+  margin:0 0 12px 0;
+  color:#2f2f20;
+}
+.service-card h3{
+  margin:24px 0 10px 2px !important;
+  font-size:16px !important;
+  font-weight:800 !important;
+  color:#6b6544 !important;
+}
+.kv .kv-row{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:6px 0;
+  font-weight:600;
+  color:#2f2f20;
+}
+.addon-head span:last-child{
+  text-align:right;
+  padding-right:18px;
+}
+.hint{
+  color:var(--muted);
+  font-size:13px;
+}
+#tables thead th{ text-align:center !important; }
+#tables td,#tables th{
+  text-align:center;
+  vertical-align:middle;
+  font-variant-numeric:tabular-nums;
+}
+#tables th:first-child,#tables td:first-child{
+  text-align:left !important;
+  padding-left:18px !important;
+}
+.card .qrbox{
+  margin-top:20px;
+  border-top:1px dashed var(--line);
+  padding-top:14px;
+}
+.text-right{ text-align:right; }
+.bold{ font-weight:800; }
+.orange{ color:var(--orange); }
