@@ -36,12 +36,6 @@ body{
 a{ color:var(--green); text-decoration:none; }
 a:hover{ text-decoration:underline; }
 
-/* 鎖住整頁水平捲動，避免整個畫面被拖走 */
-html, body { overflow-x: clip; }
-@supports not (overflow-x: clip){
-  html, body { overflow-x: hidden; }
-}
-
 /* =====================
    頂部列（固定）
 ===================== */
@@ -54,7 +48,7 @@ html, body { overflow-x: clip; }
   background:rgba(255,253,245,.9);
   backdrop-filter:blur(6px);
   border-bottom:1px solid var(--line);
-  overflow-x:hidden; /* 頂欄不溢出 */
+  overflow-x:hidden;
 }
 
 /* 品牌區 */
@@ -77,7 +71,7 @@ html, body { overflow-x: clip; }
   white-space:nowrap;
 }
 
-/* 導覽列：可橫向捲動並顯示滾輪 */
+/* 導覽列：中間置中（寬版不顯示滾輪） */
 .nav-links{
   grid-column:2;
   display:flex;
@@ -85,16 +79,10 @@ html, body { overflow-x: clip; }
   align-items:center;
   gap:40px;
   white-space:nowrap;
-
-  overflow-x:auto !important;
+  overflow-x:visible;
   overflow-y:hidden;
-  max-width:100%;
-  min-width:0;
-  -webkit-overflow-scrolling:touch;
-  scrollbar-gutter: stable both-edges;
 }
 .nav-links a{
-  flex:0 0 auto;
   text-decoration:none;
   color:#333;
   font-weight:600;
@@ -104,14 +92,6 @@ html, body { overflow-x: clip; }
 .nav-links a:hover{
   color:#ff9800;
   transform:translateY(-1px);
-}
-
-/* 美化水平捲軸 */
-.nav-links::-webkit-scrollbar{ height:8px; }
-.nav-links::-webkit-scrollbar-track{ background:#f0ead2; }
-.nav-links::-webkit-scrollbar-thumb{
-  background:#cdbf86;
-  border-radius:8px;
 }
 
 /* 右側按鈕區 */
@@ -383,7 +363,6 @@ html, body { overflow-x: clip; }
   #tables th,#tables td{ padding:10px 12px; font-size:14px; line-height:1.2; white-space:nowrap; }
   #tables input[type="number"]{ width:58px; height:32px; font-size:14px; }
   .foot{ gap:12px; font-size:14px; }
-  .nav-links{ gap:20px; }
 }
 
 /* =====================
@@ -392,7 +371,7 @@ html, body { overflow-x: clip; }
 *{-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none;}
 img,a img{-webkit-user-drag:none;user-drag:none;}
 
-/* 導覽高亮（底線＋浮起） */
+/* 導覽高亮 */
 .nav-links a.active{
   color:#ff9800;
   border-bottom:2px solid #ff9800;
@@ -405,10 +384,32 @@ img,a img{-webkit-user-drag:none;user-drag:none;}
   height:1px;
 }
 
-/* 讓滾動體驗更自然 */
-.nav-links{
-  scroll-snap-type: x proximity;
-}
-.nav-links a{
-  scroll-snap-align: start;
+/* =====================
+   ✅ 只在頁面縮小時顯示橫向滾輪
+===================== */
+@media (max-width:1100px){
+  html, body { overflow-x: clip; }
+  @supports not (overflow-x: clip){ html, body { overflow-x: hidden; } }
+
+  .topbar{ overflow-x:hidden !important; }
+
+  .nav-links{
+    display:flex !important;
+    flex-wrap:nowrap !important;
+    justify-content:center;
+    align-items:center;
+    overflow-x:auto !important;   /* ← 縮小時才出現滾輪 */
+    overflow-y:hidden !important;
+    max-width:100%;
+    min-width:0;
+    -webkit-overflow-scrolling:touch;
+    scrollbar-gutter:stable both-edges;
+    gap:24px;
+  }
+  .nav-links a{ flex:0 0 auto; white-space:nowrap; }
+
+  /* 美化滾輪 */
+  .nav-links::-webkit-scrollbar{ height:8px; }
+  .nav-links::-webkit-scrollbar-track{ background:#f0ead2; }
+  .nav-links::-webkit-scrollbar-thumb{ background:#cdbf86; border-radius:8px; }
 }
