@@ -364,42 +364,11 @@ a:hover{ text-decoration:underline; }
 *{-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none;}
 img,a img{-webkit-user-drag:none;user-drag:none;}
 
-/* 導覽項目：預留底線空間，並啟用變化 */
-.nav-links a{
-  position: relative;
-  display: inline-block;
-  padding: 8px 6px 14px;   /* 底部多留一點空間放底線 */
-  font-weight: 700;
-  color:#333;
-  transition: color .2s ease, transform .2s ease;
-}
-
-/* 底線用偽元素畫，不會影響排版高度 */
-.nav-links a::after{
-  content:"";
-  position:absolute;
-  left:0; right:0;
-  bottom:4px;              /* 底線與字的距離，依喜好微調 */
-  height:3px;              /* 底線粗細 */
-  background:#ff9800;
-  border-radius:2px;
-  transform: scaleX(0);    /* 預設隱藏 */
-  transform-origin: left;
-  transition: transform .25s ease;
-}
-
-/* 滑過：只變色，不一定要浮起（可保守） */
-.nav-links a:hover{
-  color:#ff9800;
-}
-
-/* 目前頁：變橘＋顯示底線（必要時微浮起 1px） */
+/* 導覽高亮 */
 .nav-links a.active{
   color:#ff9800;
-  transform: translateY(-1px); /* 想完全不浮起就刪掉這行 */
-}
-.nav-links a.active::after{
-  transform: scaleX(1);
+  border-bottom:2px solid #ff9800;
+  padding-bottom:2px;
 }
 
 /* =========================================================
@@ -435,37 +404,4 @@ img,a img{-webkit-user-drag:none;user-drag:none;}
   .topbar{ padding:14px 16px; }
   .nav-links{ gap:20px; }
   .actions-ghost{ min-width:0; }
-}
-/* --- 導覽高亮：提高指定度避免被舊規則覆蓋 --- */
-.topbar .nav-links a{
-  position: relative;
-  display: inline-block;
-  padding: 8px 6px 14px;
-  font-weight: 700;
-  transition: color .2s ease, transform .2s ease;
-}
-
-.topbar .nav-links a::after{
-  content:"";
-  position:absolute;
-  left:0; right:0;
-  bottom:4px;
-  height:3px;
-  background:#ff9800;
-  border-radius:2px;
-  transform: scaleX(0);
-  transform-origin: left;
-  transition: transform .25s ease;
-}
-
-/* 滑過僅變色（可自行拿掉浮起） */
-.topbar .nav-links a:hover{ color:#ff9800; }
-
-/* 目前頁：變橘＋顯示底線（含微浮起） */
-.topbar .nav-links a.active{
-  color:#ff9800 !important;
-  transform: translateY(-1px);
-}
-.topbar .nav-links a.active::after{
-  transform: scaleX(1);
 }
