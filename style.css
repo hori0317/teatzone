@@ -364,13 +364,6 @@ a:hover{ text-decoration:underline; }
 *{-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none;}
 img,a img{-webkit-user-drag:none;user-drag:none;}
 
-/* 導覽高亮 */
-.nav-links a.active{
-  color:#ff9800;
-  border-bottom:2px solid #ff9800;
-  padding-bottom:2px;
-}
-
 /* =========================================================
    ▼ Topbar 對齊修正 & 導覽間距升級
 ========================================================= */
@@ -404,4 +397,42 @@ img,a img{-webkit-user-drag:none;user-drag:none;}
   .topbar{ padding:14px 16px; }
   .nav-links{ gap:20px; }
   .actions-ghost{ min-width:0; }
+}
+
+/* =========================================================
+   ▼ Nav 目前頁面上浮 + 橘色底線（替代舊的 .nav-links a.active 底線）
+========================================================= */
+.nav-links a{
+  position: relative;
+  padding: 6px 10px;
+  border-radius: 10px;
+  transition: transform .18s ease, box-shadow .18s ease, background-color .18s ease;
+}
+.nav-links a::after{
+  content:"";
+  position:absolute;
+  left:12px; right:12px;
+  bottom:-6px;
+  height:2px;
+  background:transparent;
+  border-radius:2px;
+  transform:scaleX(0);
+  opacity:0;
+  transition: transform .18s ease, opacity .18s ease;
+  transform-origin:left center;
+}
+.nav-links a.active{
+  color: var(--green);
+  transform: translateY(-3px);
+  background: rgba(46,125,50,.08);
+  box-shadow: 0 6px 14px rgba(0,0,0,.06);
+}
+.nav-links a.active::after{
+  background: var(--orange);
+  transform: scaleX(1);
+  opacity: 1;
+}
+@media (prefers-reduced-motion: reduce){
+  .nav-links a{ transition:none; }
+  .nav-links a::after{ transition:none; }
 }
