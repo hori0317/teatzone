@@ -5,10 +5,6 @@
  * - 產表時每列加入 tr.dataset.code = item.code
  * - C 組 tr.dataset.cmode = "1"（供統計排 C 用）
  * - applyUnitEffects()：B 單位隱藏並歸零 BA09/BA09a 與整個 BD 組；A 單位恢復
- * 
- * 2025-11-12 修正：
- * (1) updateSCAvailability() 在非外籍時，同步把 SC 各列 dataset.use 歸零並更新金額欄
- * (2) 導覽列自動高亮在子路徑環境改用 location.href 當 URL base，避免 GitHub Pages 子路徑比不到
  **********************/
 
 /* 公用 */
@@ -308,26 +304,15 @@ function bindHeaderInputs(){
   $("#keepQuota")?.addEventListener("input", updateResults);
 }
 
-/* SC 只能外籍看護用（修正版：非外籍時同步歸零 dataset.use 與金額欄） */
+/* SC 只能外籍看護用 */
 function updateSCAvailability(){
   const scBox = document.querySelector('[data-group="SC"]');
   if(!scBox) return;
   const hasForeign = (document.querySelector("input[name='foreign']:checked")||{}).value === "1";
-
-  scBox.querySelectorAll("tbody tr").forEach(tr=>{
-    tr.querySelectorAll("input").forEach(inp=>{
-      inp.disabled = !hasForeign;
-      if(!hasForeign) inp.value = 0;
-    });
-
-    // ★ 關鍵：無外籍 → 直接把 dataset.use 歸零，並同步金額格，避免計算殘留
-    if(!hasForeign){
-      tr.dataset.use = "0";
-      const cell = tr.querySelector(".cell-amount");
-      if (cell) cell.textContent = "0";
-    }
+  scBox.querySelectorAll("input").forEach(inp=>{
+    inp.disabled = !hasForeign;
+    if(!hasForeign) inp.value = 0;
   });
-
   const warn=$("#warnSCfg");
   if(warn){ !hasForeign ? warn.classList.remove("hidden") : warn.classList.add("hidden"); }
 }
@@ -553,73 +538,52 @@ function adjustTopbarPadding(){
   document.documentElement.style.setProperty('--topbar-h', h + 'px');
 }
 
-/* ---- 導覽：自動高亮（子路徑/查詢字串/結尾斜線/索引頁都吃） ---- */
+/* ---- 導覽：依當前網址自動高亮（支援多頁 + 錨點） ---- */
 (function(){
-  // 取最後一段檔名作為「頁鍵」；/、/index.html 都視為 index
-  const pageKeyFromPath = (p) => {
-    try{
-      let path = String(p || '/').split('?')[0];
-      if (path.length > 1 && path.endsWith('/')) path = path.slice(0, -1);
-      path = path.replace(/\/(index\.html?)?$/i, '/index').replace(/\.html?$/i, '');
-      const seg = path.split('/').pop();
-      return (seg || 'index').toLowerCase();
-    }catch{ return 'index'; }
-  };
+  function normPath(pathname){
+    // 移除結尾斜線 → 把 / 或 /index.html 視為 /index → 去掉 .html
+    let p = String(pathname || '/').trim();
+    if (p.length > 1 && p.endsWith('/')) p = p.slice(0, -1);
+    p = p.replace(/\/(index\.html?)?$/i, '/index').replace(/\.html?$/i, '');
+    const seg = p.split('/').pop() || 'index';
+    return seg.toLowerCase();
+  }
 
-  const markActive = () => {
-    const here = new URL(location.href);
-    const hereKey = pageKeyFromPath(here.pathname);
+  function setActiveNav(){
+    const herePath = normPath(location.pathname);
+    const hereHash = (location.hash || '').toLowerCase();
 
-    // 先清空
-    document.querySelectorAll('.nav-links a.active').forEach(a => a.classList.remove('active'));
+    // 先清除舊的 active
+    document.querySelectorAll('.nav-links a.active').forEach(a=>a.classList.remove('active'));
 
-    const links = Array.from(document.querySelectorAll('.nav-links a[href]'));
-    let hit = null;
+    document.querySelectorAll('.nav-links a[href]').forEach(a=>{
+      const raw = (a.getAttribute('href') || '').trim();
+      if (!raw) return;
 
-    // 第一輪：嚴格比對「路徑鍵」
-    for (const a of links){
-      try{
-        const u = new URL(a.getAttribute('href'), location.href);
-        const key = pageKeyFromPath(u.pathname);
-        if (key === hereKey || (key === 'index' && (hereKey === '' || hereKey === 'index'))){
-          hit = a; break;
+      let active = false;
+
+      if (raw.startsWith('#')){
+        // 單頁錨點：僅當前 hash 完全相同才亮（避免全部 # 錨點同時亮）
+        active = (raw.toLowerCase() === hereHash && hereHash !== '');
+      } else {
+        // 多頁：以檔名比對（/page、/page.html、/ 皆可）
+        try{
+          const url = new URL(raw, location.origin);
+          const targetPath = normPath(url.pathname);
+          active = (targetPath === herePath) ||
+                   (targetPath === 'index' && (herePath === '' || herePath === 'index'));
+        }catch(e){
+          // 相對連結 fallback
+          const hrefClean = raw.replace(/^\.\//,'').replace(/\.html?$/i,'').replace(/\/$/,'') || 'index';
+          active = (hrefClean.toLowerCase() === herePath);
         }
-      }catch{/* ignore */}
-    }
-
-    // 第二輪：比對完整 pathname（處理一樣的目錄層級）
-    if (!hit){
-      for (const a of links){
-        try{
-          const u = new URL(a.getAttribute('href'), location.href);
-          const ap = u.pathname.replace(/\/index\.html?$/i, '/').replace(/\/+$/,'/');
-          const hp = here.pathname.replace(/\/index\.html?$/i, '/').replace(/\/+$/,'/');
-          if (ap === hp){ hit = a; break; }
-        }catch{/* ignore */}
       }
-    }
 
-    // 第三輪：寬鬆 startsWith（如 /tools 與 /tools/sub）
-    if (!hit){
-      for (const a of links){
-        try{
-          const u = new URL(a.getAttribute('href'), location.href);
-          const ap = u.pathname.replace(/\/index\.html?$/i, '/');
-          const hp = here.pathname.replace(/\/index\.html?$/i, '/');
-          if (ap !== '/' && hp.startsWith(ap)){ hit = a; break; }
-        }catch{/* ignore */}
-      }
-    }
+      if (active) a.classList.add('active');
+    });
+  }
 
-    // 第四輪：hash 導覽（單頁錨點）
-    if (!hit && here.hash){
-      hit = document.querySelector(`.nav-links a[href='${here.hash}']`);
-    }
-
-    if (hit) hit.classList.add('active');
-  };
-
-  window.addEventListener('DOMContentLoaded', markActive);
-  window.addEventListener('hashchange', markActive);
-  window.addEventListener('popstate',  markActive);
+  window.addEventListener('DOMContentLoaded', setActiveNav);
+  window.addEventListener('hashchange', setActiveNav);
+  window.addEventListener('popstate', setActiveNav); // 處理前進/後退
 })();
