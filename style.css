@@ -82,12 +82,21 @@ a:hover{ text-decoration:underline; }
   text-decoration:none;
   color:#333;
   font-weight:600;
-  transition:color .2s, transform .2s;
+  transition:color .25s ease, transform .25s ease;
   white-space:nowrap;
 }
 .nav-links a:hover{
   color:#ff9800;
   transform:translateY(-1px);
+}
+
+/* 導覽高亮（微浮起＋底線強調） */
+.nav-links a.active{
+  color:#ff9800;
+  border-bottom:3px solid #ff9800;
+  padding-bottom:4px;
+  transform:translateY(-2px);
+  transition:all .25s ease;
 }
 
 /* 右側按鈕區 */
@@ -263,59 +272,6 @@ a:hover{ text-decoration:underline; }
 }
 
 /* =====================
-   服務表格（修正版）
-===================== */
-.service-card h3 {
-  margin:24px 0 10px 2px;
-  font-size:16px;
-  font-weight:800;
-  color:#6b6544;
-}
-#tables { width:100%; }
-#tables table {
-  width:100%;
-  border-collapse:separate;
-  border-spacing:0;
-  background:#fff;
-  border:1px solid var(--line);
-  border-radius:12px;
-  overflow:hidden;
-}
-#tables thead th {
-  position:sticky;
-  top:0;
-  z-index:5;
-  background:#f6f1d9;
-  color:#584f2a;
-  padding:12px 18px;
-  border-bottom:1px solid var(--line);
-  font-weight:800;
-  text-align:center;
-}
-#tables th:first-child,
-#tables td:first-child { text-align:left; padding-left:18px; }
-
-#tables td, #tables th {
-  text-align:center;
-  vertical-align:middle;
-  font-variant-numeric: tabular-nums;
-}
-
-#tables tbody td {
-  padding:12px 18px;
-  border-top:1px solid var(--line);
-}
-#tables tbody tr:nth-child(even){ background:#fffef9; }
-#tables input[type="number"] {
-  width:70px; height:36px;
-  font-size:15px;
-  text-align:center;
-  margin:0 auto;
-  display:block;
-}
-.cell-price, .cell-amount { text-align:center; }
-
-/* =====================
    浮水印（恢復）
 ===================== */
 .watermark{
@@ -343,34 +299,6 @@ a:hover{ text-decoration:underline; }
   .watermark{ display:none!important; }
 }
 
-/* =====================
-   手機優化
-===================== */
-@media (max-width:860px){
-  .grid-3{ grid-template-columns:1fr; gap:14px; }
-  .card{ padding:14px; }
-  .topbar{ padding-top:max(10px, env(safe-area-inset-top)); }
-  .footerbar{ padding-bottom:max(10px, env(safe-area-inset-bottom)); }
-  #tables{ overflow-x:auto; -webkit-overflow-scrolling:touch; padding-bottom:calc(var(--dock-h) + 14px); }
-  #tables table{ min-width:780px; table-layout:fixed; }
-  #tables th,#tables td{ padding:10px 12px; font-size:14px; line-height:1.2; white-space:nowrap; }
-  #tables input[type="number"]{ width:58px; height:32px; font-size:14px; }
-  .foot{ gap:12px; font-size:14px; }
-}
-
-/* =====================
-   禁止選取文字與拖曳圖片
-===================== */
-*{-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none;}
-img,a img{-webkit-user-drag:none;user-drag:none;}
-
-/* 導覽高亮 */
-.nav-links a.active{
-  color:#ff9800;
-  border-bottom:2px solid #ff9800;
-  padding-bottom:2px;
-}
-
 /* =========================================================
    ▼ Topbar 對齊修正 & 導覽間距升級
 ========================================================= */
@@ -379,17 +307,17 @@ img,a img{-webkit-user-drag:none;user-drag:none;}
   grid-template-columns:auto 1fr auto;
   align-items:center;
   padding:16px 32px;
-  overflow:visible;                 /* ★ 取消 topbar 自身滾軸 */
+  overflow:visible; 
 }
 .brand{ grid-column:1; }
 .nav-links{
   grid-column:2;
   justify-content:center;
   gap:40px;
-  overflow-x:auto;                  /* ★ 僅保留橫向滾輪 */
-  overflow-y:hidden;                /* ★ 移除上下滾輪 */
+  overflow-x:auto;
+  overflow-y:hidden;
   -webkit-overflow-scrolling:touch;
-  min-width:0;                      /* ★ 關鍵：允許縮小，overflow 才會生效 */
+  min-width:0;
 }
 .actions{
   grid-column:3;
