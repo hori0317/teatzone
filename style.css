@@ -82,20 +82,12 @@ a:hover{ text-decoration:underline; }
   text-decoration:none;
   color:#333;
   font-weight:600;
-  transition:color .25s ease, transform .25s ease, border-bottom-color .25s ease;
+  transition:color .2s, transform .2s;
   white-space:nowrap;
 }
 .nav-links a:hover{
   color:#ff9800;
   transform:translateY(-1px);
-}
-
-/* 導覽高亮（微浮起＋底線強調） */
-.nav-links a.active{
-  color:#ff9800;
-  border-bottom:3px solid #ff9800;
-  padding-bottom:4px;
-  transform:translateY(-2px);
 }
 
 /* 右側按鈕區 */
@@ -372,6 +364,15 @@ a:hover{ text-decoration:underline; }
 *{-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none;}
 img,a img{-webkit-user-drag:none;user-drag:none;}
 
+/* 導覽高亮（當前頁籤：微浮起＋底線） */
+.nav-links a.active{
+  color:#ff9800;
+  border-bottom:2px solid #ff9800;
+  padding-bottom:2px;
+  transform: translateY(-2px);     /* ★ 微微往上 */
+  transition: transform .2s, color .2s, border-color .2s;
+}
+
 /* =========================================================
    ▼ Topbar 對齊修正 & 導覽間距升級
 ========================================================= */
@@ -380,17 +381,17 @@ img,a img{-webkit-user-drag:none;user-drag:none;}
   grid-template-columns:auto 1fr auto;
   align-items:center;
   padding:16px 32px;
-  overflow:visible;                 /* 取消 topbar 自身滾軸 */
+  overflow:visible;                 /* ★ 取消 topbar 自身滾軸 */
 }
 .brand{ grid-column:1; }
 .nav-links{
   grid-column:2;
   justify-content:center;
   gap:40px;
-  overflow-x:auto;                  /* 僅保留橫向滾輪 */
-  overflow-y:hidden;                /* 移除上下滾輪 */
+  overflow-x:auto;                  /* ★ 僅保留橫向滾輪 */
+  overflow-y:hidden;                /* ★ 移除上下滾輪 */
   -webkit-overflow-scrolling:touch;
-  min-width:0;                      /* 允許縮小，overflow 才會生效 */
+  min-width:0;                      /* ★ 關鍵：允許縮小，overflow 才會生效 */
 }
 .actions{
   grid-column:3;
