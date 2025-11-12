@@ -33,8 +33,6 @@ body{
   padding-bottom: var(--dock-h);
 }
 .hidden{ display:none !important; }
-
-/* 一般連結維持原本行為（hover 有底線） */
 a{ color:var(--green); text-decoration:none; }
 a:hover{ text-decoration:underline; }
 
@@ -43,11 +41,13 @@ a:hover{ text-decoration:underline; }
 ===================== */
 .topbar{
   position:sticky; top:0; z-index:1000;
+  display:flex; align-items:center; justify-content:space-between;
   padding:12px 24px;
   background:rgba(255,253,245,.9);
   backdrop-filter:blur(6px);
   border-bottom:1px solid var(--line);
   flex-wrap:nowrap;
+  overflow-x:auto;
   -webkit-overflow-scrolling:touch;
 }
 .brand{
@@ -69,52 +69,29 @@ a:hover{ text-decoration:underline; }
   white-space:nowrap;
 }
 
-/* 導覽列：置中 */
+/* 導覽列：中間置中 */
 .nav-links{
+  flex:1 1 auto;
   display:flex;
   justify-content:center;
   align-items:center;
   gap:24px;
   white-space:nowrap;
-  flex:1 1 auto;
 }
-
-/* 導覽列連結（統一、抗干擾版本）*/
 .nav-links a{
-  position:relative;
-  display:inline-flex;            /* 讓底線與文字等寬 */
-  align-items:center;
-  padding:4px 8px;
+  position: relative;
+  display: inline-block;          /* ★ 關鍵修正：用 inline-block 才會畫底線 */
+  text-decoration: none;
   color:#333;
   font-weight:600;
-  line-height:1.2;                /* 讓底線貼近文字 */
-  text-decoration:none;           /* 交由下方規則控制 */
+  line-height:1.2;
+  padding:4px 8px;
   transition:color .2s, transform .2s;
   white-space:nowrap;
 }
-
-/* hover：只變色，不改位移與底線（避免搶 active 效果）*/
 .nav-links a:hover{
   color:#ff9800;
-  text-decoration:none;
-  transform:none;
-}
-
-/* active：上浮＋文字等寬底線 */
-.nav-links a.active{
-  color:#ff9800;
-  transform:translateY(-3px);     /* ★ 往上浮起 */
-  text-decoration:underline;      /* ★ 原生底線，與文字同寬 */
-  text-decoration-thickness:2px;
-  text-underline-offset:6px;      /* 與字距離 */
-  text-decoration-color:currentColor;
-}
-
-/* 避免 hover 時覆蓋 active 的上浮與底線 */
-.nav-links a.active:hover{
-  color:#ff9800;
-  transform:translateY(-3px);
-  text-decoration:underline;
+  transform:translateY(-1px);
 }
 
 /* 右側按鈕區 */
@@ -392,24 +369,24 @@ a:hover{ text-decoration:underline; }
 img,a img{-webkit-user-drag:none;user-drag:none;}
 
 /* =========================================================
-   ▼ Topbar 對齊修正 & 導覽間距升級（保留你的設定）
+   ▼ Topbar 對齊修正 & 導覽間距升級
 ========================================================= */
 .topbar{
   display:grid !important;
   grid-template-columns:auto 1fr auto;
   align-items:center;
   padding:16px 32px;
-  overflow:visible;                 /* 取消 topbar 自身滾軸 */
+  overflow:visible;
 }
 .brand{ grid-column:1; }
 .nav-links{
   grid-column:2;
   justify-content:center;
   gap:40px;
-  overflow-x:auto;                  /* 僅保留橫向滾輪 */
+  overflow-x:auto;
   overflow-y:hidden;
   -webkit-overflow-scrolling:touch;
-  min-width:0;                      /* 允許縮小，overflow 才會生效 */
+  min-width:0;
 }
 .actions{
   grid-column:3;
@@ -424,4 +401,19 @@ img,a img{-webkit-user-drag:none;user-drag:none;}
   .topbar{ padding:14px 16px; }
   .nav-links{ gap:20px; }
   .actions-ghost{ min-width:0; }
+}
+
+/* ====== 導覽「當前頁」效果（最終版） ====== */
+.nav-links a.active{
+  color:#ff9800;
+  transform: translateY(-3px);
+  text-decoration: underline;         /* 與文字等寬的底線 */
+  text-decoration-thickness: 2px;
+  text-underline-offset: 6px;
+  text-decoration-color: currentColor;
+}
+.nav-links a.active:hover{
+  color:#ff9800;
+  transform: translateY(-3px);
+  text-decoration: underline;
 }
