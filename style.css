@@ -249,74 +249,8 @@ a:hover{ text-decoration:underline; }
 .text-right{ text-align:right; }
 .addon-head span:last-child{ text-align:right; padding-right:18px; }
 
-/* QR 區 */
-.qrbox{ margin-top:16px; display:flex; gap:16px; align-items:center; }
-.qr-left img{ width:84px; height:84px; object-fit:contain; border-radius:10px; border:1px solid var(--line); background:#fff; }
-.qr-right p{ margin:4px 0; }
-.qr-right .bold{ font-weight:800; }
-.qr-right .orange{ color:var(--orange); font-weight:700; }
-
-.card .qrbox {
-  margin-top: 20px;
-  border-top: 1px dashed var(--line);
-  padding-top: 14px;
-}
-
 /* =====================
-   服務表格（修正版）
-===================== */
-.service-card h3 {
-  margin:24px 0 10px 2px;
-  font-size:16px;
-  font-weight:800;
-  color:#6b6544;
-}
-#tables { width:100%; }
-#tables table {
-  width:100%;
-  border-collapse:separate;
-  border-spacing:0;
-  background:#fff;
-  border:1px solid var(--line);
-  border-radius:12px;
-  overflow:hidden;
-}
-#tables thead th {
-  position:sticky;
-  top:0;
-  z-index:5;
-  background:#f6f1d9;
-  color:#584f2a;
-  padding:12px 18px;
-  border-bottom:1px solid var(--line);
-  font-weight:800;
-  text-align:center;
-}
-#tables th:first-child,
-#tables td:first-child { text-align:left; padding-left:18px; }
-
-#tables td, #tables th {
-  text-align:center;
-  vertical-align:middle;
-  font-variant-numeric: tabular-nums;
-}
-
-#tables tbody td {
-  padding:12px 18px;
-  border-top:1px solid var(--line);
-}
-#tables tbody tr:nth-child(even){ background:#fffef9; }
-#tables input[type="number"] {
-  width:70px; height:36px;
-  font-size:15px;
-  text-align:center;
-  margin:0 auto;
-  display:block;
-}
-.cell-price, .cell-amount { text-align:center; }
-
-/* =====================
-   浮水印（恢復）
+   浮水印
 ===================== */
 .watermark{
   position: fixed;
@@ -341,21 +275,6 @@ a:hover{ text-decoration:underline; }
 }
 @media print{
   .watermark{ display:none!important; }
-}
-
-/* =====================
-   手機優化
-===================== */
-@media (max-width:860px){
-  .grid-3{ grid-template-columns:1fr; gap:14px; }
-  .card{ padding:14px; }
-  .topbar{ padding-top:max(10px, env(safe-area-inset-top)); }
-  .footerbar{ padding-bottom:max(10px, env(safe-area-inset-bottom)); }
-  #tables{ overflow-x:auto; -webkit-overflow-scrolling:touch; padding-bottom:calc(var(--dock-h) + 14px); }
-  #tables table{ min-width:780px; table-layout:fixed; }
-  #tables th,#tables td{ padding:10px 12px; font-size:14px; line-height:1.2; white-space:nowrap; }
-  #tables input[type="number"]{ width:58px; height:32px; font-size:14px; }
-  .foot{ gap:12px; font-size:14px; }
 }
 
 /* =====================
@@ -403,44 +322,18 @@ img,a img{-webkit-user-drag:none;user-drag:none;}
    ▼ Nav 目前頁：微上浮＋橘文字＋深色底線（無底色、無陰影）
 ========================================================= */
 .nav-links a{
+  display: inline-block;
   position: relative;
   padding: 6px 10px;
   border-radius: 6px;
-  transition: color .18s ease, transform .18s ease;
+  border-bottom: 2px solid transparent;
+  transition: color .18s ease, transform .18s ease, border-color .18s ease;
 }
 
-/* 底線偽元素 */
-.nav-links a::after{
-  content:"";
-  position:absolute;
-  left:12px; right:12px;
-  bottom:-4px;
-  height:2px;
-  background:transparent;
-  border-radius:2px;
-  transform:scaleX(0);
-  opacity:0;
-  transition: transform .18s ease, opacity .18s ease, background-color .18s ease;
-  transform-origin:left center;
-}
-
-/* ★ 當前頁面樣式 */
 .nav-links a.active{
-  color: var(--orange);        /* 純橘文字 */
-  background: transparent;     /* 無底色 */
-  box-shadow: none;            /* 無陰影 */
-  transform: translateY(-2px); /* 微微上浮 */
-}
-
-/* ★ 深色底線（接近字體主色調） */
-.nav-links a.active::after{
-  background: var(--ink);      /* 深墨色底線 */
-  transform: scaleX(1);
-  opacity: 1;
-}
-
-/* 動畫減少偏好 */
-@media (prefers-reduced-motion: reduce){
-  .nav-links a{ transition:none; }
-  .nav-links a::after{ transition:none; }
+  color: var(--orange);
+  background: transparent;
+  box-shadow: none;
+  transform: translateY(-2px);
+  border-bottom-color: var(--ink);
 }
