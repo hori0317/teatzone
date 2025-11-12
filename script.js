@@ -1,4 +1,4 @@
-/**********************
+/********************** 
  * script.js（週→月→總；總可改，但改週即重置同步）
  * 重點修正：服務列改用 DOM 建構，每欄獨立 <td>，避免「沐浴0」黏在一起
  * 本版新增：
@@ -538,22 +538,52 @@ function adjustTopbarPadding(){
   document.documentElement.style.setProperty('--topbar-h', h + 'px');
 }
 
-/* ---- 導覽：依當前網址自動高亮（支援 /page 與 page.html） ---- */
+/* ---- 導覽：依當前網址自動高亮（支援多頁 + 錨點） ---- */
 (function(){
-  function norm(href){
-    try{
-      const u = new URL(href, location.origin);
-      let p = u.pathname.trim();
-      if (p.length > 1 && p.endsWith('/')) p = p.slice(0, -1);
-      p = p.replace(/\/(index\.html?)?$/i, '/index').replace(/\.html?$/i, '');
-      const parts = p.split('/');
-      const last = parts[parts.length - 1];
-      return last.toLowerCase();
-    }catch(e){ return ''; }
+  function normPath(pathname){
+    // 移除結尾斜線 → 把 / 或 /index.html 視為 /index → 去掉 .html
+    let p = String(pathname || '/').trim();
+    if (p.length > 1 && p.endsWith('/')) p = p.slice(0, -1);
+    p = p.replace(/\/(index\.html?)?$/i, '/index').replace(/\.html?$/i, '');
+    const seg = p.split('/').pop() || 'index';
+    return seg.toLowerCase();
   }
-  const here = norm(location.href);
-  document.querySelectorAll('.nav-links a[href]').forEach(a=>{
-    const target = norm(a.getAttribute('href'));
-    if (target && target === here) a.classList.add('active');
-  });
+
+  function setActiveNav(){
+    const herePath = normPath(location.pathname);
+    const hereHash = (location.hash || '').toLowerCase();
+
+    // 先清除舊的 active
+    document.querySelectorAll('.nav-links a.active').forEach(a=>a.classList.remove('active'));
+
+    document.querySelectorAll('.nav-links a[href]').forEach(a=>{
+      const raw = (a.getAttribute('href') || '').trim();
+      if (!raw) return;
+
+      let active = false;
+
+      if (raw.startsWith('#')){
+        // 單頁錨點：僅當前 hash 完全相同才亮（避免全部 # 錨點同時亮）
+        active = (raw.toLowerCase() === hereHash && hereHash !== '');
+      } else {
+        // 多頁：以檔名比對（/page、/page.html、/ 皆可）
+        try{
+          const url = new URL(raw, location.origin);
+          const targetPath = normPath(url.pathname);
+          active = (targetPath === herePath) ||
+                   (targetPath === 'index' && (herePath === '' || herePath === 'index'));
+        }catch(e){
+          // 相對連結 fallback
+          const hrefClean = raw.replace(/^\.\//,'').replace(/\.html?$/i,'').replace(/\/$/,'') || 'index';
+          active = (hrefClean.toLowerCase() === herePath);
+        }
+      }
+
+      if (active) a.classList.add('active');
+    });
+  }
+
+  window.addEventListener('DOMContentLoaded', setActiveNav);
+  window.addEventListener('hashchange', setActiveNav);
+  window.addEventListener('popstate', setActiveNav); // 處理前進/後退
 })();
