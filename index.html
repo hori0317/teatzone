@@ -82,19 +82,22 @@
   <button class="btn pill" style="background:#4285F4; color:white;" id="btnLogin" type="button">Google 登入</button>
   
   <!-- 會員專區 (登入後顯示) -->
-  <div id="member-area" style="display:none; align-items: center; gap:5px;">
-      <!-- 顯示名字 -->
-      <span id="userDisplay" style="font-size: 13px; font-weight: bold; color: #333; margin-right: 4px;"></span>
-      
-      <!-- 修改資料按鈕 -->
-      <button class="btn pill" style="background:#777; color:white; font-size:12px; padding:4px 10px;" id="btnEditProfile" type="button">修改資料</button>
-      
-      <!-- 儲存按鈕 -->
-      <button class="btn pill" style="background:#34A853; color:white;" id="btnSaveCloud" type="button">儲存紀錄</button>
-      
-      <!-- 登出按鈕 -->
-      <button class="btn pill" style="background:#EA4335; color:white;" id="btnLogout" type="button">登出</button>
-  </div>
+<div id="member-area" style="display:none; align-items: center; gap:5px;">
+    <!-- 顯示名字 -->
+    <span id="userDisplay" style="font-size: 13px; font-weight: bold; color: #333; margin-right: 4px;"></span>
+    
+    <!-- 🔽 新增：管理後台按鈕 (預設 display:none 隱藏，紫色以示區別) 🔽 -->
+    <a href="admin.html" id="btnAdminLink" class="btn pill" style="background:#673AB7; color:white; font-size:12px; padding:4px 10px; text-decoration:none; display:none;">管理後台</a>
+
+    <!-- 修改資料按鈕 -->
+    <button class="btn pill" style="background:#777; color:white; font-size:12px; padding:4px 10px;" id="btnEditProfile" type="button">修改資料</button>
+    
+    <!-- 儲存按鈕 -->
+    <button class="btn pill" style="background:#34A853; color:white;" id="btnSaveCloud" type="button">儲存紀錄</button>
+    
+    <!-- 登出按鈕 -->
+    <button class="btn pill" style="background:#EA4335; color:white;" id="btnLogout" type="button">登出</button>
+</div>
 </div>
   </header>
   <div class="divider"></div>
