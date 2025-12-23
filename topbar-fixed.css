@@ -43,11 +43,11 @@ body{margin:0; color:var(--ink); background:#fffaf0;}
 .nav-links a.active{color:var(--orange)}
 /* 修正版：只畫一條底線 */
 .nav-links a.active::after{
-  content:""; 
-  position:absolute; 
-  left:12%; right:12%; bottom:-6px;
-  height:2.5px; 
-  background:var(--orange); 
+  content:"";
+  position:absolute;
+  left:12%; right:12%; bottom:0; /* 保留這行 */
+  height:2.5px;
+  background:var(--orange);
   border-radius:3px;
 }
 
@@ -55,6 +55,33 @@ body{margin:0; color:var(--ink); background:#fffaf0;}
 .nav-links a.active{
   text-decoration:none !important;
   border-bottom:none !important;
+}
+
+body[data-page="index"] .nav-links a[href="index.html"],
+body[data-page="payroll"] .nav-links a[href="payroll.html"],
+body[data-page="care-info"] .nav-links a[href="care-info.html"],
+body[data-page="news"] .nav-links a[href="news.html"],
+body[data-page="contact"] .nav-links a[href="contact.html"],
+body[data-page="about"] .nav-links a[href="about.html"]{
+  color:var(--orange);
+  transform:translateY(-1.5px);
+  border-bottom-color:var(--orange);
+}
+
+body[data-page="index"] .nav-links a[href="index.html"]::after,
+body[data-page="payroll"] .nav-links a[href="payroll.html"]::after,
+body[data-page="care-info"] .nav-links a[href="care-info.html"]::after,
+body[data-page="news"] .nav-links a[href="news.html"]::after,
+body[data-page="contact"] .nav-links a[href="contact.html"]::after,
+body[data-page="about"] .nav-links a[href="about.html"]::after{
+  content:"";
+  position:absolute;
+  left:0;
+  right:0;
+  bottom:0;
+  height:2.5px;
+  background:var(--orange);
+  border-radius:3px;
 }
 
 
