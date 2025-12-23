@@ -1,64 +1,43 @@
-(function(){
-  const LABELS = {
-    'index': '額度計算機',
-    'payroll': '薪資計算機',
-    'care-info': '長照相關資訊',
-    'news': '最新公告',
-    'contact': '聯繫方式',
-    'about': '關於我們'
-  };
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>最新公告｜長照工具</title>
+  <meta name="description" content="單位公告與更新資訊。">
+  <link rel="icon" type="image/x-icon" href="YORU.ico" />
+  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="topbar-fixed.css" />
+  <script src="nav.js" defer></script>
+  <script src="script.js" defer></script>
+</head>
+<body data-page="news">
+  <header class="topbar">
+    <div class="brand">
+      <a href="index.html" class="logo-link"><img src="org-logo.png" alt="logo" onerror="this.style.opacity=0.2" /></a>
+      <span class="site-title" id="siteTitle" data-sync-title>最新公告</span>
+    </div>
+    <nav class="nav-links" aria-label="主選單">
+      <a href="index.html">額度計算機</a>
+      <a href="payroll.html">薪資計算機</a>
+      <a href="care-info.html">長照相關資訊</a>
+      <a href="news.html">最新公告</a>
+      <a href="contact.html">聯繫方式</a>
+      <a href="about.html">關於我們</a>
+    </nav>
+    <div class="actions actions-ghost" aria-hidden="true"></div>
+  </header>
+  <div class="divider"></div>
 
-  function currentSlug(){
-    const bodyAttr = document.body?.dataset?.page;
-    if (bodyAttr) return bodyAttr.toLowerCase();
-    const path = (location.pathname.split('/').pop() || '').toLowerCase();
-    const slug = path.replace(/\.html?$/i, '');
-    return slug || 'index';
-  }
+  <main class="container">
+    <section class="card">
+      <h1 class="card-title">最新公告</h1>
+      <p class="hint">公告列表區塊</p>
+    </section>
+  </main>
 
-  function cleanHref(href){
-    if (!href) return '';
-    const trimmed = href.trim();
-    if (!trimmed) return '';
-    if (trimmed.startsWith('#')) return trimmed.toLowerCase();
-    return trimmed
-      .replace(/^\.\//, '')
-      .replace(/#.*/, '')
-      .replace(/\/$/, '')
-      .replace(/\/index$/i, '/index.html')
-      .replace(/\.html?$/i, '')
-      .toLowerCase() || 'index';
-  }
-
-  function syncNav(){
-    const slug = currentSlug();
-    const titleEl = document.querySelector('.site-title[data-sync-title]');
-    if (titleEl && LABELS[slug]){
-      titleEl.textContent = LABELS[slug];
-    }
-
-    document.querySelectorAll('.nav-links a[href]').forEach(link => {
-      const href = link.getAttribute('href');
-      const key = cleanHref(href);
-      let active = false;
-
-      if (key.startsWith('#')){
-        const hash = (location.hash || '').toLowerCase();
-        active = hash === key;
-      } else {
-        active = (key || 'index') === slug;
-      }
-
-      link.classList.toggle('active', active);
-      if (active){
-        link.setAttribute('aria-current', 'page');
-      } else {
-        link.removeAttribute('aria-current');
-      }
-    });
-  }
-
-  document.addEventListener('DOMContentLoaded', syncNav);
-  window.addEventListener('hashchange', syncNav);
-  window.addEventListener('popstate', syncNav);
-})();
+  <footer id="bottomDock" class="footerbar">
+    <div class="foot"><span class="ok">© hori</span></div>
+  </footer>
+</body>
+</html>
