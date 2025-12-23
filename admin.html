@@ -122,10 +122,21 @@
                         loadUsers();
                         loadAdmins();
 
-                    } else {
-                        // 不是管理員
-                        document.body.innerHTML = "<h2 style='text-align:center; margin-top:50px;'>⛔ 權限不足<br><a href='index.html'>回首頁</a></h2>";
-                    }
+                   } else {
+    // 顯示除錯訊息
+    document.body.innerHTML = `
+        <h2 style='text-align:center; margin-top:50px; color:red;'>⛔ 權限不足</h2>
+        <p style='text-align:center;'>
+            系統偵測到的登入 Email 為：<br>
+            <strong style="font-size:20px;">${user.email}</strong>
+        </p>
+        <p style='text-align:center;'>
+            請確認 Firestore 資料庫 > admins > 文件ID<br>
+            是否與上方 Email <strong>完全一模一樣</strong> (包含大小寫/空白)。
+        </p>
+        <p style='text-align:center;'><a href='index.html'>回首頁</a></p>
+    `;
+}
                 } catch (e) {
                     console.error(e);
                     alert("驗證錯誤，請檢查網路或規則");
