@@ -1,23 +1,22 @@
-<script>
-(async function(){
-  // 決定 header 檔案：若 body 有 data-header="lite" → 載入 header-lite.html
-  const headerType = document.body.dataset.header === 'lite'
-    ? 'header-lite.html'
-    : 'header.html';
+<header class="topbar">
+  <div class="brand">
+    <a href="index.html" class="logo-link" aria-label="回首頁"><img src="org-logo.png" alt="logo"></a>
+    <span class="site-title" data-sync-title>長照相關資訊</span>
+  </div>
 
-  async function inject(id, url){
-    const el = document.getElementById(id);
-    if(!el) return;
-    try{
-      const res = await fetch(url, { cache: 'no-cache' });
-      el.innerHTML = await res.text();
-    }catch(e){
-      el.innerHTML = `<div style="color:#b00020;font-weight:700;">無法載入 ${url}</div>`;
-    }
-  }
+  <nav class="nav-links" aria-label="主選單">
+    <a href="index.html">額度計算機</a>
+    <a href="payroll.html">薪資計算機</a>
+    <a href="care-info.html">長照相關資訊</a>
+    <a href="news.html">最新公告</a>
+    <a href="contact.html">聯繫方式</a>
+    <a href="about.html">關於我們</a>
+  </nav>
 
-  // 載入 header / footer
-  await inject('__header', headerType);
-  await inject('__footer', 'footer.html');
-})();
-</script>
+  <div class="actions">
+    <button class="btn pill btn-orange">B單位</button>
+    <button class="btn pill btn-green">重置</button>
+    <button class="btn pill btn-gray" onclick="window.print()">列印</button>
+  </div>
+</header>
+<div class="divider"></div>
