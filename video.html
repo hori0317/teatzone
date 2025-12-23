@@ -171,7 +171,14 @@
     window.onYouTubeIframeAPIReady = function() {
       player = new YT.Player('video-placeholder', {
         videoId: YOUTUBE_VIDEO_ID,
-        playerVars: { 'playsinline': 1, 'modestbranding': 1, 'rel': 0, 'controls': 1 },
+        playerVars: {
+    'playsinline': 1,    // 手機不強制全螢幕
+    'modestbranding': 1, // 隱藏 Logo
+    'rel': 0,            // 不顯示推薦
+    'controls': 1,       // 顯示播放/暫停/音量列
+    'fs': 0,             // ★ 關鍵：禁用全螢幕按鈕 (Fullscreen)
+    'iv_load_policy': 3  // 隱藏影片註釋
+},
         events: { 'onStateChange': onPlayerStateChange }
       });
     };
