@@ -127,8 +127,32 @@ a:hover{ text-decoration:underline; }
 .nav-links a.active{ color:var(--orange); }
 .nav-links a.active::after{
   content:"";
-  position:absolute; left:0; right:0; bottom:-6px;
+  position:absolute; left:0; right:0; bottom:0;
   height:3px; background:var(--orange); border-radius:3px;
+}
+
+body[data-page="index"] .nav-links a[href="index.html"],
+body[data-page="payroll"] .nav-links a[href="payroll.html"],
+body[data-page="care-info"] .nav-links a[href="care-info.html"],
+body[data-page="news"] .nav-links a[href="news.html"],
+body[data-page="contact"] .nav-links a[href="contact.html"],
+body[data-page="about"] .nav-links a[href="about.html"]{
+  color:var(--orange);
+  transform:translateY(-1px);
+}
+
+body[data-page="index"] .nav-links a[href="index.html"]::after,
+body[data-page="payroll"] .nav-links a[href="payroll.html"]::after,
+body[data-page="care-info"] .nav-links a[href="care-info.html"]::after,
+body[data-page="news"] .nav-links a[href="news.html"]::after,
+body[data-page="contact"] .nav-links a[href="contact.html"]::after,
+body[data-page="about"] .nav-links a[href="about.html"]::after{
+  content:"";
+  position:absolute;
+  left:0; right:0; bottom:0;
+  height:3px;
+  background:var(--orange);
+  border-radius:3px;
 }
 
 /* 右側按鈕區 */
@@ -170,7 +194,7 @@ a:hover{ text-decoration:underline; }
 .foot .warn{ color:var(--warn); }
 
 /* =====================
-   容器與卡片（縮小左右空白）
+   容器與卡片
 ===================== */
 .container{
   max-width:1360px;
@@ -349,7 +373,7 @@ a:hover{ text-decoration:underline; }
 }
 
 /* =====================
-   手機／平板優化
+   手機／平板優化（通用）
 ===================== */
 @media (max-width:860px){
   .grid-3{ grid-template-columns:1fr; gap:14px; }
@@ -402,7 +426,7 @@ img,a img{
 }
 
 /* =========================================================
-   ▼▼▼ 修補區
+   修補區
 ========================================================= */
 .topbar,.nav-links{
   overflow-x:auto !important;
@@ -440,7 +464,7 @@ img,a img{
 }
 
 /* =========================================================
-   ▼▼▼ 卡片文字樣式：版本2 風格（append-only）
+   卡片文字樣式
 ========================================================= */
 .card-title{
   font-size:18px;
@@ -488,3 +512,271 @@ img,a img{
 .text-right{ text-align:right; }
 .bold{ font-weight:800; }
 .orange{ color:var(--orange); }
+
+/* =========================================================
+   手機版 index：卡片式服務列排版
+========================================================= */
+@media (max-width:860px){
+  body[data-page="index"] #tables{
+    overflow-x:visible !important;
+    padding-bottom:14px !important;
+  }
+  body[data-page="index"] #tables table{
+    width:100% !important;
+    min-width:0 !important;
+    table-layout:fixed;
+    border-collapse:separate;
+    border-spacing:0 10px;
+  }
+
+  body[data-page="index"] #tables thead{
+    display:none;
+  }
+
+  body[data-page="index"] #tables tbody tr{
+    display:block;
+    background:#fff;
+    border:1px solid var(--line);
+    border-radius:12px;
+    padding:8px 10px 6px;
+  }
+
+  body[data-page="index"] #tables tbody td{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:4px 0;
+    border-top:none;
+    white-space:normal;
+    font-size:13px;
+  }
+
+  body[data-page="index"] #tables tbody td:first-child{
+    flex-direction:column;
+    align-items:flex-start;
+    padding-bottom:6px;
+    margin-bottom:4px;
+    border-bottom:1px dashed var(--line);
+    font-weight:700;
+  }
+  body[data-page="index"] #tables tbody td:first-child::before{
+    content:"服務項目";
+    font-size:12px;
+    color:var(--muted);
+    font-weight:500;
+    margin-bottom:2px;
+  }
+
+  body[data-page="index"] #tables tbody td:nth-child(n+2){
+    text-align:right;
+    gap:8px;
+  }
+  body[data-page="index"] #tables tbody td:nth-child(n+2)::before{
+    font-size:12px;
+    color:var(--muted);
+    font-weight:500;
+    margin-right:6px;
+  }
+  body[data-page="index"] #tables tbody td:nth-child(2)::before{ content:"單價"; }
+  body[data-page="index"] #tables tbody td:nth-child(3)::before{ content:"週次數"; }
+  body[data-page="index"] #tables tbody td:nth-child(4)::before{ content:"月次數"; }
+  body[data-page="index"] #tables tbody td:nth-child(5)::before{ content:"總次數"; }
+  body[data-page="index"] #tables tbody td:nth-child(6)::before{ content:"總金額"; }
+
+  body[data-page="index"] #tables tbody td:nth-child(2),
+  body[data-page="index"] #tables tbody td:nth-child(6){
+    font-variant-numeric:tabular-nums;
+  }
+
+  body[data-page="index"] #tables tbody td:nth-child(3) input[type="number"],
+  body[data-page="index"] #tables tbody td:nth-child(4) input[type="number"],
+  body[data-page="index"] #tables tbody td:nth-child(5) input[type="number"]{
+    margin-left:auto !important;
+    margin-right:0 !important;
+    text-align:right !important;
+    width:64px;
+    height:32px;
+    font-size:13px;
+  }
+
+  body[data-page="index"] #tables tbody td{
+    font-size:13px;
+  }
+}
+
+/* index 手機版輸入框再縮小 */
+@media (max-width:860px){
+  body[data-page="index"] #tables tbody td:nth-child(3) input[type="number"],
+  body[data-page="index"] #tables tbody td:nth-child(4) input[type="number"],
+  body[data-page="index"] #tables tbody td:nth-child(5) input[type="number"]{
+    width:52px !important;
+    height:28px !important;
+    font-size:12px !important;
+    padding:0 4px !important;
+  }
+}
+
+/* =========================================================
+   payroll：上方 KV 區 Σ支數、出現筆數 對齊
+========================================================= */
+body[data-page="payroll"] .kv .kv-row{
+  display:flex;
+  justify-content:space-between;
+  align-items:baseline;
+  gap:8px;
+}
+body[data-page="payroll"] .kv .kv-row span{
+  flex:0 0 auto;
+}
+body[data-page="payroll"] .kv .kv-row b{
+  min-width:3.5ch;
+  text-align:right;
+  font-variant-numeric:tabular-nums;
+}
+
+/* =========================================================
+   payroll：表格欄位對齊＋欄寬固定
+========================================================= */
+
+/* 讓 payroll 主表欄寬固定，不會因為匯入資料跳來跳去 */
+body[data-page="payroll"] #tables table{
+  table-layout:fixed;
+}
+body[data-page="payroll"] #tables th,
+body[data-page="payroll"] #tables td{
+  white-space:nowrap;
+}
+
+body[data-page="payroll"] table th,
+body[data-page="payroll"] table td{
+  vertical-align:middle;
+}
+
+/* 第一欄：碼別／代碼靠左 */
+body[data-page="payroll"] table th:first-child,
+body[data-page="payroll"] table td:first-child{
+  text-align:left !important;
+  padding-left:18px !important;
+}
+
+/* 第二欄：出現筆數（GA/SC）或其他數字欄 → 靠右 */
+body[data-page="payroll"] table th:nth-child(2),
+body[data-page="payroll"] table td:nth-child(2){
+  text-align:right !important;
+  padding-left:14px !important;
+  padding-right:14px !important;
+  font-variant-numeric:tabular-nums !important;
+  min-width:3.5ch;
+}
+
+/* 第三欄之後：Σ支數、本月支數、金額… → 預設靠右 */
+body[data-page="payroll"] table th:nth-child(n+3),
+body[data-page="payroll"] table td:nth-child(n+3){
+  text-align:right !important;
+  padding-left:14px !important;
+  padding-right:14px !important;
+  font-variant-numeric:tabular-nums !important;
+  min-width:3.5ch;
+}
+
+/* 「本月支數」欄（第 3 欄）表頭＋輸入框置中對齊 */
+body[data-page="payroll"] table th:nth-child(3),
+body[data-page="payroll"] table td:nth-child(3){
+  text-align:center !important;
+}
+body[data-page="payroll"] table td:nth-child(3) input[type="number"]{
+  margin:0 auto !important;
+  text-align:center !important;
+}
+
+/* 數字輸入框（本月支數等）在桌機時預設貼齊欄位右側 */
+body[data-page="payroll"] table td:nth-child(n+2):not(:nth-child(3)) input[type="number"]{
+  margin-left:auto !important;
+  margin-right:0 !important;
+  text-align:right !important;
+}
+
+/* 覆寫通用 thead 置中，避免干擾 payroll 的對齊 */
+body[data-page="payroll"] #tables thead th:first-child{
+  text-align:left !important;
+}
+body[data-page="payroll"] #tables thead th:nth-child(2){
+  text-align:right !important;
+}
+body[data-page="payroll"] #tables thead th:nth-child(n+3){
+  text-align:right !important;
+}
+
+/* =========================================================
+   payroll 手機版：本月支數輸入框縮小＋靠右（所有表格）
+========================================================= */
+@media (max-width:860px){
+  body[data-page="payroll"] table input[type="number"]{
+    width:52px;
+    height:28px;
+    font-size:12px;
+    padding:0 4px;
+    display:block;
+    margin-left:auto !important;
+    margin-right:0 !important;
+    text-align:right !important;
+  }
+}
+
+/* =========================================================
+   payroll：BA 本月支數卡片 — 兩欄式排版
+========================================================= */
+body[data-page="payroll"] .service-card .kv-row{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:8px;
+  padding:4px 0;
+  font-size:15px;
+}
+body[data-page="payroll"] .service-card .kv-row > *:first-child{
+  font-weight:600;
+  color:#2f2f20;
+}
+body[data-page="payroll"] .service-card .kv-row > *:last-child{
+  min-width:60px;
+  text-align:right;
+  font-variant-numeric:tabular-nums;
+}
+body[data-page="payroll"] .service-card .kv-row input[type="number"]{
+  width:64px;
+  height:32px;
+  padding:0 6px;
+  margin-left:auto;
+  margin-right:0;
+  text-align:right;
+  border:1px solid var(--line);
+  border-radius:6px;
+  background:#fffdf6;
+  font-size:14px;
+  min-width:0;
+}
+@media (max-width:860px){
+  body[data-page="payroll"] .service-card .kv-row input[type="number"]{
+    width:52px;
+    height:28px;
+    font-size:12px;
+    padding:0 4px;
+  }
+}
+
+/* =========================================================
+   payroll：三欄表頭「單價／本月支數／小計」平均分配
+   使用方式：讓那張表加上 class="triple-cols"
+========================================================= */
+body[data-page="payroll"] table.triple-cols{
+  table-layout:fixed;
+}
+body[data-page="payroll"] table.triple-cols th,
+body[data-page="payroll"] table.triple-cols td{
+  width:33.3333% !important;
+  text-align:center !important;
+}
+body[data-page="payroll"] table.triple-cols thead th:first-child{
+  padding-left:24px; /* 想再往右就加大，例如 28px、32px */
+}
