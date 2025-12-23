@@ -8,6 +8,7 @@
   <link rel="icon" type="image/x-icon" href="YORU.ico" />
   <link rel="stylesheet" href="style.css" />
   <link rel="stylesheet" href="topbar-fixed.css" />
+  <script src="nav.js" defer></script>
   <script src="script.js" defer></script>
 
   <!-- 版面覆寫：三欄→二欄；基本資料較寬，個案額度及自付額稍微加寬 -->
@@ -29,7 +30,7 @@
     #addonPlaceholders{ display:none; }
   </style>
 </head>
-<body>
+<body data-page="index">
   <div class="watermark" aria-hidden="true">
     <span class="wm-item" style="top:5%; left:5%;  --dur:9s;">@hori版權所有</span>
     <span class="wm-item" style="top:5%; left:35%; --dur:11s;">@hori版權所有</span>
@@ -53,7 +54,7 @@
       <a href="index.html" class="logo-link" aria-label="回首頁">
         <img src="org-logo.png" alt="logo" onerror="this.style.opacity=0.2" />
       </a>
-      <span class="site-title" id="siteTitle">額度計算機</span>
+      <span class="site-title" id="siteTitle" data-sync-title>額度計算機</span>
     </div>
     <nav class="nav-links" aria-label="主選單">
       <a href="index.html">額度計算機</a>
@@ -160,28 +161,6 @@
       <span>總額：<b id="sumGrand_foot">0</b></span>
     </div>
   </footer>
-
-  <!-- 導覽高亮與標題自動化（所有頁面同段） -->
-  <script>
-    (function(){
-      function slug(){
-        const p=(location.pathname.split('/').pop()||'index.html').toLowerCase();
-        return p.replace(/\.html?$/,'')||'index';
-      }
-      const map={
-        'index':'額度計算機','payroll':'薪資計算機','care-info':'長照相關資訊',
-        'news':'最新公告','contact':'聯繫方式','about':'關於我們'
-      };
-      const s=slug();
-      document.querySelectorAll('.nav-links a[href]').forEach(a=>{
-        const t=(a.getAttribute('href')||'').replace(/\.html?$/,'').toLowerCase()||'index';
-        if(t===s) a.classList.add('active');
-      });
-      const st=document.getElementById('siteTitle');
-      if(st) st.textContent=map[s]||'額度計算機';
-      document.title=(map[s]||'額度計算機')+'｜長照工具';
-    })();
-  </script>
 
   <!-- 基本防拷（可保留或移除） -->
   <script>
