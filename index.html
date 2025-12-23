@@ -235,7 +235,7 @@
   </div>
 </div>
   
-<!-- Firebase SDK 與 會員邏輯 (含修改資料功能) -->
+<!-- Firebase SDK 與 會員邏輯 (含管理員判斷) -->
 <script type="module">
   // 1. 匯入
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
@@ -267,14 +267,15 @@
   const memberArea = document.getElementById('member-area');
   const userDisplay = document.getElementById('userDisplay');
   
-  // 彈窗相關
+  // 新增：管理員按鈕
+  const btnAdminLink = document.getElementById('btnAdminLink');
+
+  // 彈窗與修改資料
   const profileModal = document.getElementById('profile-modal');
   const pfNameInput = document.getElementById('pf-name');
   const pfAgeInput = document.getElementById('pf-age');
   const btnSaveProfile = document.getElementById('btn-save-profile');
-  const modalTitle = profileModal.querySelector('h3'); // 抓取標題，方便修改文字
-  
-  // 新增：修改按鈕
+  const modalTitle = profileModal ? profileModal.querySelector('h3') : null;
   const btnEditProfile = document.getElementById('btnEditProfile');
 
   let currentUser = null;
@@ -289,30 +290,49 @@
     signOut(auth).then(() => alert("已登出"));
   });
 
-  // --- 監聽狀態 ---
+  // --- 監聽狀態 (核心邏輯) ---
   onAuthStateChanged(auth, async (user) => {
     if (user) {
       currentUser = user;
       btnLogin.style.display = 'none';
       
+      // 1. 檢查一般會員資料
       const userDocRef = doc(db, "users", user.uid);
       try {
         const docSnap = await getDoc(userDocRef);
         if (docSnap.exists()) {
-          // 資料存在 -> 顯示會員區
           showMemberUI(docSnap.data().name);
         } else {
-          // 資料不存在 -> 強制填寫
           openProfileModal("歡迎加入！請完善資料", user.displayName || "", "");
         }
       } catch (e) {
-        console.error(e);
+        console.error("讀取會員資料失敗", e);
       }
+
+      // 2. ★★★ 新增：檢查是否為管理員 ★★★
+      try {
+        // 去 admins 集合找有沒有這個 Email 的文件
+        const adminDocRef = doc(db, "admins", user.email);
+        const adminSnap = await getDoc(adminDocRef);
+        
+        if (adminSnap.exists()) {
+            // 是管理員 -> 顯示按鈕
+            if(btnAdminLink) btnAdminLink.style.display = 'inline-block';
+        } else {
+            // 不是管理員 -> 確保隱藏
+            if(btnAdminLink) btnAdminLink.style.display = 'none';
+        }
+      } catch (e) {
+        console.error("檢查管理員權限失敗", e);
+      }
+
     } else {
+      // 未登入
       currentUser = null;
       btnLogin.style.display = 'block';
       memberArea.style.display = 'none';
-      profileModal.style.display = 'none';
+      if(profileModal) profileModal.style.display = 'none';
+      if(btnAdminLink) btnAdminLink.style.display = 'none'; // 隱藏後台按鈕
       userDisplay.textContent = '';
     }
   });
@@ -322,29 +342,24 @@
     userDisplay.textContent = name;
   }
 
-  // --- 開啟彈窗的通用函式 ---
   function openProfileModal(title, defaultName, defaultAge) {
-    modalTitle.textContent = title; // 修改標題
+    if(!modalTitle) return;
+    modalTitle.textContent = title;
     pfNameInput.value = defaultName;
     pfAgeInput.value = defaultAge;
     profileModal.style.display = 'flex';
   }
 
-  // --- 按鈕：點擊「修改資料」 ---
+  // --- 修改資料 ---
   if(btnEditProfile){
     btnEditProfile.addEventListener('click', async () => {
       if(!currentUser) return;
-      
-      // 先把按鈕變文字，提示讀取中...
       const originalText = btnEditProfile.textContent;
       btnEditProfile.textContent = "讀取中...";
-
       try {
-        // 從雲端抓取最新的舊資料
         const docSnap = await getDoc(doc(db, "users", currentUser.uid));
         if(docSnap.exists()){
             const data = docSnap.data();
-            // 打開彈窗，標題改為「修改個人資料」
             openProfileModal("修改個人資料", data.name || "", data.age || "");
         }
       } catch(e) {
@@ -355,80 +370,53 @@
     });
   }
 
-  // --- 按鈕：彈窗內的「儲存」 ---
+  // --- 儲存個人資料 ---
   if(btnSaveProfile){
     btnSaveProfile.addEventListener('click', async () => {
       const name = pfNameInput.value.trim();
       const age = pfAgeInput.value.trim();
-
-      if (!name || !age) {
-        alert("姓名與年齡不能為空！");
-        return;
-      }
-
+      if (!name || !age) { alert("請填寫完整"); return; }
       try {
-        // 使用 merge: true，這樣如果是修改，就不會覆蓋掉原本的 createdAt
         await setDoc(doc(db, "users", currentUser.uid), {
-          name: name,
-          age: age,
-          email: currentUser.email,
-          lastUpdated: serverTimestamp() // 紀錄最後修改時間
+          name: name, age: age, email: currentUser.email, lastUpdated: serverTimestamp()
         }, { merge: true });
-
-        alert("資料儲存成功！");
+        alert("儲存成功");
         profileModal.style.display = 'none';
-        showMemberUI(name); // 更新右上角顯示的名字
-
-      } catch (e) {
-        console.error("儲存失敗:", e);
-        alert("儲存失敗：" + e.message);
-      }
+        showMemberUI(name);
+      } catch (e) { alert("儲存失敗"); }
     });
   }
 
-  // --- 按鈕：儲存計算紀錄 ---
+  // --- 儲存計算紀錄 ---
   btnSaveCloud.addEventListener('click', async () => {
     if (!currentUser) { alert("請先登入"); return; }
     try {
-        // 蒐集欄位資料
         const cmsLevel = document.querySelector('input[name="cms"]:checked')?.value || "未選";
         const identity = document.querySelector('input[name="idty"]:checked')?.value || "未選";
         const totalGrand = document.getElementById('sumGrand')?.textContent || "0";
         const selfPay = document.getElementById('sumSelfpay')?.textContent || "0";
         const govSubsidy = document.getElementById('sumGovSubsidy')?.textContent || "0";
-        
         const name = userDisplay.textContent || currentUser.displayName;
 
         const recordData = {
-            uid: currentUser.uid,
-            memberName: name, 
-            email: currentUser.email,
-            cmsLevel: cmsLevel,
-            identity: identity,
-            grandTotal: totalGrand,
-            selfPay: selfPay,
-            govSubsidy: govSubsidy,
-            createdAt: serverTimestamp(),
+            uid: currentUser.uid, memberName: name, email: currentUser.email,
+            cmsLevel: cmsLevel, identity: identity, grandTotal: totalGrand,
+            selfPay: selfPay, govSubsidy: govSubsidy, createdAt: serverTimestamp(),
             note: "額度計算機儲存"
         };
-
         await addDoc(collection(db, "care_records"), recordData);
-        alert("✅ 計算結果已備份到雲端！");
-    } catch (e) {
-        alert("❌ 儲存失敗：" + e.message);
-    }
+        alert("✅ 備份成功！");
+    } catch (e) { alert("❌ 儲存失敗：" + e.message); }
   });
 
-  // 點擊彈窗背景關閉 (選用功能)
-  profileModal.addEventListener('click', (e) => {
-    if (e.target === profileModal && currentUser) {
-        // 只有在已經登入且資料庫有資料時，才允許點背景關閉
-        // 如果是新註冊(強制填寫)，就不給關閉
-        if(userDisplay.textContent !== "") {
+  // 點擊背景關閉彈窗
+  if(profileModal){
+    profileModal.addEventListener('click', (e) => {
+        if (e.target === profileModal && currentUser && userDisplay.textContent !== "") {
             profileModal.style.display = 'none';
         }
-    }
-  });
+    });
+  }
 </script>
 </body>
 </html>
