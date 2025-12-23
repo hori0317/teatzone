@@ -65,18 +65,34 @@
       <a href="about.html">關於我們</a>
     </nav>
 <div class="actions" style="align-items: center; gap: 8px;">
-  <!-- 原有按鈕 -->
+  <!-- =========================== -->
+  <!-- 1. 原本的功能按鈕 (絕對不能刪) -->
+  <!-- =========================== -->
   <button class="btn pill btn-orange" id="btnUnitToggle" type="button" data-unit="B">B單位</button>
   <button class="btn pill btn-green" id="btnReset" type="button">重置</button>
   <button class="btn pill btn-gray" id="btnPrint" type="button" onclick="window.print()">列印</button>
-  
-  <!-- 新增會員功能按鈕 -->
-  <div style="width: 1px; height: 20px; background: #ccc; margin: 0 4px;"></div> <!-- 分隔線 -->
-  
+
+  <!-- 分隔線 (美觀用) -->
+  <div style="width: 1px; height: 20px; background: #ccc; margin: 0 4px;"></div>
+
+  <!-- =========================== -->
+  <!-- 2. 新增的會員功能按鈕        -->
+  <!-- =========================== -->
+  <!-- 登入按鈕 -->
   <button class="btn pill" style="background:#4285F4; color:white;" id="btnLogin" type="button">Google 登入</button>
+  
+  <!-- 會員專區 (登入後顯示) -->
   <div id="member-area" style="display:none; align-items: center; gap:5px;">
-      <span id="userDisplay" style="font-size: 13px; font-weight: bold; color: #333;"></span>
+      <!-- 顯示名字 -->
+      <span id="userDisplay" style="font-size: 13px; font-weight: bold; color: #333; margin-right: 4px;"></span>
+      
+      <!-- 修改資料按鈕 -->
+      <button class="btn pill" style="background:#777; color:white; font-size:12px; padding:4px 10px;" id="btnEditProfile" type="button">修改資料</button>
+      
+      <!-- 儲存按鈕 -->
       <button class="btn pill" style="background:#34A853; color:white;" id="btnSaveCloud" type="button">儲存紀錄</button>
+      
+      <!-- 登出按鈕 -->
       <button class="btn pill" style="background:#EA4335; color:white;" id="btnLogout" type="button">登出</button>
   </div>
 </div>
