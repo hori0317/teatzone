@@ -64,11 +64,22 @@
       <a href="contact.html">聯繫方式</a>
       <a href="about.html">關於我們</a>
     </nav>
-    <div class="actions">
-      <button class="btn pill btn-orange" id="btnUnitToggle" type="button" data-unit="B">B單位</button>
-      <button class="btn pill btn-green" id="btnReset" type="button">重置</button>
-      <button class="btn pill btn-gray" id="btnPrint" type="button" onclick="window.print()">列印</button>
-    </div>
+<div class="actions" style="align-items: center; gap: 8px;">
+  <!-- 原有按鈕 -->
+  <button class="btn pill btn-orange" id="btnUnitToggle" type="button" data-unit="B">B單位</button>
+  <button class="btn pill btn-green" id="btnReset" type="button">重置</button>
+  <button class="btn pill btn-gray" id="btnPrint" type="button" onclick="window.print()">列印</button>
+  
+  <!-- 新增會員功能按鈕 -->
+  <div style="width: 1px; height: 20px; background: #ccc; margin: 0 4px;"></div> <!-- 分隔線 -->
+  
+  <button class="btn pill" style="background:#4285F4; color:white;" id="btnLogin" type="button">Google 登入</button>
+  <div id="member-area" style="display:none; align-items: center; gap:5px;">
+      <span id="userDisplay" style="font-size: 13px; font-weight: bold; color: #333;"></span>
+      <button class="btn pill" style="background:#34A853; color:white;" id="btnSaveCloud" type="button">儲存紀錄</button>
+      <button class="btn pill" style="background:#EA4335; color:white;" id="btnLogout" type="button">登出</button>
+  </div>
+</div>
   </header>
   <div class="divider"></div>
 
@@ -180,5 +191,116 @@
     <div id="addonRows"></div>
     <div id="caregiverSalary"></div>
   </div>
+  <!-- Firebase SDK 與 邏輯 -->
+<script type="module">
+  // 1. 引入 Firebase 函式庫
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+  import { getAuth, signInWithPopup, GoogleAuthProvider, signOut, onAuthStateChanged } 
+    from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+  import { getFirestore, collection, addDoc, serverTimestamp } 
+    from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+  // 2. 設定 Firebase (請填入你的資料)
+  // TODO: 請把這裡換成你自己的 Firebase Config !!!
+  const firebaseConfig = {
+    apiKey: "你的API_KEY",
+    authDomain: "你的專案ID.firebaseapp.com",
+    projectId: "你的專案ID",
+    storageBucket: "你的專案ID.appspot.com",
+    messagingSenderId: "你的ID",
+    appId: "你的APP_ID"
+  };
+
+  // 3. 初始化
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const db = getFirestore(app);
+  const provider = new GoogleAuthProvider();
+
+  // 4. 取得 HTML 元素
+  const btnLogin = document.getElementById('btnLogin');
+  const btnLogout = document.getElementById('btnLogout');
+  const btnSaveCloud = document.getElementById('btnSaveCloud');
+  const memberArea = document.getElementById('member-area');
+  const userDisplay = document.getElementById('userDisplay');
+
+  let currentUser = null;
+
+  // 5. 登入按鈕事件
+  btnLogin.addEventListener('click', () => {
+    signInWithPopup(auth, provider)
+      .then((result) => {
+        // 登入成功，onAuthStateChanged 會自動處理 UI
+        console.log("登入成功");
+      }).catch((error) => {
+        console.error(error);
+        alert("登入失敗：" + error.message);
+      });
+  });
+
+  // 6. 登出按鈕事件
+  btnLogout.addEventListener('click', () => {
+    signOut(auth).then(() => {
+      alert("已登出");
+    });
+  });
+
+  // 7. 監聽登入狀態 (自動切換按鈕顯示)
+  onAuthStateChanged(auth, (user) => {
+    if (user) {
+      currentUser = user;
+      btnLogin.style.display = 'none';
+      memberArea.style.display = 'flex';
+      // 顯示名字 (如果太長就截斷)
+      const name = user.displayName || user.email;
+      userDisplay.textContent = name.length > 5 ? name.substring(0, 5) + '..' : name;
+    } else {
+      currentUser = null;
+      btnLogin.style.display = 'block';
+      memberArea.style.display = 'none';
+      userDisplay.textContent = '';
+    }
+  });
+
+  // 8. 儲存資料按鈕事件
+  btnSaveCloud.addEventListener('click', async () => {
+    if (!currentUser) {
+      alert("請先登入！");
+      return;
+    }
+
+    // 收集網頁上的計算數據
+    // 透過 document.querySelector 抓取你原本網頁上的數值
+    try {
+        const cmsLevel = document.querySelector('input[name="cms"]:checked')?.value || "未選";
+        const identity = document.querySelector('input[name="idty"]:checked')?.value || "未選";
+        const totalGrand = document.getElementById('sumGrand')?.textContent || "0";
+        const selfPay = document.getElementById('sumSelfpay')?.textContent || "0";
+        const govSubsidy = document.getElementById('sumGovSubsidy')?.textContent || "0";
+        
+        // 建立要存檔的資料物件
+        const recordData = {
+            uid: currentUser.uid,        // 會員ID
+            email: currentUser.email,    // 會員Email
+            cmsLevel: cmsLevel,          // CMS等級
+            identity: identity,          // 身分別
+            grandTotal: totalGrand,      // 總金額
+            selfPay: selfPay,            // 自付額
+            govSubsidy: govSubsidy,      // 補助額
+            createdAt: serverTimestamp(), // 儲存時間
+            note: "額度計算機儲存"
+        };
+
+        // 寫入 Firestore 的 "care_records" 集合
+        await addDoc(collection(db, "care_records"), recordData);
+        
+        alert("✅ 儲存成功！\n\n金額：" + totalGrand + "\n自付：" + selfPay);
+
+    } catch (e) {
+        console.error("儲存錯誤: ", e);
+        alert("❌ 儲存失敗，請檢查網路或權限。\n錯誤代碼：" + e.message);
+    }
+  });
+</script>
 </body>
 </html>
