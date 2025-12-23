@@ -8,6 +8,7 @@
   <link rel="icon" type="image/x-icon" href="YORU.ico" />
   <link rel="stylesheet" href="style.css" />
   <link rel="stylesheet" href="topbar-fixed.css" />
+  <script src="nav.js" defer></script>
   <style>
     :root{
       --wm-text:"@hori版權所有"; --wm-size:36px; --wm-angle:-25deg; --wm-alpha:.05; --wm-shift:120px;
@@ -29,14 +30,62 @@
     .tbl{width:100%; border-collapse:separate; border-spacing:0; background:#fff; border:1px solid var(--line);
       border-radius:12px; overflow:hidden;}
     .tbl th{background:#f6f1d9; color:#5b5534; padding:10px; font-weight:800; border-bottom:1px solid var(--line);}
+    .tbl th.month-col{text-align:center;}
     .tbl td{padding:10px; border-top:1px solid var(--line);}
     .tbl tbody tr:nth-child(even){background:#fffef9;}
     .tbl input[type="number"]{width:90px; height:34px; text-align:right;}
+    @media (max-width:860px){
+      .tbl{display:block; font-size:15px; border:0; background:none; overflow:visible;}
+      .tbl thead{display:none;}
+      .tbl tbody,.tbl tfoot{display:block; width:100%;}
+      .tbl tbody tr{display:block; border:1px solid var(--line); border-radius:12px; padding:10px 12px;
+        margin-bottom:12px; background:#fff; box-shadow:0 1px 2px rgba(0,0,0,.05);}
+      .tbl tbody tr:nth-child(even){background:#fff;}
+      .tbl td{display:flex; gap:12px; justify-content:space-between; align-items:center; padding:6px 0; line-height:1.45;
+        white-space:normal; border-top:none;}
+      .tbl td[data-label]{text-align:left;}
+      .tbl td[data-label]::before{content:attr(data-label); font-weight:700; color:#5b5534; flex:1; text-align:left;}
+      .tbl td[data-label="代碼＋名稱"],
+      .tbl td[data-label="代碼"]{flex-direction:column; align-items:flex-start;}
+      .tbl td[data-label="代碼＋名稱"]::before,
+      .tbl td[data-label="代碼"]::before{margin-bottom:2px;}
+      .tbl td.right{justify-content:space-between;}
+      .tbl input[type="number"],
+      .tbl select{width:100%; max-width:none; height:38px;}
+      .tbl td[data-label="設定"]{flex-direction:column; align-items:flex-start; gap:6px;}
+      .tbl tfoot{border:1px solid var(--line); border-radius:12px; background:#fff; padding:10px 12px;}
+      .tbl tfoot tr{display:flex; flex-wrap:wrap; justify-content:flex-end; gap:8px;}
+      .tbl tfoot th{flex:1 1 auto; background:none; border:none; padding:0; text-align:right;}
+      .tbl tfoot th:last-child{flex:0 0 auto; min-width:90px; font-size:18px;}
+    }
     .right{text-align:right;} .mono{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,"Liberation Mono",monospace;}
     .grid-2{display:grid; grid-template-columns:1fr 1fr; gap:14px;}
     @media (max-width:860px){.grid-2{grid-template-columns:1fr;}}
     .row-mid{display:flex; align-items:center; gap:10px; flex-wrap:wrap;}
     .pill-note{display:inline-block; padding:2px 8px; border:1px solid var(--line); border-radius:999px; background:#fff; font-weight:700; color:#333;}
+    .month-col{text-align:center;}
+    @media (min-width:861px){
+      :is(#tblAA,#tblBA,#tblGA,#tblSC){table-layout:fixed;}
+      :is(#tblAA,#tblBA,#tblGA,#tblSC) col.col-price{width:130px;}
+      :is(#tblAA,#tblBA,#tblGA,#tblSC) col.col-month{width:170px;}
+      :is(#tblAA,#tblBA,#tblGA,#tblSC) col.col-sum{width:160px;}
+      :is(#tblAA,#tblBA,#tblGA,#tblSC) td[data-label="本月支數"]{text-align:center;}
+      :is(#tblAA,#tblBA,#tblGA,#tblSC) td[data-label="本月支數"] input{margin:0 auto; text-align:center;}
+    }
+    @media (max-width:860px){
+      :is(#tblAA,#tblBA,#tblGA,#tblSC) td[data-label="本月支數"]{align-items:center;}
+      :is(#tblAA,#tblBA,#tblGA,#tblSC) td[data-label="本月支數"]::before{flex:1;}
+      :is(#tblAA,#tblBA,#tblGA,#tblSC) td[data-label="本月支數"] input{
+        display:block;
+        margin-left:auto;
+        margin-right:0;
+        width:52px;
+        height:28px;
+        font-size:12px;
+        padding:0 4px;
+        text-align:right;
+      }
+    }
 
     /* PDF 支數小工具（ps- 前綴） */
     .ps-muted{color:#5b6b81}.ps-small{font-size:.86rem}.ps-mono{font-family:ui-monospace,Menlo,Consolas,monospace}
@@ -59,7 +108,7 @@
     .ps-syncbar{border-color:#c7e7c7;background:#f6fff6}
   </style>
 </head>
-<body>
+<body data-page="payroll">
   <!-- 浮水印 -->
   <div class="watermark" aria-hidden="true">
     <span class="wm-item" style="top:5%; left:5%;  --dur:9s;">@hori版權所有</span>
@@ -85,7 +134,7 @@
       <a href="index.html" class="logo-link" aria-label="回首頁">
         <img src="org-logo.png" alt="logo" onerror="this.style.opacity=0.2" />
       </a>
-      <span class="site-title" id="siteTitle">薪資計算機</span>
+      <span class="site-title" id="siteTitle" data-sync-title>薪資計算機</span>
     </div>
     <nav class="nav-links" aria-label="主選單">
       <a href="index.html">額度計算機</a>
@@ -210,7 +259,13 @@
     <section class="card">
       <h2 class="card-title">② AA 本月支數</h2>
       <table class="tbl" id="tblAA">
-        <thead><tr><th style="min-width:220px;">代碼</th><th class="right">單價</th><th class="right">本月支數</th><th class="right">小計</th></tr></thead>
+        <colgroup>
+          <col class="col-code">
+          <col class="col-price">
+          <col class="col-month">
+          <col class="col-sum">
+        </colgroup>
+        <thead><tr><th style="min-width:220px;">代碼</th><th class="right">單價</th><th class="month-col">本月支數</th><th class="right">小計</th></tr></thead>
         <tbody></tbody>
         <tfoot><tr><th colspan="3" class="right">AA 小計</th><th class="right" id="sumAA">0</th></tr></tfoot>
       </table>
@@ -221,7 +276,13 @@
     <section class="card">
       <h2 class="card-title">③ BA 本月支數</h2>
       <table class="tbl" id="tblBA">
-        <thead><tr><th style="min-width:260px;">代碼＋名稱</th><th class="right">單價</th><th class="right">本月支數</th><th class="right">小計</th></tr></thead>
+        <colgroup>
+          <col class="col-code">
+          <col class="col-price">
+          <col class="col-month">
+          <col class="col-sum">
+        </colgroup>
+        <thead><tr><th style="min-width:260px;">代碼＋名稱</th><th class="right">單價</th><th class="month-col">本月支數</th><th class="right">小計</th></tr></thead>
         <tbody></tbody>
         <tfoot><tr><th colspan="3" class="right">BA 小計</th><th class="right" id="sumBA">0</th></tr></tfoot>
       </table>
@@ -231,7 +292,13 @@
     <section class="card">
       <h2 class="card-title">④ GA 本月支數</h2>
       <table class="tbl" id="tblGA">
-        <thead><tr><th style="min-width:220px;">代碼＋名稱</th><th class="right">單價</th><th class="right">本月支數</th><th class="right">小計</th></tr></thead>
+        <colgroup>
+          <col class="col-code">
+          <col class="col-price">
+          <col class="col-month">
+          <col class="col-sum">
+        </colgroup>
+        <thead><tr><th style="min-width:220px;">代碼＋名稱</th><th class="right">單價</th><th class="month-col">本月支數</th><th class="right">小計</th></tr></thead>
         <tbody></tbody>
         <tfoot><tr><th colspan="3" class="right">GA 小計</th><th class="right" id="sumGA">0</th></tr></tfoot>
       </table>
@@ -241,7 +308,13 @@
     <section class="card">
       <h2 class="card-title">⑤ SC 本月支數</h2>
       <table class="tbl" id="tblSC">
-        <thead><tr><th style="min-width:220px;">代碼＋名稱</th><th class="right">單價</th><th class="right">本月支數</th><th class="right">小計</th></tr></thead>
+        <colgroup>
+          <col class="col-code">
+          <col class="col-price">
+          <col class="col-month">
+          <col class="col-sum">
+        </colgroup>
+        <thead><tr><th style="min-width:220px;">代碼＋名稱</th><th class="right">單價</th><th class="month-col">本月支數</th><th class="right">小計</th></tr></thead>
         <tbody></tbody>
         <tfoot><tr><th colspan="3" class="right">SC 小計</th><th class="right" id="sumSC">0</th></tr></tfoot>
       </table>
@@ -281,11 +354,11 @@
             </thead>
             <tbody>
               <tr>
-                <td><select id="insGrade" style="height:34px;min-width:140px;"></select></td>
-                <td class="right"><input id="insLabor" type="number" min="0" step="1" value="0" style="height:34px;width:110px;text-align:right;"></td>
-                <td class="right"><input id="insHealth" type="number" min="0" step="1" value="0" style="height:34px;width:110px;text-align:right;"></td>
-                <td class="right mono" id="insSum">0</td>
-                <td>
+                <td data-label="投保級距"><select id="insGrade" style="height:34px;min-width:140px;"></select></td>
+                <td class="right" data-label="勞保（員工）"><input id="insLabor" type="number" min="0" step="1" value="0" style="height:34px;width:110px;text-align:right;"></td>
+                <td class="right" data-label="健保（員工）"><input id="insHealth" type="number" min="0" step="1" value="0" style="height:34px;width:110px;text-align:right;"></td>
+                <td class="right mono" id="insSum" data-label="合計">0</td>
+                <td data-label="設定">
                   <label class="chip" style="cursor:pointer;">
                     <input id="insAuto" type="checkbox" checked> 自動帶入金額
                   </label>
@@ -390,10 +463,10 @@
           const price = PRICE.AA[code];
           const tr = document.createElement('tr');
           tr.innerHTML = `
-            <td>${code}</td>
-            <td class="right mono">${F(price)}</td>
-            <td class="right"><input type="number" min="0" step="1" value="${N(saved[code]||0)}" data-aa="${code}"></td>
-            <td class="right mono" data-aa-sum="${code}">0</td>
+            <td data-label="代碼">${code}</td>
+            <td class="right mono" data-label="單價">${F(price)}</td>
+            <td data-label="本月支數"><input type="number" min="0" step="1" value="${N(saved[code]||0)}" data-aa="${code}"></td>
+            <td class="right mono" data-label="小計" data-aa-sum="${code}">0</td>
           `;
           host.appendChild(tr);
         });
@@ -406,10 +479,10 @@
         PRICE[key].forEach(item=>{
           const tr = document.createElement('tr');
           tr.innerHTML = `
-            <td>${item.code}${item.name ? ' ' + item.name : ''}</td>
-            <td class="right mono">${F(item.price)}</td>
-            <td class="right"><input type="number" min="0" step="1" value="${N(saved[item.code]||0)}" data-${k}="${item.code}"></td>
-            <td class="right mono" data-${k}-sum="${item.code}">0</td>
+            <td data-label="代碼＋名稱">${item.code}${item.name ? ' ' + item.name : ''}</td>
+            <td class="right mono" data-label="單價">${F(item.price)}</td>
+            <td data-label="本月支數"><input type="number" min="0" step="1" value="${N(saved[item.code]||0)}" data-${k}="${item.code}"></td>
+            <td class="right mono" data-label="小計" data-${k}-sum="${item.code}">0</td>
           `;
           host.appendChild(tr);
         });
@@ -587,31 +660,6 @@ function findGradeBySalary(sal){
       wire();
       updateAll();
 
-      // 導覽高亮
-      (function(){
-        function norm(href){
-          try{
-            const u=new URL(href, location.origin);
-            let p=u.pathname.trim();
-            if (p.length > 1 && p.endsWith('/')) p = p.slice(0, -1);
-            p = p.replace(/\/(index\.html?)?$/i, '/index').replace(/\.html?$/i, '');
-            return p.split('/').pop().toLowerCase();
-          }catch(e){return '';}
-        }
-        const here = norm(location.href);
-        document.querySelectorAll('.nav-links a[href]').forEach(a=>{
-          const target = norm(a.getAttribute('href'));
-          if (target && target === here) a.classList.add('active');
-        });
-        // 同步頁面標題
-        const map = { index:'額度計算機', payroll:'薪資計算機', 'care-info':'長照相關資訊', news:'最新公告', contact:'聯繫方式', about:'關於我們' };
-        const slug = here || 'payroll';
-        const pageName = map[slug] || '薪資計算機';
-        const st = document.getElementById('siteTitle');
-        if (st) st.textContent = pageName;
-        document.title = `${pageName}｜長照工具`;
-      })();
-
       // 防拷
       document.addEventListener('contextmenu', e => e.preventDefault());
       document.addEventListener('keydown', e => {
@@ -765,28 +813,30 @@ function findGradeBySalary(sal){
 
       // 渲染 & 匯出
       const tb={BA:$('#ps-t-BA tbody'),AA:$('#ps-t-AA tbody'),GA:$('#ps-t-GA tbody'),SC:$('#ps-t-SC tbody')};
+      const fmtCount = v => Math.round(Number(v) || 0);
       function renderRows(tbody, rows){
         if(!tbody) return;
         tbody.innerHTML='';
         for(const r of rows){
+          const sum = fmtCount(r.sum);
           const tr=document.createElement('tr');
           tr.innerHTML=`
             <td><span class="ps-pill">${r.code}</span></td>
             <td class="ps-right">${r.occ}</td>
-            <td class="ps-right">${r.sum.toFixed(1)}</td>
+            <td class="ps-right">${sum}</td>
           `;
           tbody.appendChild(tr);
         }
       }
       function renderAll(res){ renderRows(tb.BA,res.BA); renderRows(tb.AA,res.AA); renderRows(tb.GA,res.GA); renderRows(tb.SC,res.SC); }
       function exportCSV(res){
-        const blk=(t,rows)=>`${t}\n碼別,出現筆數,Σ支數\n`+rows.map(r=>`${r.code},${r.occ},${r.sum.toFixed(1)}`).join('\n')+'\n\n';
+        const blk=(t,rows)=>`${t}\n碼別,出現筆數,Σ支數\n`+rows.map(r=>`${r.code},${r.occ},${fmtCount(r.sum)}`).join('\n')+'\n\n';
         const csv=blk('【BA】',res.BA)+blk('【AA】',res.AA)+blk('【GA】',res.GA)+blk('【SC】',res.SC);
         const blob=new Blob([csv],{type:'text/csv;charset=utf-8'}), url=URL.createObjectURL(blob);
         const a=document.createElement('a'); a.href=url; a.download='pdf-stat.csv'; a.click(); URL.revokeObjectURL(url);
       }
       function exportJSON(res){
-        const pick=rows=>rows.map(r=>({code:r.code,occ:r.occ,sum:Number(r.sum.toFixed(1))}));
+        const pick=rows=>rows.map(r=>({code:r.code,occ:r.occ,sum:fmtCount(r.sum)}));
         const payload={BA:pick(res.BA),AA:pick(res.AA),GA:pick(res.GA),SC:pick(res.SC),meta:{generatedAt:new Date().toISOString()}};
         const blob=new Blob([JSON.stringify(payload,null,2)],{type:'application/json'}), url=URL.createObjectURL(blob);
         const a=document.createElement('a'); a.href=url; a.download='pdf-stat.json'; a.click(); URL.revokeObjectURL(url);
