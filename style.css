@@ -15,7 +15,7 @@
   --graybtn:#9ca3af;
   --warn:#b00020;
 
-  --topbar-h:56px;
+  --topbar-h:70px; /* 更新為新高度 */
   --dock-h:56px;
 
   /* 浮水印變數 */
@@ -27,10 +27,17 @@
 }
 
 /* =====================
-   全域
+   全域設定
 ===================== */
 *{ box-sizing:border-box; }
-html,body{ height:100%; }
+
+html, body { height: 100%; }
+
+/* ★ 強制顯示右側捲軸，防止切換頁面時跳動 ★ */
+html {
+  overflow-y: scroll;
+}
+
 body{
   margin:0;
   font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Noto Sans TC","Microsoft JhengHei","PingFang TC",system-ui,sans-serif;
@@ -67,108 +74,119 @@ a:hover{ text-decoration:underline; }
 @media print{ .watermark{ opacity:.08; } }
 
 /* =====================
-   頂部列（固定）
+   頂部導覽列 (固定位置與樣式) - 新版 Grid 置中
 ===================== */
-.topbar{
-  position:sticky; top:0; z-index:1000;
-  display:grid !important;
-  grid-template-columns:auto 1fr auto;
-  align-items:center;
-  padding:14px 24px;
-  background:rgba(255,253,245,.9);
-  backdrop-filter:blur(6px);
-  border-bottom:1px solid var(--line);
-  overflow-x:auto;
-  -webkit-overflow-scrolling:touch;
+.topbar {
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  background: rgba(255, 253, 245, 0.95); /* 背景色 */
+  backdrop-filter: blur(6px);
+  border-bottom: 1px solid var(--line);
+  padding: 0 20px; /* 左右留白 */
+  height: 70px;    /* 固定高度，避免跳動 */
+  
+  /* ★ 關鍵排版：三欄式，中間絕對置中 ★ */
+  display: grid;
+  grid-template-columns: 1fr auto 1fr; 
+  align-items: center;
 }
-.brand{
-  display:flex; align-items:center; gap:16px;
-  font-weight:700; letter-spacing:1px;
-  flex:0 0 auto;
-  min-width:max-content;
-  white-space:nowrap;
+
+/* 1. 左側品牌區 */
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  justify-self: start; /* 靠左對齊 */
 }
-.brand img{
-  height:60px; width:auto;
-  transition:transform .3s ease;
-  display:block;
+.brand img {
+  height: 40px; /* 固定 Logo 高度 */
+  width: auto;
+  transition: transform .3s ease;
 }
 .brand img:hover{ transform:scale(1.08); }
-.site-title{
-  font-size:20px; font-weight:700;
-  margin-right:28px;
-  white-space:nowrap;
+
+.site-title {
+  font-size: 20px;
+  font-weight: 800;
+  white-space: nowrap;
 }
 
-/* 導覽列：中間置中 */
-.nav-links{
-  grid-column:2;
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  gap:40px;
-  white-space:nowrap;
-  overflow-x:auto;
-  -webkit-overflow-scrolling:touch;
-}
-.nav-links a{
-  text-decoration:none;
-  color:#333;
-  font-weight:600;
-  transition:color .2s, transform .2s;
-  white-space:nowrap;
-  position:relative;
-  padding:8px 4px;
-}
-.nav-links a:hover{
-  color:var(--orange);
-  transform:translateY(-1px);
-}
-.nav-links a.active{ color:var(--orange); }
-.nav-links a.active::after{
-  content:"";
-  position:absolute; left:0; right:0; bottom:0;
-  height:3px; background:var(--orange); border-radius:3px;
+/* 2. 中間導覽選單 */
+.nav-links {
+  display: flex;
+  gap: 20px; /* 按鈕之間的間距 */
+  justify-self: center; /* 絕對置中 */
 }
 
-body[data-page="index"] .nav-links a[href="index.html"],
-body[data-page="payroll"] .nav-links a[href="payroll.html"],
-body[data-page="care-info"] .nav-links a[href="care-info.html"],
-body[data-page="news"] .nav-links a[href="news.html"],
-body[data-page="contact"] .nav-links a[href="contact.html"],
-body[data-page="about"] .nav-links a[href="about.html"]{
-  color:var(--orange);
-  transform:translateY(-1px);
+.nav-links a {
+  text-decoration: none;
+  color: #555;
+  font-weight: 600;
+  font-size: 16px;
+  padding: 8px 4px;
+  position: relative; /* 為了放底線 */
+  transition: color 0.3s;
 }
 
-body[data-page="index"] .nav-links a[href="index.html"]::after,
-body[data-page="payroll"] .nav-links a[href="payroll.html"]::after,
-body[data-page="care-info"] .nav-links a[href="care-info.html"]::after,
-body[data-page="news"] .nav-links a[href="news.html"]::after,
-body[data-page="contact"] .nav-links a[href="contact.html"]::after,
-body[data-page="about"] .nav-links a[href="about.html"]::after{
-  content:"";
-  position:absolute;
-  left:0; right:0; bottom:0;
-  height:3px;
-  background:var(--orange);
-  border-radius:3px;
+.nav-links a:hover {
+  color: var(--orange);
 }
 
-/* 右側按鈕區 */
-.actions{
-  grid-column:3;
-  display:flex;
-  align-items:center;
-  gap:10px;
-  justify-self:end;
-  white-space:nowrap;
+/* ★ 亮起狀態 (Active) 的樣式 ★ */
+.nav-links a.active {
+  color: var(--orange);
+  font-weight: 800;
+}
+
+/* 底線動畫效果 */
+.nav-links a.active::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 3px; /* 線條粗細 */
+  background: var(--orange);
+  border-radius: 2px;
+}
+
+/* 3. 右側功能按鈕區 */
+.actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  justify-self: end; /* 靠右對齊 */
+  white-space: nowrap;
 }
 .actions-ghost{
   min-width:320px;
   height:1px;
 }
 .divider{ height:10px; }
+
+/* RWD 手機版調整：變成可以左右滑動 */
+@media (max-width: 900px) {
+  .topbar {
+    grid-template-columns: auto 1fr; /* 手機版改回兩欄 */
+    height: auto;
+    padding: 10px 16px;
+    gap: 10px;
+  }
+  
+  .brand { grid-column: 1; }
+  .actions { grid-column: 2; }
+  
+  /* 選單移到第二行 */
+  .nav-links {
+    grid-column: 1 / -1;
+    justify-self: stretch; /* 拉滿寬度 */
+    overflow-x: auto;      /* 允許滑動 */
+    padding-bottom: 4px;
+    gap: 15px;
+  }
+  .site-title { display: none; } /* 手機版隱藏文字標題省空間 */
+}
 
 /* =====================
    底部資訊條（固定）
@@ -426,44 +444,6 @@ img,a img{
 }
 
 /* =========================================================
-   修補區
-========================================================= */
-.topbar,.nav-links{
-  overflow-x:auto !important;
-  overflow-y:hidden !important;
-  -webkit-overflow-scrolling:touch;
-}
-.nav-links a{
-  position:relative !important;
-  display:inline-flex !important;
-  align-items:center;
-  padding:8px 4px 10px !important;
-  border-bottom:2px solid transparent !important;
-  transition:color .2s, transform .2s, border-color .2s !important;
-}
-.nav-links a:hover{ transform:translateY(-1px) !important; }
-.nav-links a.active{
-  color:var(--orange) !important;
-  transform:translateY(-1.5px) !important;
-  border-bottom-color:var(--orange) !important;
-}
-#tables th:first-child,
-#tables td:first-child{
-  text-align:left !important;
-  padding-left:18px !important;
-}
-#tables th:not(:first-child),
-#tables td:not(:first-child){
-  text-align:center !important;
-  font-variant-numeric:tabular-nums !important;
-}
-#tables input[type="number"]{
-  text-align:center !important;
-  margin:0 auto !important;
-  display:block !important;
-}
-
-/* =========================================================
    卡片文字樣式
 ========================================================= */
 .card-title{
@@ -609,406 +589,3 @@ img,a img{
   body[data-page="index"] #tables tbody td:nth-child(3) input[type="number"],
   body[data-page="index"] #tables tbody td:nth-child(4) input[type="number"],
   body[data-page="index"] #tables tbody td:nth-child(5) input[type="number"]{
-    width:52px !important;
-    height:28px !important;
-    font-size:12px !important;
-    padding:0 4px !important;
-  }
-}
-
-/* =========================================================
-   payroll：上方 KV 區 Σ支數、出現筆數 對齊
-========================================================= */
-body[data-page="payroll"] .kv .kv-row{
-  display:flex;
-  justify-content:space-between;
-  align-items:baseline;
-  gap:8px;
-}
-body[data-page="payroll"] .kv .kv-row span{
-  flex:0 0 auto;
-}
-body[data-page="payroll"] .kv .kv-row b{
-  min-width:3.5ch;
-  text-align:right;
-  font-variant-numeric:tabular-nums;
-}
-
-/* =========================================================
-   payroll：表格欄位對齊＋欄寬固定
-========================================================= */
-
-/* 讓 payroll 主表欄寬固定，不會因為匯入資料跳來跳去 */
-body[data-page="payroll"] #tables table{
-  table-layout:fixed;
-}
-body[data-page="payroll"] #tables th,
-body[data-page="payroll"] #tables td{
-  white-space:nowrap;
-}
-
-body[data-page="payroll"] table th,
-body[data-page="payroll"] table td{
-  vertical-align:middle;
-}
-
-/* 第一欄：碼別／代碼靠左 */
-body[data-page="payroll"] table th:first-child,
-body[data-page="payroll"] table td:first-child{
-  text-align:left !important;
-  padding-left:18px !important;
-}
-
-/* 第二欄：出現筆數（GA/SC）或其他數字欄 → 靠右 */
-body[data-page="payroll"] table th:nth-child(2),
-body[data-page="payroll"] table td:nth-child(2){
-  text-align:right !important;
-  padding-left:14px !important;
-  padding-right:14px !important;
-  font-variant-numeric:tabular-nums !important;
-  min-width:3.5ch;
-}
-
-/* 第三欄之後：Σ支數、本月支數、金額… → 預設靠右 */
-body[data-page="payroll"] table th:nth-child(n+3),
-body[data-page="payroll"] table td:nth-child(n+3){
-  text-align:right !important;
-  padding-left:14px !important;
-  padding-right:14px !important;
-  font-variant-numeric:tabular-nums !important;
-  min-width:3.5ch;
-}
-
-/* 「本月支數」欄（第 3 欄）表頭＋輸入框置中對齊 */
-body[data-page="payroll"] table th:nth-child(3),
-body[data-page="payroll"] table td:nth-child(3){
-  text-align:center !important;
-}
-body[data-page="payroll"] table td:nth-child(3) input[type="number"]{
-  margin:0 auto !important;
-  text-align:center !important;
-}
-
-/* 數字輸入框（本月支數等）在桌機時預設貼齊欄位右側 */
-body[data-page="payroll"] table td:nth-child(n+2):not(:nth-child(3)) input[type="number"]{
-  margin-left:auto !important;
-  margin-right:0 !important;
-  text-align:right !important;
-}
-
-/* 覆寫通用 thead 置中，避免干擾 payroll 的對齊 */
-body[data-page="payroll"] #tables thead th:first-child{
-  text-align:left !important;
-}
-body[data-page="payroll"] #tables thead th:nth-child(2){
-  text-align:right !important;
-}
-body[data-page="payroll"] #tables thead th:nth-child(n+3){
-  text-align:right !important;
-}
-
-/* =========================================================
-   payroll 手機版：本月支數輸入框縮小＋靠右（所有表格）
-========================================================= */
-@media (max-width:860px){
-  body[data-page="payroll"] table input[type="number"]{
-    width:52px;
-    height:28px;
-    font-size:12px;
-    padding:0 4px;
-    display:block;
-    margin-left:auto !important;
-    margin-right:0 !important;
-    text-align:right !important;
-  }
-}
-
-/* =========================================================
-   payroll：BA 本月支數卡片 — 兩欄式排版
-========================================================= */
-body[data-page="payroll"] .service-card .kv-row{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  gap:8px;
-  padding:4px 0;
-  font-size:15px;
-}
-body[data-page="payroll"] .service-card .kv-row > *:first-child{
-  font-weight:600;
-  color:#2f2f20;
-}
-body[data-page="payroll"] .service-card .kv-row > *:last-child{
-  min-width:60px;
-  text-align:right;
-  font-variant-numeric:tabular-nums;
-}
-body[data-page="payroll"] .service-card .kv-row input[type="number"]{
-  width:64px;
-  height:32px;
-  padding:0 6px;
-  margin-left:auto;
-  margin-right:0;
-  text-align:right;
-  border:1px solid var(--line);
-  border-radius:6px;
-  background:#fffdf6;
-  font-size:14px;
-  min-width:0;
-}
-@media (max-width:860px){
-  body[data-page="payroll"] .service-card .kv-row input[type="number"]{
-    width:52px;
-    height:28px;
-    font-size:12px;
-    padding:0 4px;
-  }
-}
-
-/* =========================================================
-   payroll：三欄表頭「單價／本月支數／小計」平均分配
-   使用方式：讓那張表加上 class="triple-cols"
-========================================================= */
-body[data-page="payroll"] table.triple-cols{
-  table-layout:fixed;
-}
-body[data-page="payroll"] table.triple-cols th,
-body[data-page="payroll"] table.triple-cols td{
-  width:33.3333% !important;
-  text-align:center !important;
-}
-body[data-page="payroll"] table.triple-cols thead th:first-child{
-  padding-left:24px; /* 想再往右就加大，例如 28px、32px */
-}
-/* =====================
-   會員資料補填彈窗 (新增)
-===================== */
-.modal-overlay {
-  position: fixed;
-  top: 0; left: 0; width: 100%; height: 100%;
-  background: rgba(47, 47, 32, 0.6); /* 使用你的 --ink 顏色做半透明遮罩 */
-  backdrop-filter: blur(3px);        /* 讓背景稍微模糊，更有質感 */
-  z-index: 2000;                     /* 必須大於 topbar 的 1000 */
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  padding: 20px;
-}
-
-.modal-content {
-  background: var(--card);      /* 使用你的卡片背景色 */
-  border: 1px solid var(--line); /* 使用你的線條顏色 */
-  border-radius: 12px;
-  padding: 24px;
-  width: 100%;
-  max-width: 420px;
-  box-shadow: 0 10px 25px rgba(0,0,0,0.15);
-  text-align: center;
-  position: relative;
-  animation: modalFadeIn 0.3s ease;
-}
-
-.modal-content h3 {
-  color: var(--green);
-  font-size: 20px;
-  font-weight: 800;
-  margin-top: 0;
-  margin-bottom: 8px;
-}
-
-.modal-content p {
-  color: var(--muted);
-  font-size: 14px;
-  margin-bottom: 20px;
-}
-
-/* 讓彈窗內的輸入框樣式跟外面一致 */
-.modal-content input[type="text"],
-.modal-content input[type="number"] {
-  width: 100%;
-  padding: 10px;
-  border: 1px solid var(--line);
-  background: #fff;
-  border-radius: 8px;
-  font-size: 16px;
-  margin-top: 4px;
-  box-sizing: border-box; /* 確保不破版 */
-}
-
-/* 按鈕區塊 */
-.modal-actions {
-  margin-top: 20px;
-}
-
-@keyframes modalFadeIn {
-  from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-/* =====================
-   影片區塊與防盜遮罩
-===================== */
-.video-card {
-  text-align: center;
-  margin-bottom: 20px;
-}
-
-.video-container {
-  position: relative;
-  width: 100%;
-  padding-bottom: 56.25%; /* 16:9 黃金比例 */
-  height: 0;
-  overflow: hidden;
-  border-radius: 12px;
-  background: #000;
-  margin: 0 auto;
-}
-
-/* YouTube 播放器本體 */
-.video-container iframe {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  z-index: 1;
-}
-
-/* 🔒 透明遮罩 - 上方 (擋住影片標題與分享按鈕) */
-.video-mask-top {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 60px; /* 根據需要調整高度 */
-  background: transparent; 
-  z-index: 10;
-  cursor: default; /* 讓滑鼠游標看起來不能點 */
-}
-
-/* 🔒 透明遮罩 - 右下 (擋住 YouTube Logo) */
-.video-mask-logo {
-  position: absolute;
-  bottom: 0;
-  right: 0;
-  width: 120px;
-  height: 50px;
-  background: transparent;
-  z-index: 10;
-  cursor: default;
-}
-
-/* 登入提示框 */
-.login-warning-box {
-  padding: 40px 20px;
-  background: #f5f5f5;
-  border: 2px dashed #ccc;
-  border-radius: 12px;
-  color: #666;
-  font-weight: 700;
-}
-/* =====================
-   頂部導覽列 (固定位置與樣式)
-===================== */
-.topbar {
-  position: sticky;
-  top: 0;
-  z-index: 1000;
-  background: rgba(255, 253, 245, 0.95); /* 背景色 */
-  backdrop-filter: blur(6px);
-  border-bottom: 1px solid var(--line);
-  padding: 0 20px; /* 左右留白 */
-  height: 70px;    /* 固定高度，避免跳動 */
-  
-  /* ★ 關鍵排版：三欄式，中間絕對置中 ★ */
-  display: grid;
-  grid-template-columns: 1fr auto 1fr; 
-  align-items: center;
-}
-
-/* 1. 左側品牌區 */
-.brand {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  justify-self: start; /* 靠左對齊 */
-}
-.brand img {
-  height: 40px; /* 固定 Logo 高度 */
-  width: auto;
-}
-.site-title {
-  font-size: 20px;
-  font-weight: 800;
-  white-space: nowrap;
-}
-
-/* 2. 中間導覽選單 */
-.nav-links {
-  display: flex;
-  gap: 20px; /* 按鈕之間的間距 */
-  justify-self: center; /* 絕對置中 */
-}
-
-.nav-links a {
-  text-decoration: none;
-  color: #555;
-  font-weight: 600;
-  font-size: 16px;
-  padding: 8px 4px;
-  position: relative; /* 為了放底線 */
-  transition: color 0.3s;
-}
-
-.nav-links a:hover {
-  color: var(--orange);
-}
-
-/* ★ 亮起狀態 (Active) 的樣式 ★ */
-.nav-links a.active {
-  color: var(--orange);
-  font-weight: 800;
-}
-
-/* 底線動畫效果 */
-.nav-links a.active::after {
-  content: "";
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  height: 3px; /* 線條粗細 */
-  background: var(--orange);
-  border-radius: 2px;
-}
-
-/* 3. 右側功能按鈕區 */
-.actions {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  justify-self: end; /* 靠右對齊 */
-  white-space: nowrap;
-}
-
-/* RWD 手機版調整：變成可以左右滑動 */
-@media (max-width: 900px) {
-  .topbar {
-    grid-template-columns: auto 1fr; /* 手機版改回兩欄 */
-    height: auto;
-    padding: 10px 16px;
-    gap: 10px;
-  }
-  
-  .brand { grid-column: 1; }
-  .actions { grid-column: 2; }
-  
-  /* 選單移到第二行 */
-  .nav-links {
-    grid-column: 1 / -1;
-    justify-self: stretch; /* 拉滿寬度 */
-    overflow-x: auto;      /* 允許滑動 */
-    padding-bottom: 4px;
-    gap: 15px;
-  }
-  .site-title { display: none; } /* 手機版隱藏文字標題省空間 */
-}
