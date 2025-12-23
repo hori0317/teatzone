@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>影音學習區｜長照工具</title>
+  <link rel="icon" type="image/x-icon" href="YORU.ico" />
+  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="topbar-fixed.css" />
+  
+  <!-- 影片專用 CSS -->
+  <style>
+    .video-card { text-align: center; margin-bottom: 20px; max-width: 800px; margin: 0 auto; }
+    .video-container {
+      position: relative; width: 100%; padding-bottom: 56.25%; /* 16:9 */
+      height: 0; overflow: hidden; border-radius: 12px;
+      background: #000; margin: 0 auto;
+    }
+    .video-container iframe {
+      position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1;
+    }
+    .video-mask-top {
+      position: absolute; top: 0; left: 0; width: 100%; height: 60px;
+      background: transparent; z-index: 10; cursor: default;
+    }
+    .video-mask-logo {
+      position: absolute; bottom: 0; right: 0; width: 120px; height: 50px;
+      background: transparent; z-index: 10; cursor: default;
+    }
+    .login-warning-box {
+      padding: 40px 20px; background: #f5f5f5; border: 2px dashed #ccc;
+      border-radius: 12px; color: #666; font-weight: 700;
+    }
+    /* 會員彈窗樣式 */
+    .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(47,47,32,0.6); backdrop-filter: blur(3px); z-index: 2000; display: flex; justify-content: center; align-items: center; padding: 20px; }
+    .modal-content { background: #fffdf5; border: 1px solid #e6dca8; border-radius: 12px; padding: 24px; width: 100%; max-width: 420px; box-shadow: 0 10px 25px rgba(0,0,0,0.15); text-align: center; }
+    .modal-content h3 { color: #2e7d32; margin-top: 0; }
+    .modal-content input { width: 100%; padding: 10px; border: 1px solid #e6dca8; background: #fff; border-radius: 8px; font-size: 16px; margin-top: 4px; box-sizing: border-box; }
+    .modal-actions { margin-top: 20px; }
+  </style>
+  <script src="nav.js" defer></script>
+</head>
+<body data-page="video"> 
+
+  <header class="topbar">
+    <div class="brand">
+      <a href="index.html" class="logo-link"><img src="org-logo.png" alt="logo" onerror="this.style.opacity=0.2" /></a>
+      <span class="site-title" data-sync-title>影音學習區</span>
+    </div>
+    
+    <!-- 導覽列 -->
+    <nav class="nav-links" aria-label="主選單">
+      <a href="index.html">額度計算機</a>
+      <a href="payroll.html">薪資計算機</a>
+      <a href="video.html" class="active" style="color:var(--orange);">影音專區</a>
+      <a href="care-info.html">長照相關資訊</a>
+      <a href="news.html">最新公告</a>
+      <a href="contact.html">聯繫方式</a>
+      <a href="about.html">關於我們</a>
+    </nav>
+
+    <!-- 右側按鈕 (只保留會員功能) -->
+    <div class="actions" style="align-items: center; gap: 8px;">
+        <button class="btn pill" style="background:#4285F4; color:white;" id="btnLogin" type="button">Google 登入</button>
+        <div id="member-area" style="display:none; align-items: center; gap:5px;">
+            <span id="userDisplay" style="font-size: 13px; font-weight: bold; color: #333; margin-right: 4px;"></span>
+            <a href="admin.html" id="btnAdminLink" class="btn pill" style="background:#673AB7; color:white; font-size:12px; padding:4px 10px; text-decoration:none; display:none;">管理後台</a>
+            <button class="btn pill" style="background:#777; color:white; font-size:12px; padding:4px 10px;" id="btnEditProfile" type="button">修改資料</button>
+            <button class="btn pill" style="background:#EA4335; color:white;" id="btnLogout" type="button">登出</button>
+        </div>
+    </div>
+  </header>
+  <div class="divider"></div>
+
+  <main class="container">
+    <section class="card video-card">
+        <h2 class="card-title">🎥 學習影片：長照服務介紹</h2>
+        
+        <div id="login-warning" class="login-warning-box">
+            🔒 請先登入會員以觀看教學影片並累積時數
+        </div>
+    
+        <div id="video-wrapper" style="display:none;">
+            <div class="video-container">
+                <div id="video-placeholder"></div>
+                <div class="video-mask-top"></div>
+                <div class="video-mask-logo"></div>
+            </div>
+            
+            <p class="hint" style="margin-top:12px; font-size:15px;">
+                累積觀看：<span id="watchTimeDisplay" style="color:#2e7d32; font-weight:bold; font-size:18px;">0</span> 秒
+                <span id="saveStatus" style="font-size:13px; color:#999; margin-left:8px;"></span>
+            </p>
+        </div>
+    </section>
+  </main>
+
+  <footer id="bottomDock" class="footerbar">
+    <div class="foot"><span class="ok">© hori 長照工具</span></div>
+  </footer>
+
+  <!-- 會員資料填寫彈窗 -->
+  <div id="profile-modal" class="modal-overlay" style="display:none;">
+    <div class="modal-content">
+      <h3>歡迎加入！請完善資料</h3>
+      <p>填寫您的基本資訊，讓我們為您記錄學習進度。</p>
+      <div style="text-align:left; margin-bottom:12px;">
+        <label style="font-weight:700; color:var(--ink); font-size:15px;">姓名 / 稱呼</label>
+        <input type="text" id="pf-name" placeholder="例如：王小明">
+      </div>
+      <div style="text-align:left; margin-bottom:12px;">
+        <label style="font-weight:700; color:var(--ink); font-size:15px;">使用者年齡</label>
+        <input type="number" id="pf-age" placeholder="例如：65">
+      </div>
+      <div class="modal-actions">
+        <button id="btn-save-profile" class="btn pill btn-green" style="width:100%; font-size:16px; padding:10px;">儲存並開始使用</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Firebase + 影片邏輯 -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+    import { getAuth, signInWithPopup, GoogleAuthProvider, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+    import { getFirestore, doc, getDoc, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+    // 設定
+    const firebaseConfig = {
+      apiKey: "AIzaSyCZMhdUI0HeIoj5masuRh00pzP3SMbF6Yc",
+      authDomain: "hori-test-1b93c.firebaseapp.com",
+      projectId: "hori-test-1b93c",
+      storageBucket: "hori-test-1b93c.firebasestorage.app",
+      messagingSenderId: "549583061796",
+      appId: "1:549583061796:web:ad58b8bf80c2b6b71c29b1"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+    const provider = new GoogleAuthProvider();
+
+    // DOM
+    const btnLogin = document.getElementById('btnLogin');
+    const btnLogout = document.getElementById('btnLogout');
+    const memberArea = document.getElementById('member-area');
+    const userDisplay = document.getElementById('userDisplay');
+    const btnAdminLink = document.getElementById('btnAdminLink');
+    const videoWrapper = document.getElementById('video-wrapper');
+    const loginWarning = document.getElementById('login-warning');
+    const watchTimeDisplay = document.getElementById('watchTimeDisplay');
+    const saveStatus = document.getElementById('saveStatus');
+    
+    // 彈窗
+    const profileModal = document.getElementById('profile-modal');
+    const pfNameInput = document.getElementById('pf-name');
+    const pfAgeInput = document.getElementById('pf-age');
+    const btnSaveProfile = document.getElementById('btn-save-profile');
+    const modalTitle = profileModal.querySelector('h3');
+    const btnEditProfile = document.getElementById('btnEditProfile');
+
+    const YOUTUBE_VIDEO_ID = 'M7lc1UVf-VE'; // ★ 你的影片 ID
+
+    let currentUser = null;
+    let player, timerInterval, currentSessionSeconds = 0, totalWatchedSeconds = 0;
+
+    // YouTube API
+    const tag = document.createElement('script');
+    tag.src = "https://www.youtube.com/iframe_api";
+    const firstScriptTag = document.getElementsByTagName('script')[0];
+    firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+
+    window.onYouTubeIframeAPIReady = function() {
+      player = new YT.Player('video-placeholder', {
+        videoId: YOUTUBE_VIDEO_ID,
+        playerVars: { 'playsinline': 1, 'modestbranding': 1, 'rel': 0, 'controls': 1 },
+        events: { 'onStateChange': onPlayerStateChange }
+      });
+    };
+
+    function onPlayerStateChange(event) {
+      if (event.data == YT.PlayerState.PLAYING) startTracking();
+      else stopTracking();
+    }
+
+    function startTracking() {
+      if (!currentUser) return;
+      if (timerInterval) clearInterval(timerInterval);
+      timerInterval = setInterval(() => {
+        currentSessionSeconds++;
+        totalWatchedSeconds++;
+        if(watchTimeDisplay) watchTimeDisplay.textContent = totalWatchedSeconds;
+        if (currentSessionSeconds % 10 === 0) saveVideoProgress();
+      }, 1000);
+    }
+
+    function stopTracking() {
+      if (timerInterval) { clearInterval(timerInterval); timerInterval = null; }
+      saveVideoProgress();
+    }
+
+    async function saveVideoProgress() {
+      if (!currentUser || currentSessionSeconds === 0) return;
+      if(saveStatus) saveStatus.textContent = "儲存中...";
+      try {
+        const docId = `${currentUser.uid}_${YOUTUBE_VIDEO_ID}`;
+        await setDoc(doc(db, "video_logs", docId), {
+          uid: currentUser.uid, email: currentUser.email, videoId: YOUTUBE_VIDEO_ID,
+          videoTitle: "教學影片", lastWatched: serverTimestamp(),
+          totalSeconds: totalWatchedSeconds
+        }, { merge: true });
+        currentSessionSeconds = 0;
+        if(saveStatus) { saveStatus.textContent = "已同步"; setTimeout(() => { saveStatus.textContent = ""; }, 2000); }
+      } catch (e) { console.error(e); }
+    }
+
+    async function loadWatchHistory(user) {
+      try {
+        const docSnap = await getDoc(doc(db, "video_logs", `${user.uid}_${YOUTUBE_VIDEO_ID}`));
+        if (docSnap.exists()) totalWatchedSeconds = docSnap.data().totalSeconds || 0;
+        if(watchTimeDisplay) watchTimeDisplay.textContent = totalWatchedSeconds;
+      } catch (e) {}
+    }
+
+    // Auth Logic
+    btnLogin.addEventListener('click', () => signInWithPopup(auth, provider).catch(alert));
+    btnLogout.addEventListener('click', () => signOut(auth).then(() => { stopTracking(); location.reload(); }));
+
+    onAuthStateChanged(auth, async (user) => {
+      if (user) {
+        currentUser = user;
+        btnLogin.style.display = 'none';
+        loginWarning.style.display = 'none';
+        videoWrapper.style.display = 'block';
+        loadWatchHistory(user);
+
+        try {
+          const docSnap = await getDoc(doc(db, "users", user.uid));
+          if (docSnap.exists()) showMemberUI(docSnap.data().name);
+          else openProfileModal("歡迎加入！請完善資料", user.displayName || "", "");
+        } catch (e) {}
+
+        try {
+          const adminSnap = await getDoc(doc(db, "admins", user.email));
+          if (adminSnap.exists() && btnAdminLink) btnAdminLink.style.display = 'inline-block';
+        } catch(e) {}
+      } else {
+        currentUser = null;
+        btnLogin.style.display = 'block';
+        memberArea.style.display = 'none';
+        loginWarning.style.display = 'block';
+        videoWrapper.style.display = 'none';
+      }
+    });
+
+    function showMemberUI(name) {
+      memberArea.style.display = 'flex';
+      userDisplay.textContent = name;
+    }
+
+    function openProfileModal(title, dName, dAge) {
+      if(modalTitle) modalTitle.textContent = title;
+      pfNameInput.value = dName;
+      pfAgeInput.value = dAge;
+      profileModal.style.display = 'flex';
+    }
+
+    btnEditProfile.addEventListener('click', async () => {
+      const s = await getDoc(doc(db, "users", currentUser.uid));
+      if(s.exists()) { const d = s.data(); openProfileModal("修改個人資料", d.name, d.age); }
+    });
+
+    btnSaveProfile.addEventListener('click', async () => {
+      const name = pfNameInput.value.trim();
+      const age = pfAgeInput.value.trim();
+      if(!name || !age) return alert("請填寫完整");
+      await setDoc(doc(db, "users", currentUser.uid), { name, age, email: currentUser.email, lastUpdated: serverTimestamp() }, { merge: true });
+      alert("儲存成功");
+      profileModal.style.display = 'none';
+      showMemberUI(name);
+    });
+    
+    profileModal.addEventListener('click', (e) => {
+        if (e.target === profileModal && currentUser && userDisplay.textContent !== "") profileModal.style.display = 'none';
+    });
+  </script>
+</body>
+</html>
