@@ -191,33 +191,32 @@
     <div id="addonRows"></div>
     <div id="caregiverSalary"></div>
   </div>
-  <!-- Firebase SDK 與 邏輯 -->
+<!-- Firebase SDK 與 邏輯 (已整合你的金鑰) -->
 <script type="module">
-  // 1. 引入 Firebase 函式庫
+  // 1. 使用網址匯入 Firebase 功能 (瀏覽器專用)
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
   import { getAuth, signInWithPopup, GoogleAuthProvider, signOut, onAuthStateChanged } 
     from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
   import { getFirestore, collection, addDoc, serverTimestamp } 
     from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-  // 2. 設定 Firebase (請填入你的資料)
-  // TODO: 請把這裡換成你自己的 Firebase Config !!!
+  // 2. 你的 Firebase 設定檔 (已填入你剛剛提供的資料)
   const firebaseConfig = {
-    apiKey: "你的API_KEY",
-    authDomain: "你的專案ID.firebaseapp.com",
-    projectId: "你的專案ID",
-    storageBucket: "你的專案ID.appspot.com",
-    messagingSenderId: "你的ID",
-    appId: "你的APP_ID"
+    apiKey: "AIzaSyCZMhdUI0HeIoj5masuRh00pzP3SMbF6Yc",
+    authDomain: "hori-test-1b93c.firebaseapp.com",
+    projectId: "hori-test-1b93c",
+    storageBucket: "hori-test-1b93c.firebasestorage.app",
+    messagingSenderId: "549583061796",
+    appId: "1:549583061796:web:ad58b8bf80c2b6b71c29b1"
   };
 
-  // 3. 初始化
+  // 3. 初始化 Firebase
   const app = initializeApp(firebaseConfig);
   const auth = getAuth(app);
   const db = getFirestore(app);
   const provider = new GoogleAuthProvider();
 
-  // 4. 取得 HTML 元素
+  // 4. 取得網頁上的按鈕元素
   const btnLogin = document.getElementById('btnLogin');
   const btnLogout = document.getElementById('btnLogout');
   const btnSaveCloud = document.getElementById('btnSaveCloud');
@@ -226,79 +225,89 @@
 
   let currentUser = null;
 
-  // 5. 登入按鈕事件
+  // --- 登入功能 ---
   btnLogin.addEventListener('click', () => {
     signInWithPopup(auth, provider)
       .then((result) => {
-        // 登入成功，onAuthStateChanged 會自動處理 UI
         console.log("登入成功");
       }).catch((error) => {
-        console.error(error);
-        alert("登入失敗：" + error.message);
+        console.error("登入錯誤:", error);
+        // 如果錯誤是網域問題，提示使用者
+        if (error.code === 'auth/unauthorized-domain') {
+            alert("登入失敗：請記得到 Firebase 後台 Authentication -> Settings -> Authorized domains 新增 'hori0317.github.io'");
+        } else {
+            alert("登入失敗：" + error.message);
+        }
       });
   });
 
-  // 6. 登出按鈕事件
+  // --- 登出功能 ---
   btnLogout.addEventListener('click', () => {
     signOut(auth).then(() => {
       alert("已登出");
     });
   });
 
-  // 7. 監聽登入狀態 (自動切換按鈕顯示)
+  // --- 監聽登入狀態 (控制按鈕顯示/隱藏) ---
   onAuthStateChanged(auth, (user) => {
     if (user) {
+      // 登入狀態
       currentUser = user;
-      btnLogin.style.display = 'none';
-      memberArea.style.display = 'flex';
-      // 顯示名字 (如果太長就截斷)
+      btnLogin.style.display = 'none';      // 隱藏登入鈕
+      memberArea.style.display = 'flex';    // 顯示會員區
+      
+      // 顯示名字
       const name = user.displayName || user.email;
-      userDisplay.textContent = name.length > 5 ? name.substring(0, 5) + '..' : name;
+      userDisplay.textContent = name; 
     } else {
+      // 未登入狀態
       currentUser = null;
-      btnLogin.style.display = 'block';
-      memberArea.style.display = 'none';
+      btnLogin.style.display = 'block';     // 顯示登入鈕
+      memberArea.style.display = 'none';    // 隱藏會員區
       userDisplay.textContent = '';
     }
   });
 
-  // 8. 儲存資料按鈕事件
+  // --- 儲存資料功能 ---
   btnSaveCloud.addEventListener('click', async () => {
     if (!currentUser) {
       alert("請先登入！");
       return;
     }
 
-    // 收集網頁上的計算數據
-    // 透過 document.querySelector 抓取你原本網頁上的數值
     try {
+        // 抓取網頁上目前的計算結果
         const cmsLevel = document.querySelector('input[name="cms"]:checked')?.value || "未選";
         const identity = document.querySelector('input[name="idty"]:checked')?.value || "未選";
         const totalGrand = document.getElementById('sumGrand')?.textContent || "0";
         const selfPay = document.getElementById('sumSelfpay')?.textContent || "0";
         const govSubsidy = document.getElementById('sumGovSubsidy')?.textContent || "0";
         
-        // 建立要存檔的資料物件
+        // 準備要存的資料
         const recordData = {
-            uid: currentUser.uid,        // 會員ID
+            uid: currentUser.uid,        // 會員ID (重要)
             email: currentUser.email,    // 會員Email
             cmsLevel: cmsLevel,          // CMS等級
             identity: identity,          // 身分別
             grandTotal: totalGrand,      // 總金額
             selfPay: selfPay,            // 自付額
             govSubsidy: govSubsidy,      // 補助額
-            createdAt: serverTimestamp(), // 儲存時間
+            createdAt: serverTimestamp(), // 雲端時間
             note: "額度計算機儲存"
         };
 
-        // 寫入 Firestore 的 "care_records" 集合
-        await addDoc(collection(db, "care_records"), recordData);
+        // 寫入資料庫
+        const docRef = await addDoc(collection(db, "care_records"), recordData);
         
         alert("✅ 儲存成功！\n\n金額：" + totalGrand + "\n自付：" + selfPay);
 
     } catch (e) {
         console.error("儲存錯誤: ", e);
-        alert("❌ 儲存失敗，請檢查網路或權限。\n錯誤代碼：" + e.message);
+        if (e.code === 'permission-denied') {
+            alert("❌ 儲存失敗：權限不足。\n請檢查 Firestore Database 的 Rules 是否已設為測試模式 (Test mode)。");
+        } else {
+            alert("❌ 儲存失敗：" + e.message);
+        }
     }
   });
 </script>
