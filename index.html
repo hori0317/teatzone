@@ -191,6 +191,31 @@
     <div id="addonRows"></div>
     <div id="caregiverSalary"></div>
   </div>
+
+  <!-- 會員資料填寫彈窗 (預設隱藏) -->
+<div id="profile-modal" class="modal-overlay" style="display:none;">
+  <div class="modal-content">
+    <h3>歡迎加入！請完善基本資料</h3>
+    <p>為了提供更準確的長照試算，請填寫以下資訊：</p>
+    
+    <div class="form-group">
+      <label>姓名 / 稱呼：</label>
+      <input type="text" id="pf-name" placeholder="例如：陳大明">
+    </div>
+    
+    <div class="form-group">
+      <label>年齡：</label>
+      <input type="number" id="pf-age" placeholder="例如：65">
+    </div>
+
+    <!-- 你可以在這裡加更多欄位，例如電話 -->
+    
+    <button id="btn-save-profile" class="btn pill" style="background:#34A853; color:white; width:100%; margin-top:10px;">
+      儲存並開始使用
+    </button>
+  </div>
+</div>
+  
 <!-- Firebase SDK 與 邏輯 (已整合你的金鑰) -->
 <script type="module">
   // 1. 使用網址匯入 Firebase 功能 (瀏覽器專用)
@@ -311,28 +336,5 @@
     }
   });
 </script>
-  <!-- 會員資料填寫彈窗 (預設隱藏) -->
-<div id="profile-modal" class="modal-overlay" style="display:none;">
-  <div class="modal-content">
-    <h3>歡迎加入！請完善基本資料</h3>
-    <p>為了提供更準確的長照試算，請填寫以下資訊：</p>
-    
-    <div class="form-group">
-      <label>姓名 / 稱呼：</label>
-      <input type="text" id="pf-name" placeholder="例如：陳大明">
-    </div>
-    
-    <div class="form-group">
-      <label>年齡：</label>
-      <input type="number" id="pf-age" placeholder="例如：65">
-    </div>
-
-    <!-- 你可以在這裡加更多欄位，例如電話 -->
-    
-    <button id="btn-save-profile" class="btn pill" style="background:#34A853; color:white; width:100%; margin-top:10px;">
-      儲存並開始使用
-    </button>
-  </div>
-</div>
 </body>
 </html>
