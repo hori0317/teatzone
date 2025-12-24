@@ -830,30 +830,34 @@ body[data-page="payroll"] table.triple-cols thead th:first-child{
 .video-mask-logo { position: absolute; bottom: 0; right: 0; width: 120px; height: 50px; background: transparent; z-index: 10; cursor: default; }
 .login-warning-box { padding: 40px 20px; background: #f5f5f5; border: 2px dashed #ccc; border-radius: 12px; color: #666; font-weight: 700; }
 
-/* =========================================
-   Payroll 薪資表單排版微調
-   ========================================= */
+/* ============================================================
+   [修正版] 僅針對 Payroll (薪資計算機) 調整表格
+   利用 [data-page="payroll"] 鎖定範圍，絕對不會影響額度計算機
+   ============================================================ */
 
-/* 將表格的「第 2 欄 (單價)」往左移 */
-/* 原理：增加右邊的留白 (padding-right)，把文字往左推 */
-.tbl th:nth-child(2),
-.tbl td:nth-child(2) {
-    padding-right: 50px !important; /* 數字越大，單價就會越往左邊靠 */
-    text-align: right;
+/* 1. 單價欄位 (第2欄) 向左移動 */
+/* 原理：原本靠右對齊，我們加大「右邊內距 (padding-right)」把字擠向左邊 */
+body[data-page="payroll"] .tbl th:nth-child(2),
+body[data-page="payroll"] .tbl td:nth-child(2) {
+    padding-right: 60px !important; /* 數字越大，單價就會越往左移 */
 }
 
-/* 同步調整「第 4 欄 (小計)」也稍微往左移一點，比較整齊 */
-.tbl th:nth-child(4),
-.tbl td:nth-child(4) {
-    padding-right: 15px !important;
+/* 2. 小計欄位 (第4欄) 微調 */
+body[data-page="payroll"] .tbl th:nth-child(4),
+body[data-page="payroll"] .tbl td:nth-child(4) {
+    padding-right: 20px !important;
 }
 
-/* 確保電腦版欄位寬度固定，不會被擠壓 */
+/* 3. 確保輸入框位置 */
+/* 避免單價移動後，支數輸入框被擠歪，確保支數欄寬度足夠 */
 @media (min-width: 861px) {
-  #tables table, .tbl {
-    table-layout: fixed;
-  }
-  /* 定義欄位寬度：代碼 | 單價 | 支數 | 小計 */
-  col.col-price { width: 140px !important; }
-  col.col-month { width: 160px !important; }
+  body[data-page="payroll"] col.col-price { width: 140px !important; }
+  body[data-page="payroll"] col.col-month { width: 160px !important; }
+}
+
+/* --- (修正 Calculator 被誤傷的部分) --- */
+/* 強制將額度計算機 (Calculator) 的單價位置復原為預設 */
+body[data-page="calculator"] #tables th:nth-child(2),
+body[data-page="calculator"] #tables td:nth-child(2) {
+    padding-right: 0 !important;
 }
