@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+
 <html lang="zh-Hant">
 <head>
   <meta charset="UTF-8" />
@@ -8,7 +9,7 @@
   <link rel="icon" type="image/x-icon" href="YORU.ico" />
   <link rel="stylesheet" href="style.css" />
   <script src="nav.js" defer></script>
-  
+
   <style>
     /* =======================================
        Payroll 頁面專屬修正樣式
@@ -69,9 +70,9 @@
         padding-right: 40px !important; 
     }
 
-    /* === 第3欄: 本月支數 (置中對齊) === */
-    .tbl th:nth-child(3), .tbl td:nth-child(3), .tbl th.month-col {
-        text-align: center !important;
+    /* === 第3欄: 本月支數 (置中) === */
+    .tbl th:nth-child(3), .tbl td:nth-child(3) {
+        text-align: center;
     }
     
     /* === 第4欄: 小計 (靠右) === */
@@ -81,15 +82,13 @@
     }
 
     .tbl tbody tr:nth-child(even){ background:#fffef9; }
-    /* ★ 修正需求 1：所有填空欄位置中對齊 ★ */
-    .tbl input[type="number"]{ width:80px; height:34px; text-align:center !important; border:1px solid #ddd; border-radius:4px; margin: 0 auto; display:block;}
+    .tbl input[type="number"]{ width:80px; height:34px; text-align:right; border:1px solid #ddd; border-radius:4px; margin: 0 auto; display:block;}
     .tbl .right{ text-align:right; }
     .tbl .mono{ font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; }
 
     /* ★ 修正投保級距表格與「自動」膠囊樣式 ★ */
     .insurance-table { table-layout: auto !important; width: 100%; }
-    /* ★ 修正需求 1：勞保下方的輸入欄位置中對齊 ★ */
-    .insurance-table input { width: 100% !important; min-width: 60px; text-align: center !important; }
+    .insurance-table input { width: 100% !important; min-width: 60px; }
     .sub-text { font-size: 11px; display: block; color: #777; line-height: 1.2; }
     
     /* ★ 修正：將自動改為橫的，勾勾靠左，確保在膠囊內 ★ */
@@ -122,17 +121,29 @@
       .tbl tbody tr{display:block; border:1px solid var(--line); border-radius:12px; padding:10px 12px; margin-bottom:12px; background:#fff; box-shadow:0 1px 2px rgba(0,0,0,.05);}
       .tbl tbody tr:nth-child(even){background:#fff;}
       
-      /* ★ 修正需求 2：手機版單價與所有數值文字強迫靠右對齊 ★ */
+      /* ★ 修正：手機版單價與所有數值文字強迫靠右對齊 ★ */
       .tbl td{display:flex; gap:12px; justify-content:space-between; align-items:center; padding:6px 0; line-height:1.45; white-space:normal; border-top:none; text-align: right !important;}
       
       .tbl td[data-label]::before{ content:attr(data-label); font-weight:700; color:#5b5534; flex:1; text-align:left; }
       .tbl td[data-label="代碼＋名稱"]::before, .tbl td[data-label="代碼"]::before{margin-bottom:2px;}
       
-      .tbl input[type="number"], .tbl select{width:100%; max-width:none; height:38px; text-align: center !important;}
+      .tbl input[type="number"], .tbl select{width:100%; max-width:none; height:38px; text-align: right;}
       
-      /* 手機版支數輸入框靠右但文字置中 */
-      .tbl td[data-label="本月支數"] input { width:80px; margin-left: auto; display: block; text-align: center !important; }
+      /* 手機版支數輸入框靠中（與上方文字垂直置中對齊） */
+      .tbl td[data-label="本月支數"] input { width:80px; margin: 0 auto; display: block; }
       
+      /* 手機版：本月支數欄垂直排列，標題在上、輸入框在下，整組置中 */
+      .tbl td[data-label="本月支數"]{
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+      }
+      .tbl td[data-label="本月支數"]::before{
+        width: 100%;
+        text-align: center;
+        margin-bottom: 4px;
+      }
+
       .tbl tfoot th{flex:1 1 auto; background:none; border:none; padding:0; text-align:right;}
       
       /* 強制手機版間距復原 */
@@ -140,8 +151,10 @@
       .tbl th:first-child, .tbl td:first-child { padding-left: 0 !important; }
     }
   </style>
+
 </head>
 <body data-page="payroll">
+
   <div class="watermark" aria-hidden="true">
     <span class="wm-item" style="top:5%; left:5%;  --dur:9s;">@hori版權所有</span>
     <span class="wm-item" style="top:50%; left:50%; --dur:10s;">@hori版權所有</span>
@@ -155,31 +168,31 @@
       <a href="index.html" class="logo-link"><img src="org-logo.png" alt="logo" onerror="this.style.opacity=0.2" /></a>
       <span class="site-title" id="siteTitle" data-sync-title>薪資計算機</span>
     </div>
-    
-    <nav class="nav-links" aria-label="主選單">
-      <a href="calculator.html">額度計算機</a>
-      <a href="payroll.html">薪資計算機</a>
-      <a href="video.html">影音專區</a>
-      <a href="care-info.html">長照資訊</a>
-      <a href="news.html">最新公告</a>
-      <a href="contact.html">聯繫方式</a>
-      <a href="about.html">關於我們</a>
-    </nav>
-    
-    <div class="actions" style="align-items: center; gap: 8px;">
-        <button class="btn pill btn-gray" id="btnPrint" type="button">列印</button>
-        <button class="btn pill btn-green" id="btnResetAll" type="button">全部清空</button>
-        
-        <div style="width: 1px; height: 20px; background: #ccc; margin: 0 4px;"></div>
-        
-        <button class="btn pill" style="background:#4285F4; color:white;" id="btnLogin" type="button">Google 登入</button>
-        <div id="member-area" style="display:none; align-items: center; gap:5px;">
-            <span id="userDisplay" style="font-size: 13px; font-weight: bold; color: #333; margin-right: 4px;"></span>
-            <a href="admin.html" id="btnAdminLink" class="btn pill" style="background:#673AB7; color:white; font-size:12px; padding:4px 10px; text-decoration:none; display:none;">管理後台</a>
-            <button class="btn pill" style="background:#777; color:white; font-size:12px; padding:4px 10px;" id="btnEditProfile" type="button">修改資料</button>
-            <button class="btn pill" style="background:#EA4335; color:white;" id="btnLogout" type="button">登出</button>
-        </div>
-    </div>
+
+<nav class="nav-links" aria-label="主選單">
+  <a href="calculator.html">額度計算機</a>
+  <a href="payroll.html">薪資計算機</a>
+  <a href="video.html">影音專區</a>
+  <a href="care-info.html">長照資訊</a>
+  <a href="news.html">最新公告</a>
+  <a href="contact.html">聯繫方式</a>
+  <a href="about.html">關於我們</a>
+</nav>
+
+<div class="actions" style="align-items: center; gap: 8px;">
+    <button class="btn pill btn-gray" id="btnPrint" type="button">列印</button>
+    <button class="btn pill btn-green" id="btnResetAll" type="button">全部清空</button>
+
+<div style="width: 1px; height: 20px; background: #ccc; margin: 0 4px;"></div>
+
+<button class="btn pill" style="background:#4285F4; color:white;" id="btnLogin" type="button">Google 登入</button>
+<div id="member-area" style="display:none; align-items: center; gap:5px;">
+    <span id="userDisplay" style="font-size: 13px; font-weight: bold; color: #333; margin-right: 4px;"></span>
+    <a href="admin.html" id="btnAdminLink" class="btn pill" style="background:#673AB7; color:white; font-size:12px; padding:4px 10px; text-decoration:none; display:none;">管理後台</a>
+    <button class="btn pill" style="background:#777; color:white; font-size:12px; padding:4px 10px;" id="btnEditProfile" type="button">修改資料</button>
+    <button class="btn pill" style="background:#EA4335; color:white;" id="btnLogout" type="button">登出</button>
+</div>
+</div>
   </header>
   <div class="divider"></div>
 
@@ -199,208 +212,208 @@
       </div>
     </section>
 
-    <section class="card">
-      <h2 class="card-title">① 拆薪比例</h2>
-      <div class="grid-2" style="margin-top:8px;">
-        <div class="row-mid">
-          <label style="min-width:120px;font-weight:700;">拆薪比例（%）</label>
-          <input id="ratioPct" type="number" min="0" max="100" step="0.1" value="60" style="height:34px;width:120px;text-align:right;">
-          <span class="hint">例：6/4 → 填 60</span>
-        </div>
-        <div class="row-mid">
-          <label style="min-width:120px;font-weight:700;">月份</label>
-          <input id="plMonth" type="month" style="height:34px;width:180px;">
-        </div>
-      </div>
-    </section>
+<section class="card">
+  <h2 class="card-title">① 拆薪比例</h2>
+  <div class="grid-2" style="margin-top:8px;">
+    <div class="row-mid">
+      <label style="min-width:120px;font-weight:700;">拆薪比例（%）</label>
+      <input id="ratioPct" type="number" min="0" max="100" step="0.1" value="60" style="height:34px;width:120px;text-align:right;">
+      <span class="hint">例：6/4 → 填 60</span>
+    </div>
+    <div class="row-mid">
+      <label style="min-width:120px;font-weight:700;">月份</label>
+      <input id="plMonth" type="month" style="height:34px;width:180px;">
+    </div>
+  </div>
+</section>
 
-    <section class="card ps-card" id="ps-widget">
-      <h2 class="card-title">PDF 支數自動統計（帶入表單）</h2>
-      <p class="ps-muted">上傳每月 PDF，統計 <span class="ps-pill">BA</span> / <span class="ps-pill">AA</span> / <span class="ps-pill">GA</span> / <span class="ps-pill">SC</span>。AA 以「金額 ÷ 單價」換算（四捨五入到最接近 0.5），AA 單價固定。</p>
+<section class="card ps-card" id="ps-widget">
+  <h2 class="card-title">PDF 支數自動統計（帶入表單）</h2>
+  <p class="ps-muted">上傳每月 PDF，統計 <span class="ps-pill">BA</span> / <span class="ps-pill">AA</span> / <span class="ps-pill">GA</span> / <span class="ps-pill">SC</span>。AA 以「金額 ÷ 單價」換算（四捨五入到最接近 0.5），AA 單價固定。</p>
 
-      <label class="ps-drop" id="ps-drop">
-        <input type="file" id="ps-file" accept="application/pdf" />
-        <strong>點我選擇 PDF 或拖曳到這裡</strong>
-        <div class="ps-small ps-muted">無文字層將自動 OCR（繁中＋英文）。</div>
-      </label>
+  <label class="ps-drop" id="ps-drop">
+    <input type="file" id="ps-file" accept="application/pdf" />
+    <strong>點我選擇 PDF 或拖曳到這裡</strong>
+    <div class="ps-small ps-muted">無文字層將自動 OCR（繁中＋英文）。</div>
+  </label>
 
-      <div class="ps-btns">
-        <button class="ps-btn" id="ps-demo" type="button">載入示範資料</button>
-        <button class="ps-btn" id="ps-apply" type="button" disabled>帶入上方表單</button>
-        <button class="ps-btn" id="ps-csv" type="button" disabled>匯出 CSV</button>
-        <button class="ps-btn" id="ps-json" type="button" disabled>匯出 JSON</button>
-      </div>
+  <div class="ps-btns">
+    <button class="ps-btn" id="ps-demo" type="button">載入示範資料</button>
+    <button class="ps-btn" id="ps-apply" type="button" disabled>帶入上方表單</button>
+    <button class="ps-btn" id="ps-csv" type="button" disabled>匯出 CSV</button>
+    <button class="ps-btn" id="ps-json" type="button" disabled>匯出 JSON</button>
+  </div>
 
-      <label class="ps-small ps-muted" style="display:inline-flex;align-items:center;gap:6px;margin-top:6px;">
-        <input id="ps-auto-sync" type="checkbox"> 匯入後自動同步到下方支數
-      </label>
+  <label class="ps-small ps-muted" style="display:inline-flex;align-items:center;gap:6px;margin-top:6px;">
+    <input id="ps-auto-sync" type="checkbox"> 匯入後自動同步到下方支數
+  </label>
 
-      <div id="ps-syncbar" class="ps-syncbar ps-box" style="display:none;align-items:center;justify-content:space-between;gap:8px;">
-        <div class="ps-small">已解析出支數，要同步到下方表格（AA/BA/GA/SC）並立即計算薪資嗎？</div>
-        <div style="display:flex;gap:8px;">
-          <button id="ps-sync-yes" class="ps-btn">同步</button>
-          <button id="ps-sync-no" class="ps-btn" style="background:#fff;">先不要</button>
-        </div>
-      </div>
+  <div id="ps-syncbar" class="ps-syncbar ps-box" style="display:none;align-items:center;justify-content:space-between;gap:8px;">
+    <div class="ps-small">已解析出支數，要同步到下方表格（AA/BA/GA/SC）並立即計算薪資嗎？</div>
+    <div style="display:flex;gap:8px;">
+      <button id="ps-sync-yes" class="ps-btn">同步</button>
+      <button id="ps-sync-no" class="ps-btn" style="background:#fff;">先不要</button>
+    </div>
+  </div>
 
-      <div class="ps-box">
-        <div class="ps-small ps-muted">處理進度</div>
-        <div class="ps-progress"><div id="ps-bar" class="ps-bar"></div></div>
-        <div id="ps-status" class="ps-small ps-muted" style="margin-top:6px">待上傳</div>
-      </div>
-      <pre id="ps-debug" class="ps-box ps-small" style="white-space:pre-wrap">偵錯訊息：</pre>
+  <div class="ps-box">
+    <div class="ps-small ps-muted">處理進度</div>
+    <div class="ps-progress"><div id="ps-bar" class="ps-bar"></div></div>
+    <div id="ps-status" class="ps-small ps-muted" style="margin-top:6px">待上傳</div>
+  </div>
+  <pre id="ps-debug" class="ps-box ps-small" style="white-space:pre-wrap">偵錯訊息：</pre>
 
-      <div style="display:grid;gap:12px;margin-top:10px;">
-        <div class="ps-box">
-          <h3 class="ps-h3">BA 統計</h3>
-          <table id="ps-t-BA" class="ps-table">
-            <thead><tr><th>碼別</th><th class="ps-right">出現筆數</th><th class="ps-right">Σ 支數</th></tr></thead>
-            <tbody></tbody>
-          </table>
-        </div>
-        <div class="ps-box">
-          <h3 class="ps-h3">AA 統計</h3>
-          <table id="ps-t-AA" class="ps-table">
-            <thead><tr><th>碼別</th><th class="ps-right">出現筆數</th><th class="ps-right">Σ 支數</th></tr></thead>
-            <tbody></tbody>
-          </table>
-        </div>
-        <div class="ps-box">
-          <h3 class="ps-h3">GA 統計</h3>
-          <table id="ps-t-GA" class="ps-table">
-            <thead><tr><th>碼別</th><th class="ps-right">出現筆數</th><th class="ps-right">Σ 支數</th></tr></thead>
-            <tbody></tbody>
-          </table>
-        </div>
-        <div class="ps-box">
-          <h3 class="ps-h3">SC 統計</h3>
-          <table id="ps-t-SC" class="ps-table">
-            <thead><tr><th>碼別</th><th class="ps-right">出現筆數</th><th class="ps-right">Σ 支數</th></tr></thead>
-            <tbody></tbody>
-          </table>
-        </div>
-      </div>
-    </section>
-
-    <section class="card">
-      <h2 class="card-title">② AA 本月支數</h2>
-      <table class="tbl" id="tblAA">
-        <colgroup>
-          <col class="col-code" style="width: 35%;">
-          <col class="col-price" style="width: 20%;">
-          <col class="col-month" style="width: 25%;">
-          <col class="col-sum" style="width: 20%;">
-        </colgroup>
-        <thead><tr><th>代碼</th><th class="right">單價</th><th class="month-col">本月支數</th><th class="right">小計</th></tr></thead>
+  <div style="display:grid;gap:12px;margin-top:10px;">
+    <div class="ps-box">
+      <h3 class="ps-h3">BA 統計</h3>
+      <table id="ps-t-BA" class="ps-table">
+        <thead><tr><th>碼別</th><th class="ps-right">出現筆數</th><th class="ps-right">Σ 支數</th></tr></thead>
         <tbody></tbody>
-        <tfoot><tr><th colspan="3" class="right">AA 小計</th><th class="right" id="sumAA">0</th></tr></tfoot>
       </table>
-      <p class="hint" style="margin-top:8px;">單價固定：AA05 200、AA06 200、AA07 760、AA08 385、AA09 770、AA11 50。</p>
-    </section>
-
-    <section class="card">
-      <h2 class="card-title">③ BA 本月支數</h2>
-      <table class="tbl" id="tblBA">
-        <colgroup>
-          <col class="col-code" style="width: 35%;">
-          <col class="col-price" style="width: 20%;">
-          <col class="col-month" style="width: 25%;">
-          <col class="col-sum" style="width: 20%;">
-        </colgroup>
-        <thead><tr><th>代碼＋名稱</th><th class="right">單價</th><th class="month-col">本月支數</th><th class="right">小計</th></tr></thead>
+    </div>
+    <div class="ps-box">
+      <h3 class="ps-h3">AA 統計</h3>
+      <table id="ps-t-AA" class="ps-table">
+        <thead><tr><th>碼別</th><th class="ps-right">出現筆數</th><th class="ps-right">Σ 支數</th></tr></thead>
         <tbody></tbody>
-        <tfoot><tr><th colspan="3" class="right">BA 小計</th><th class="right" id="sumBA">0</th></tr></tfoot>
       </table>
-    </section>
-
-    <section class="card">
-      <h2 class="card-title">④ GA 本月支數</h2>
-      <table class="tbl" id="tblGA">
-        <colgroup>
-          <col class="col-code" style="width: 35%;">
-          <col class="col-price" style="width: 20%;">
-          <col class="col-month" style="width: 25%;">
-          <col class="col-sum" style="width: 20%;">
-        </colgroup>
-        <thead><tr><th>代碼＋名稱</th><th class="right">單價</th><th class="month-col">本月支數</th><th class="right">小計</th></tr></thead>
+    </div>
+    <div class="ps-box">
+      <h3 class="ps-h3">GA 統計</h3>
+      <table id="ps-t-GA" class="ps-table">
+        <thead><tr><th>碼別</th><th class="ps-right">出現筆數</th><th class="ps-right">Σ 支數</th></tr></thead>
         <tbody></tbody>
-        <tfoot><tr><th colspan="3" class="right">GA 小計</th><th class="right" id="sumGA">0</th></tr></tfoot>
       </table>
-    </section>
-
-    <section class="card">
-      <h2 class="card-title">⑤ SC 本月支數</h2>
-      <table class="tbl" id="tblSC">
-        <colgroup>
-          <col class="col-code" style="width: 35%;">
-          <col class="col-price" style="width: 20%;">
-          <col class="col-month" style="width: 25%;">
-          <col class="col-sum" style="width: 20%;">
-        </colgroup>
-        <thead><tr><th>代碼＋名稱</th><th class="right">單價</th><th class="month-col">本月支數</th><th class="right">小計</th></tr></thead>
+    </div>
+    <div class="ps-box">
+      <h3 class="ps-h3">SC 統計</h3>
+      <table id="ps-t-SC" class="ps-table">
+        <thead><tr><th>碼別</th><th class="ps-right">出現筆數</th><th class="ps-right">Σ 支數</th></tr></thead>
         <tbody></tbody>
-        <tfoot><tr><th colspan="3" class="right">SC 小計</th><th class="right" id="sumSC">0</th></tr></tfoot>
       </table>
-    </section>
+    </div>
+  </div>
+</section>
 
-    <section class="card">
-      <h2 class="card-title">⑥ 薪資結果 & 勞健保扣款</h2>
-      <div class="grid-2" style="margin-top:8px;">
-        <div class="card" style="padding:14px;">
-          <table class="tbl">
-            <tbody>
-              <tr><td>AA 小計</td><td class="right mono" id="resAA">0</td></tr>
-              <tr><td>BA 小計</td><td class="right mono" id="resBA">0</td></tr>
-              <tr><td>GA 小計</td><td class="right mono" id="resGA">0</td></tr>
-              <tr><td>SC 小計</td><td class="right mono" id="resSC">0</td></tr>
-              <tr><td><b>全月總額</b></td><td class="right mono" id="resTotal"><b>0</b></td></tr>
-              <tr><td>拆薪比例</td><td class="right mono"><span id="resRatio">60</span>%</td></tr>
-              <tr><td><b>拆薪後薪資</b></td><td class="right mono" id="resSalary"><b>0</b></td></tr>
-              <tr><td><b>實領（扣勞健保）</b></td><td class="right mono" id="resNet"><b>0</b></td></tr>
-            </tbody>
-          </table>
-        </div>
-        <div class="card" style="padding:14px;">
-          <div class="row-mid" style="margin-bottom:10px;">
-            <span class="pill-note">自動依「拆薪後薪資」抓 ≥ 薪資的最大投保級距</span>
-          </div>
-          <table class="tbl insurance-table">
-            <colgroup>
-                <col style="width:28%;">
-                <col style="width:22%;">
-                <col style="width:22%;">
-                <col style="width:14%;">
-                <col style="width:14%;">
-            </colgroup>
-            <thead>
-                <tr>
-                    <th>投保級距</th>
-                    <th>勞保<br><span class="sub-text">(員工)</span></th>
-                    <th>健保<br><span class="sub-text">(員工)</span></th>
-                    <th>合計</th>
-                    <th>設定</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td data-label="投保級距"><select id="insGrade" style="width:100%;"></select></td>
-                    <td class="right" data-label="勞保(員工)"><input id="insLabor" type="number" min="0" step="1" value="0" style="height:34px;width:100%;text-align:center !important;"></td>
-                    <td class="right" data-label="健保(員工)"><input id="insHealth" type="number" min="0" step="1" value="0" style="height:34px;width:100%;text-align:center !important;"></td>
-                    <td class="right mono" id="insSum" data-label="合計">0</td>
-                    <td data-label="設定">
-                        <label class="chip auto-chip"><input id="insAuto" type="checkbox" checked> 自動</label>
-                    </td>
-                </tr>
-            </tbody>
-          </table>
-          <div class="row-mid" style="margin-top:12px;">
-            <div class="pill-note">實領（拆薪後薪資－勞健保合計）：<b class="mono" id="netPay">0</b></div>
-          </div>
-        </div>
+<section class="card">
+  <h2 class="card-title">② AA 本月支數</h2>
+  <table class="tbl" id="tblAA">
+    <colgroup>
+      <col class="col-code" style="width: 35%;">
+      <col class="col-price" style="width: 20%;">
+      <col class="col-month" style="width: 25%;">
+      <col class="col-sum" style="width: 20%;">
+    </colgroup>
+    <thead><tr><th>代碼</th><th class="right">單價</th><th class="month-col">本月支數</th><th class="right">小計</th></tr></thead>
+    <tbody></tbody>
+    <tfoot><tr><th colspan="3" class="right">AA 小計</th><th class="right" id="sumAA">0</th></tr></tfoot>
+  </table>
+  <p class="hint" style="margin-top:8px;">單價固定：AA05 200、AA06 200、AA07 760、AA08 385、AA09 770、AA11 50。</p>
+</section>
+
+<section class="card">
+  <h2 class="card-title">③ BA 本月支數</h2>
+  <table class="tbl" id="tblBA">
+    <colgroup>
+      <col class="col-code" style="width: 35%;">
+      <col class="col-price" style="width: 20%;">
+      <col class="col-month" style="width: 25%;">
+      <col class="col-sum" style="width: 20%;">
+    </colgroup>
+    <thead><tr><th>代碼＋名稱</th><th class="right">單價</th><th class="month-col">本月支數</th><th class="right">小計</th></tr></thead>
+    <tbody></tbody>
+    <tfoot><tr><th colspan="3" class="right">BA 小計</th><th class="right" id="sumBA">0</th></tr></tfoot>
+  </table>
+</section>
+
+<section class="card">
+  <h2 class="card-title">④ GA 本月支數</h2>
+  <table class="tbl" id="tblGA">
+    <colgroup>
+      <col class="col-code" style="width: 35%;">
+      <col class="col-price" style="width: 20%;">
+      <col class="col-month" style="width: 25%;">
+      <col class="col-sum" style="width: 20%;">
+    </colgroup>
+    <thead><tr><th>代碼＋名稱</th><th class="right">單價</th><th class="month-col">本月支數</th><th class="right">小計</th></tr></thead>
+    <tbody></tbody>
+    <tfoot><tr><th colspan="3" class="right">GA 小計</th><th class="right" id="sumGA">0</th></tr></tfoot>
+  </table>
+</section>
+
+<section class="card">
+  <h2 class="card-title">⑤ SC 本月支數</h2>
+  <table class="tbl" id="tblSC">
+    <colgroup>
+      <col class="col-code" style="width: 35%;">
+      <col class="col-price" style="width: 20%;">
+      <col class="col-month" style="width: 25%;">
+      <col class="col-sum" style="width: 20%;">
+    </colgroup>
+    <thead><tr><th>代碼＋名稱</th><th class="right">單價</th><th class="month-col">本月支數</th><th class="right">小計</th></tr></thead>
+    <tbody></tbody>
+    <tfoot><tr><th colspan="3" class="right">SC 小計</th><th class="right" id="sumSC">0</th></tr></tfoot>
+  </table>
+</section>
+
+<section class="card">
+  <h2 class="card-title">⑥ 薪資結果 & 勞健保扣款</h2>
+  <div class="grid-2" style="margin-top:8px;">
+    <div class="card" style="padding:14px;">
+      <table class="tbl">
+        <tbody>
+          <tr><td>AA 小計</td><td class="right mono" id="resAA">0</td></tr>
+          <tr><td>BA 小計</td><td class="right mono" id="resBA">0</td></tr>
+          <tr><td>GA 小計</td><td class="right mono" id="resGA">0</td></tr>
+          <tr><td>SC 小計</td><td class="right mono" id="resSC">0</td></tr>
+          <tr><td><b>全月總額</b></td><td class="right mono" id="resTotal"><b>0</b></td></tr>
+          <tr><td>拆薪比例</td><td class="right mono"><span id="resRatio">60</span>%</td></tr>
+          <tr><td><b>拆薪後薪資</b></td><td class="right mono" id="resSalary"><b>0</b></td></tr>
+          <tr><td><b>實領（扣勞健保）</b></td><td class="right mono" id="resNet"><b>0</b></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="card" style="padding:14px;">
+      <div class="row-mid" style="margin-bottom:10px;">
+        <span class="pill-note">自動依「拆薪後薪資」抓 ≥ 薪資的最大投保級距</span>
       </div>
-    </section>
+      <table class="tbl insurance-table">
+        <colgroup>
+            <col style="width:28%;">
+            <col style="width:22%;">
+            <col style="width:22%;">
+            <col style="width:14%;">
+            <col style="width:14%;">
+        </colgroup>
+        <thead>
+            <tr>
+                <th>投保級距</th>
+                <th>勞保<br><span class="sub-text">(員工)</span></th>
+                <th>健保<br><span class="sub-text">(員工)</span></th>
+                <th>合計</th>
+                <th>設定</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td data-label="投保級距"><select id="insGrade" style="width:100%;"></select></td>
+                <td class="right" data-label="勞保(員工)"><input id="insLabor" type="number" min="0" step="1" value="0" style="height:34px;width:100%;text-align:right;"></td>
+                <td class="right" data-label="健保(員工)"><input id="insHealth" type="number" min="0" step="1" value="0" style="height:34px;width:100%;text-align:right;"></td>
+                <td class="right mono" id="insSum" data-label="合計">0</td>
+                <td data-label="設定">
+                    <label class="chip auto-chip"><input id="insAuto" type="checkbox" checked> 自動</label>
+                </td>
+            </tr>
+        </tbody>
+      </table>
+      <div class="row-mid" style="margin-top:12px;">
+        <div class="pill-note">實領（拆薪後薪資－勞健保合計）：<b class="mono" id="netPay">0</b></div>
+      </div>
+    </div>
+  </div>
+</section>
   </main>
-  
+
   <footer id="bottomDock" class="footerbar">
     <div class="foot">
       <span class="ok">※ 每年 <b>2 月</b> 和 <b>8 月</b> 調整投保級距，並於次月 <b>1 號</b> 生效。</span>
@@ -917,7 +930,7 @@
       });
     })();
   </script>
-  
+
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
     import { getAuth, signInWithPopup, GoogleAuthProvider, signOut, onAuthStateChanged } 
@@ -961,5 +974,6 @@
 
     if(dom.modal) dom.modal.addEventListener('click',e=>{if(e.target===dom.modal&&auth.currentUser&&dom.user.textContent!="")dom.modal.style.display='none'});
   </script>
+
 </body>
 </html>
