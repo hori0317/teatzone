@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>首頁｜長照工具平台</title>
+  <meta name="description" content="專業的長照服務工具平台，提供額度試算、薪資計算與影音教學。">
+  <link rel="icon" type="image/x-icon" href="YORU.ico" />
+  <link rel="stylesheet" href="style.css" />
+  
+  <!-- 會員彈窗樣式 (沿用) -->
+  <style>
+    .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(47,47,32,0.6); backdrop-filter: blur(3px); z-index: 2000; display: flex; justify-content: center; align-items: center; padding: 20px; }
+    .modal-content { background: #fffdf5; border: 1px solid #e6dca8; border-radius: 12px; padding: 24px; width: 100%; max-width: 420px; box-shadow: 0 10px 25px rgba(0,0,0,0.15); text-align: center; }
+    .modal-content h3 { color: #2e7d32; margin-top: 0; }
+    .modal-content input { width: 100%; padding: 10px; border: 1px solid #e6dca8; background: #fff; border-radius: 8px; font-size: 16px; margin-top: 4px; box-sizing: border-box; }
+    .modal-actions { margin-top: 20px; }
+  </style>
+
+  <script src="nav.js" defer></script>
+</head>
+<body data-page="home"> <!-- Body ID 設為 home -->
+
+  <!-- 頂部導覽列 (注意：額度計算機的連結已改成 calculator.html) -->
+  <header class="topbar">
+    <div class="brand">
+      <a href="index.html" class="logo-link"><img src="org-logo.png" alt="logo" onerror="this.style.opacity=0.2" /></a>
+      <span class="site-title" data-sync-title>長照工具平台</span>
+    </div>
+    
+    <nav class="nav-links" aria-label="主選單">
+      <a href="calculator.html">額度計算機</a> <!-- 連結修改 -->
+      <a href="payroll.html">薪資計算機</a>
+      <a href="video.html">影音專區</a>
+      <a href="care-info.html">長照相關資訊</a>
+      <a href="news.html">最新公告</a>
+      <a href="contact.html">聯繫方式</a>
+      <a href="about.html">關於我們</a>
+    </nav>
+    
+    <div class="actions" style="align-items: center; gap: 8px;">
+        <button class="btn pill" style="background:#4285F4; color:white;" id="btnLogin" type="button">Google 登入</button>
+        <div id="member-area" style="display:none; align-items: center; gap:5px;">
+            <span id="userDisplay" style="font-size: 13px; font-weight: bold; color: #333; margin-right: 4px;"></span>
+            <a href="admin.html" id="btnAdminLink" class="btn pill" style="background:#673AB7; color:white; font-size:12px; padding:4px 10px; text-decoration:none; display:none;">管理後台</a>
+            <button class="btn pill" style="background:#777; color:white; font-size:12px; padding:4px 10px;" id="btnEditProfile" type="button">修改資料</button>
+            <button class="btn pill" style="background:#EA4335; color:white;" id="btnLogout" type="button">登出</button>
+        </div>
+    </div>
+  </header>
+
+  <!-- ★ Hero Section (主視覺區) ★ -->
+  <section class="hero-section">
+    <div class="hero-bg-circle"></div>
+    
+    <div class="hero-content">
+      <h1 class="hero-title">守護家人的<br>溫暖依靠</h1>
+      <p class="hero-desc">
+        我們提供專業的長照額度試算、薪資計算工具，以及豐富的影音學習資源。<br>
+        讓複雜的長照制度變得簡單易懂。
+      </p>
+      <div style="display:flex; gap:10px;">
+        <a href="calculator.html" class="btn pill btn-green" style="padding:12px 24px; font-size:1.1rem; text-decoration:none;">開始試算額度</a>
+        <a href="video.html" class="btn pill btn-orange" style="padding:12px 24px; font-size:1.1rem; text-decoration:none;">觀看教學影片</a>
+      </div>
+    </div>
+
+    <div class="hero-image">
+      <!-- 這裡放一張溫馨的照片，目前使用佔位圖，請換成你的 -->
+      <img src="https://images.unsplash.com/photo-1576765608535-5f04d1e3f289?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="長照服務形象圖">
+    </div>
+  </section>
+
+  <!-- ★ 功能特色區 (Grid 卡片) ★ -->
+  <section class="features-section">
+    <div class="section-heading">
+      <h2>我們的服務與工具</h2>
+      <p>點擊下方卡片快速前往您需要的功能</p>
+    </div>
+
+    <div class="features-grid">
+      <!-- 卡片 1 -->
+      <a href="calculator.html" class="feature-card">
+        <div class="feature-icon">🧮</div>
+        <h3 class="feature-title">額度計算機</h3>
+        <p class="feature-text">快速計算 CMS 補助額度與自付金額，協助您規劃長照預算。</p>
+      </a>
+
+      <!-- 卡片 2 -->
+      <a href="payroll.html" class="feature-card">
+        <div class="feature-icon">💰</div>
+        <h3 class="feature-title">薪資計算機</h3>
+        <p class="feature-text">專為居服員與機構設計，快速拆解 AA/BA 碼別薪資結構。</p>
+      </a>
+
+      <!-- 卡片 3 -->
+      <a href="video.html" class="feature-card">
+        <div class="feature-icon">🎥</div>
+        <h3 class="feature-title">影音專區</h3>
+        <p class="feature-text">會員專屬教學影片，深入淺出了解長照服務內容。</p>
+      </a>
+
+      <!-- 卡片 4 -->
+      <a href="care-info.html" class="feature-card">
+        <div class="feature-icon">ℹ️</div>
+        <h3 class="feature-title">長照資訊</h3>
+        <p class="feature-text">彙整最新法規、補助代碼表與常見問題 Q&A。</p>
+      </a>
+    </div>
+  </section>
+
+  <footer id="bottomDock" class="footerbar">
+    <div class="foot"><span class="ok">© hori 長照工具平台</span></div>
+  </footer>
+
+  <!-- 會員資料填寫彈窗 (必須保留，首頁登入也會觸發) -->
+  <div id="profile-modal" class="modal-overlay" style="display:none;">
+    <div class="modal-content">
+      <h3>歡迎加入！請完善資料</h3>
+      <p>填寫您的基本資訊，讓我們為您記錄試算結果。</p>
+      <div style="text-align:left; margin-bottom:12px;">
+        <label style="font-weight:700; color:var(--ink); font-size:15px;">姓名 / 稱呼</label>
+        <input type="text" id="pf-name" placeholder="例如：王小明">
+      </div>
+      <div style="text-align:left; margin-bottom:12px;">
+        <label style="font-weight:700; color:var(--ink); font-size:15px;">使用者年齡</label>
+        <input type="number" id="pf-age" placeholder="例如：65">
+      </div>
+      <div class="modal-actions">
+        <button id="btn-save-profile" class="btn pill btn-green" style="width:100%; font-size:16px; padding:10px;">儲存並開始使用</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Firebase 邏輯 (只保留會員與管理員，移除不需要的計算儲存邏輯) -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+    import { getAuth, signInWithPopup, GoogleAuthProvider, signOut, onAuthStateChanged } 
+      from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+    import { getFirestore, doc, getDoc, setDoc, serverTimestamp } 
+      from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+    // 設定
+    const firebaseConfig = {
+      apiKey: "AIzaSyCZMhdUI0HeIoj5masuRh00pzP3SMbF6Yc",
+      authDomain: "hori-test-1b93c.firebaseapp.com",
+      projectId: "hori-test-1b93c",
+      storageBucket: "hori-test-1b93c.firebasestorage.app",
+      messagingSenderId: "549583061796",
+      appId: "1:549583061796:web:ad58b8bf80c2b6b71c29b1"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+    const provider = new GoogleAuthProvider();
+
+    const btnLogin = document.getElementById('btnLogin');
+    const btnLogout = document.getElementById('btnLogout');
+    const memberArea = document.getElementById('member-area');
+    const userDisplay = document.getElementById('userDisplay');
+    const btnAdminLink = document.getElementById('btnAdminLink');
+    
+    const profileModal = document.getElementById('profile-modal');
+    const pfNameInput = document.getElementById('pf-name');
+    const pfAgeInput = document.getElementById('pf-age');
+    const btnSaveProfile = document.getElementById('btn-save-profile');
+    const modalTitle = profileModal.querySelector('h3');
+    const btnEditProfile = document.getElementById('btnEditProfile');
+
+    let currentUser = null;
+
+    btnLogin.addEventListener('click', () => {
+      signInWithPopup(auth, provider).catch(e => {
+          if(e.code === 'auth/unauthorized-domain') alert("請至 Firebase 新增授權網域");
+          else alert(e.message);
+      });
+    });
+
+    btnLogout.addEventListener('click', () => {
+      signOut(auth).then(() => { alert("已登出"); location.reload(); });
+    });
+
+    onAuthStateChanged(auth, async (user) => {
+      if (user) {
+        currentUser = user;
+        btnLogin.style.display = 'none';
+        
+        const userDocRef = doc(db, "users", user.uid);
+        try {
+          const docSnap = await getDoc(userDocRef);
+          if (docSnap.exists()) showMemberUI(docSnap.data().name);
+          else openProfileModal("歡迎加入！請完善資料", user.displayName || "", "");
+        } catch (e) { console.error(e); }
+
+        try {
+          const adminSnap = await getDoc(doc(db, "admins", user.email));
+          if (adminSnap.exists() && btnAdminLink) btnAdminLink.style.display = 'inline-block';
+        } catch(e) { console.error(e); }
+
+      } else {
+        currentUser = null;
+        btnLogin.style.display = 'block';
+        memberArea.style.display = 'none';
+        if(profileModal) profileModal.style.display = 'none';
+        if(btnAdminLink) btnAdminLink.style.display = 'none';
+        userDisplay.textContent = '';
+      }
+    });
+
+    function showMemberUI(name) {
+      memberArea.style.display = 'flex';
+      userDisplay.textContent = name;
+    }
+
+    function openProfileModal(title, dName, dAge) {
+      if(modalTitle) modalTitle.textContent = title;
+      pfNameInput.value = dName;
+      pfAgeInput.value = dAge;
+      profileModal.style.display = 'flex';
+    }
+
+    btnEditProfile.addEventListener('click', async () => {
+      const s = await getDoc(doc(db, "users", currentUser.uid));
+      if(s.exists()){ const d = s.data(); openProfileModal("修改個人資料", d.name, d.age); }
+    });
+
+    btnSaveProfile.addEventListener('click', async () => {
+      const name = pfNameInput.value.trim();
+      const age = pfAgeInput.value.trim();
+      if(!name || !age) return alert("請填寫完整");
+      
+      await setDoc(doc(db, "users", currentUser.uid), {
+        name, age, email: currentUser.email, lastUpdated: serverTimestamp()
+      }, { merge: true });
+      
+      alert("儲存成功");
+      profileModal.style.display = 'none';
+      showMemberUI(name);
+    });
+    
+    if(profileModal){
+      profileModal.addEventListener('click', (e) => {
+          if (e.target === profileModal && currentUser && userDisplay.textContent !== "") {
+              profileModal.style.display = 'none';
+          }
+      });
+    }
+  </script>
+</body>
+</html>
