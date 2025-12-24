@@ -26,3 +26,22 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 });
+// ==========================================
+//  全站通用：基本防護 (防右鍵、防 F12、防複製)
+// ==========================================
+document.addEventListener('contextmenu', e => e.preventDefault()); // 鎖右鍵
+
+document.addEventListener('keydown', e => {
+  // 擋 F12
+  if (e.key === 'F12') {
+    e.preventDefault();
+  }
+  // 擋 Ctrl+U (看原始碼), Ctrl+S (存檔), Ctrl+P (列印)
+  if ((e.ctrlKey || e.metaKey) && ['u', 's', 'p'].includes(e.key.toLowerCase())) {
+    e.preventDefault();
+  }
+});
+
+// 擋選取與複製
+document.addEventListener('selectstart', e => e.preventDefault());
+document.addEventListener('copy', e => e.preventDefault());
