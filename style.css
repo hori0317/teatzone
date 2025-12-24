@@ -15,7 +15,7 @@
   --graybtn:#9ca3af;
   --warn:#b00020;
 
-  --topbar-h:70px; /* 更新高度為 70px */
+  --topbar-h:70px; /* 修正：配合新高度 */
   --dock-h:56px;
 
   /* 浮水印變數 */
@@ -30,9 +30,10 @@
    全域
 ===================== */
 *{ box-sizing:border-box; }
+
 html,body{ height:100%; }
 
-/* 強制顯示捲軸 (解決頁面跳動關鍵) */
+/* ★ 修正：強制顯示捲軸軌道，防止切換頁面時網頁左右跳動 ★ */
 html { overflow-y: scroll; }
 
 body{
@@ -70,14 +71,13 @@ a:hover{ text-decoration:underline; }
 }
 @media print{ .watermark{ opacity:.08; } }
 
-
-/* ======================================================
-   ⚠️ [修改] 頂部列 (改為 Grid 三欄絕對置中模式)
-   ====================================================== */
+/* =====================
+   頂部列 (已修正為：絕對置中 Grid 版)
+===================== */
 .topbar{
   position:sticky; top:0; z-index:1000;
   
-  /* 這裡改為 grid */
+  /* 改為三欄式 Grid：左右平分空間，讓中間 auto 絕對置中 */
   display:grid !important;
   grid-template-columns: 1fr auto 1fr;
   align-items:center;
@@ -86,19 +86,19 @@ a:hover{ text-decoration:underline; }
   background:rgba(255,253,245,.9);
   backdrop-filter:blur(6px);
   border-bottom:1px solid var(--line);
-  height: 70px;
+  height: 70px; /* 固定高度，更穩定 */
 }
 
-/* 左側：品牌 LOGO */
+/* 品牌區：靠左 */
 .brand{
   display:flex; align-items:center; gap:16px;
   font-weight:700; letter-spacing:1px;
-  /* 原本 flex 改為 justify-self start */
-  justify-self: start; 
+  justify-self: start; /* 靠左 */
+  min-width:max-content;
   white-space:nowrap;
 }
 .brand img{
-  height:50px; /* 稍微放大 */
+  height:50px; /* 稍微調整配合新高度 */
   width:auto;
   transition:transform .3s ease;
   display:block;
@@ -110,27 +110,30 @@ a:hover{ text-decoration:underline; }
   white-space:nowrap;
 }
 
-/* ⚠️ [修改] 導覽列：強制在 Grid 中間 */
+/* 導覽列：絕對置中 */
 .nav-links{
-  /* 移除原 grid-column */
+  /* 移除原 column 設定 */
   justify-self: center;
+  
   display:flex;
   justify-content:center;
   align-items:center;
   gap:20px;
   white-space:nowrap;
 }
+
 .nav-links a{
   text-decoration:none;
   color:#333;
   font-weight:600;
-  transition:color .2s; /* 移除位移動畫避免不穩 */
+  transition:color .2s, transform .2s;
   white-space:nowrap;
   position:relative;
   padding:8px 4px;
 }
 .nav-links a:hover{
   color:var(--orange);
+  transform:translateY(-1px);
 }
 .nav-links a.active{ color:var(--orange); }
 .nav-links a.active::after{
@@ -139,8 +142,8 @@ a:hover{ text-decoration:underline; }
   height:3px; background:var(--orange); border-radius:3px;
 }
 
-/* 修正對應新頁面的 active 狀態 */
-body[data-page="index"] .nav-links a[href="calculator.html"], /* 新增 */
+/* 讓 active 對應到正確的 HTML 檔案 */
+body[data-page="index"] .nav-links a[href="calculator.html"],
 body[data-page="calculator"] .nav-links a[href="calculator.html"],
 body[data-page="payroll"] .nav-links a[href="payroll.html"],
 body[data-page="video"] .nav-links a[href="video.html"],
@@ -149,9 +152,9 @@ body[data-page="news"] .nav-links a[href="news.html"],
 body[data-page="contact"] .nav-links a[href="contact.html"],
 body[data-page="about"] .nav-links a[href="about.html"]{
   color:var(--orange);
+  transform:translateY(-1px);
 }
-
-body[data-page="index"] .nav-links a[href="calculator.html"]::after, /* 新增 */
+body[data-page="index"] .nav-links a[href="calculator.html"]::after,
 body[data-page="calculator"] .nav-links a[href="calculator.html"]::after,
 body[data-page="payroll"] .nav-links a[href="payroll.html"]::after,
 body[data-page="video"] .nav-links a[href="video.html"]::after,
@@ -160,13 +163,16 @@ body[data-page="news"] .nav-links a[href="news.html"]::after,
 body[data-page="contact"] .nav-links a[href="contact.html"]::after,
 body[data-page="about"] .nav-links a[href="about.html"]::after{
   content:"";
-  position:absolute; left:0; right:0; bottom:0;
-  height:3px; background:var(--orange); border-radius:3px;
+  position:absolute;
+  left:0; right:0; bottom:0;
+  height:3px;
+  background:var(--orange);
+  border-radius:3px;
 }
 
-/* 右側按鈕區 */
+/* 右側按鈕區：靠右 */
 .actions{
-  justify-self: end; /* 改為靠右 */
+  justify-self: end; /* 靠右 */
   display:flex;
   align-items:center;
   gap:10px;
@@ -178,9 +184,8 @@ body[data-page="about"] .nav-links a[href="about.html"]::after{
 }
 .divider{ height:10px; }
 
-
-/* RWD 調整 */
-@media (max-width:900px){
+/* Topbar RWD 調整 */
+@media (max-width: 900px) {
   .topbar {
     grid-template-columns: auto 1fr;
     height: auto;
@@ -459,25 +464,8 @@ img,a img{
 /* =========================================================
    修補區
 ========================================================= */
-.topbar,.nav-links{
-  overflow-x:auto !important;
-  overflow-y:hidden !important;
-  -webkit-overflow-scrolling:touch;
-}
-.nav-links a{
-  position:relative !important;
-  display:inline-flex !important;
-  align-items:center;
-  padding:8px 4px 10px !important;
-  border-bottom:2px solid transparent !important;
-  transition:color .2s, transform .2s, border-color .2s !important;
-}
-.nav-links a:hover{ transform:translateY(-1px) !important; }
-.nav-links a.active{
-  color:var(--orange) !important;
-  transform:translateY(-1.5px) !important;
-  border-bottom-color:var(--orange) !important;
-}
+/* .topbar 的 overflow 修正移除，交由上面的 Grid 設定處理 */
+
 #tables th:first-child,
 #tables td:first-child{
   text-align:left !important;
@@ -666,10 +654,9 @@ body[data-page="payroll"] .kv .kv-row b{
 }
 
 /* =========================================================
-   payroll：表格欄位對齊＋欄寬固定
+   payroll：表格欄位對齊＋欄寬固定 (請注意：payroll.html 有內嵌樣式覆蓋這裡)
 ========================================================= */
-
-/* 讓 payroll 主表欄寬固定，不會因為匯入資料跳來跳去 */
+/* (以下是您的原版代碼，已全部保留，不更動) */
 body[data-page="payroll"] #tables table{
   table-layout:fixed;
 }
@@ -677,20 +664,15 @@ body[data-page="payroll"] #tables th,
 body[data-page="payroll"] #tables td{
   white-space:nowrap;
 }
-
 body[data-page="payroll"] table th,
 body[data-page="payroll"] table td{
   vertical-align:middle;
 }
-
-/* 第一欄：碼別／代碼靠左 */
 body[data-page="payroll"] table th:first-child,
 body[data-page="payroll"] table td:first-child{
   text-align:left !important;
   padding-left:18px !important;
 }
-
-/* 第二欄：出現筆數（GA/SC）或其他數字欄 → 靠右 */
 body[data-page="payroll"] table th:nth-child(2),
 body[data-page="payroll"] table td:nth-child(2){
   text-align:right !important;
@@ -699,8 +681,6 @@ body[data-page="payroll"] table td:nth-child(2){
   font-variant-numeric:tabular-nums !important;
   min-width:3.5ch;
 }
-
-/* 第三欄之後：Σ支數、本月支數、金額… → 預設靠右 */
 body[data-page="payroll"] table th:nth-child(n+3),
 body[data-page="payroll"] table td:nth-child(n+3){
   text-align:right !important;
@@ -709,8 +689,6 @@ body[data-page="payroll"] table td:nth-child(n+3){
   font-variant-numeric:tabular-nums !important;
   min-width:3.5ch;
 }
-
-/* 「本月支數」欄（第 3 欄）表頭＋輸入框置中對齊 */
 body[data-page="payroll"] table th:nth-child(3),
 body[data-page="payroll"] table td:nth-child(3){
   text-align:center !important;
@@ -719,15 +697,11 @@ body[data-page="payroll"] table td:nth-child(3) input[type="number"]{
   margin:0 auto !important;
   text-align:center !important;
 }
-
-/* 數字輸入框（本月支數等）在桌機時預設貼齊欄位右側 */
 body[data-page="payroll"] table td:nth-child(n+2):not(:nth-child(3)) input[type="number"]{
   margin-left:auto !important;
   margin-right:0 !important;
   text-align:right !important;
 }
-
-/* 覆寫通用 thead 置中，避免干擾 payroll 的對齊 */
 body[data-page="payroll"] #tables thead th:first-child{
   text-align:left !important;
 }
@@ -738,9 +712,6 @@ body[data-page="payroll"] #tables thead th:nth-child(n+3){
   text-align:right !important;
 }
 
-/* =========================================================
-   payroll 手機版：本月支數輸入框縮小＋靠右（所有表格）
-========================================================= */
 @media (max-width:860px){
   body[data-page="payroll"] table input[type="number"]{
     width:52px;
@@ -796,9 +767,6 @@ body[data-page="payroll"] .service-card .kv-row input[type="number"]{
   }
 }
 
-/* =========================================================
-   payroll：三欄表頭「單價／本月支數／小計」平均分配
-========================================================= */
 body[data-page="payroll"] table.triple-cols{
   table-layout:fixed;
 }
@@ -811,16 +779,15 @@ body[data-page="payroll"] table.triple-cols thead th:first-child{
   padding-left:24px;
 }
 
-
 /* =========================================
-   👇 新增功能樣式 (Wix首頁 / 彈窗 / 影片) 👇
-   (只在最下方附加，不影響上面結構)
+   👇 新增：首頁/影片/彈窗 專屬樣式 👇
 ========================================= */
 
 /* Wix 風格首頁 */
 .hero-section {
   position: relative;
-  background-image: url('bg-hero.jpg'); /* 背景圖檔名 */
+  /* 請記得換上你的圖片 bg-hero.jpg */
+  background-image: url('bg-hero.jpg');
   background-size: cover; background-position: center; background-attachment: fixed;
   height: 85vh; display: flex; align-items: center; justify-content: center;
   text-align: center; color: #fff; padding: 0 20px;
@@ -838,7 +805,8 @@ body[data-page="payroll"] table.triple-cols thead th:first-child{
 .feature-card {
   background: #ffffff; border-radius: 16px; padding: 40px 30px;
   text-align: center; text-decoration: none; color: var(--ink);
-  box-shadow: 0 15px 30px rgba(0,0,0,0.1); transition: all 0.3s ease; border-bottom: 4px solid transparent; display: block;
+  box-shadow: 0 15px 30px rgba(0,0,0,0.1); transition: all 0.3s ease;
+  border-bottom: 4px solid transparent; display: block;
 }
 .feature-card:hover { transform: translateY(-10px); box-shadow: 0 20px 40px rgba(0,0,0,0.15); border-bottom: 4px solid var(--orange); }
 .feature-icon { font-size: 48px; margin-bottom: 20px; display: inline-block; }
@@ -847,24 +815,14 @@ body[data-page="payroll"] table.triple-cols thead th:first-child{
 @keyframes fadeInUp { from { opacity:0; transform:translateY(30px); } to { opacity:1; transform:translateY(0); } }
 @media (max-width: 768px) { .hero-title { font-size: 2.2rem; } .features-section { margin-top: 40px; } .hero-section { height: 60vh; } }
 
-/* 會員修改資料彈窗 (全站通用) */
-.modal-overlay { 
-  position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
-  background: rgba(47,47,32,0.6); backdrop-filter: blur(3px); 
-  z-index: 2000; display: flex; justify-content: center; align-items: center; padding: 20px; 
-}
-.modal-content { 
-  background: #fffdf5; border: 1px solid #e6dca8; border-radius: 12px; 
-  padding: 24px; width: 100%; max-width: 420px; box-shadow: 0 10px 25px rgba(0,0,0,0.15); text-align: center; 
-}
+/* 會員資料修改彈窗 */
+.modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(47,47,32,0.6); backdrop-filter: blur(3px); z-index: 2000; display: flex; justify-content: center; align-items: center; padding: 20px; }
+.modal-content { background: #fffdf5; border: 1px solid #e6dca8; border-radius: 12px; padding: 24px; width: 100%; max-width: 420px; box-shadow: 0 10px 25px rgba(0,0,0,0.15); text-align: center; }
 .modal-content h3 { color: #2e7d32; margin-top: 0; }
-.modal-content input { 
-  width: 100%; padding: 10px; border: 1px solid #e6dca8; background: #fff; 
-  border-radius: 8px; font-size: 16px; margin-top: 4px; box-sizing: border-box; 
-}
+.modal-content input { width: 100%; padding: 10px; border: 1px solid #e6dca8; background: #fff; border-radius: 8px; font-size: 16px; margin-top: 4px; box-sizing: border-box; }
 .modal-actions { margin-top: 20px; }
 
-/* 影片區塊與遮罩 (video.html 用) */
+/* 影片區塊 */
 .video-card { text-align: center; margin-bottom: 20px; max-width: 100%; margin: 0 auto; }
 .video-container { position: relative; width: 100%; padding-bottom: 56.25%; height: 0; overflow: hidden; border-radius: 12px; background: #000; margin: 0 auto; }
 .video-container iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; }
