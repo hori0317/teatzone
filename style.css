@@ -829,3 +829,31 @@ body[data-page="payroll"] table.triple-cols thead th:first-child{
 .video-mask-top { position: absolute; top: 0; left: 0; width: 100%; height: 80px; background: transparent; z-index: 10; cursor: default; }
 .video-mask-logo { position: absolute; bottom: 0; right: 0; width: 120px; height: 50px; background: transparent; z-index: 10; cursor: default; }
 .login-warning-box { padding: 40px 20px; background: #f5f5f5; border: 2px dashed #ccc; border-radius: 12px; color: #666; font-weight: 700; }
+
+/* =========================================
+   Payroll 薪資表單排版微調
+   ========================================= */
+
+/* 將表格的「第 2 欄 (單價)」往左移 */
+/* 原理：增加右邊的留白 (padding-right)，把文字往左推 */
+.tbl th:nth-child(2),
+.tbl td:nth-child(2) {
+    padding-right: 50px !important; /* 數字越大，單價就會越往左邊靠 */
+    text-align: right;
+}
+
+/* 同步調整「第 4 欄 (小計)」也稍微往左移一點，比較整齊 */
+.tbl th:nth-child(4),
+.tbl td:nth-child(4) {
+    padding-right: 15px !important;
+}
+
+/* 確保電腦版欄位寬度固定，不會被擠壓 */
+@media (min-width: 861px) {
+  #tables table, .tbl {
+    table-layout: fixed;
+  }
+  /* 定義欄位寬度：代碼 | 單價 | 支數 | 小計 */
+  col.col-price { width: 140px !important; }
+  col.col-month { width: 160px !important; }
+}
