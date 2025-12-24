@@ -15,7 +15,7 @@
   --graybtn:#9ca3af;
   --warn:#b00020;
 
-  --topbar-h:70px; /* 更新為新高度 */
+  --topbar-h:70px;
   --dock-h:56px;
 
   /* 浮水印變數 */
@@ -33,7 +33,7 @@
 
 html, body { height: 100%; }
 
-/* ★ 強制顯示右側捲軸，防止切換頁面時跳動 ★ */
+/* 強制顯示右側捲軸，防止切換頁面時跳動 */
 html {
   overflow-y: scroll;
 }
@@ -51,7 +51,7 @@ a{ color:var(--green); text-decoration:none; }
 a:hover{ text-decoration:underline; }
 
 /* =====================
-   浮水印（固定＋左右緩慢擺動）
+   浮水印
 ===================== */
 .watermark{
   position:fixed; inset:0; pointer-events:none; z-index:0; overflow:hidden;
@@ -74,33 +74,33 @@ a:hover{ text-decoration:underline; }
 @media print{ .watermark{ opacity:.08; } }
 
 /* =====================
-   頂部導覽列 (固定位置與樣式) - 新版 Grid 置中
+   頂部導覽列 (固定位置 + 絕對置中)
 ===================== */
 .topbar {
   position: sticky;
   top: 0;
   z-index: 1000;
-  background: rgba(255, 253, 245, 0.95); /* 背景色 */
+  background: rgba(255, 253, 245, 0.95);
   backdrop-filter: blur(6px);
   border-bottom: 1px solid var(--line);
-  padding: 0 20px; /* 左右留白 */
-  height: 70px;    /* 固定高度，避免跳動 */
+  padding: 0 20px;
+  height: 70px;
   
-  /* ★ 關鍵排版：三欄式，中間絕對置中 ★ */
+  /* ★ 關鍵：三欄式 Grid，中間自動置中 ★ */
   display: grid;
   grid-template-columns: 1fr auto 1fr; 
   align-items: center;
 }
 
-/* 1. 左側品牌區 */
+/* 1. 左側品牌 */
 .brand {
   display: flex;
   align-items: center;
   gap: 12px;
-  justify-self: start; /* 靠左對齊 */
+  justify-self: start;
 }
 .brand img {
-  height: 40px; /* 固定 Logo 高度 */
+  height: 40px;
   width: auto;
   transition: transform .3s ease;
 }
@@ -112,11 +112,11 @@ a:hover{ text-decoration:underline; }
   white-space: nowrap;
 }
 
-/* 2. 中間導覽選單 */
+/* 2. 中間選單 */
 .nav-links {
   display: flex;
-  gap: 20px; /* 按鈕之間的間距 */
-  justify-self: center; /* 絕對置中 */
+  gap: 20px;
+  justify-self: center;
 }
 
 .nav-links a {
@@ -125,71 +125,57 @@ a:hover{ text-decoration:underline; }
   font-weight: 600;
   font-size: 16px;
   padding: 8px 4px;
-  position: relative; /* 為了放底線 */
+  position: relative;
   transition: color 0.3s;
 }
 
-.nav-links a:hover {
-  color: var(--orange);
-}
+.nav-links a:hover { color: var(--orange); }
 
-/* ★ 亮起狀態 (Active) 的樣式 ★ */
+/* 亮起狀態 */
 .nav-links a.active {
   color: var(--orange);
   font-weight: 800;
 }
-
-/* 底線動畫效果 */
 .nav-links a.active::after {
   content: "";
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  height: 3px; /* 線條粗細 */
-  background: var(--orange);
-  border-radius: 2px;
+  position: absolute; left: 0; right: 0; bottom: 0;
+  height: 3px; background: var(--orange); border-radius: 2px;
 }
 
-/* 3. 右側功能按鈕區 */
+/* 3. 右側按鈕 */
 .actions {
   display: flex;
   align-items: center;
   gap: 8px;
-  justify-self: end; /* 靠右對齊 */
+  justify-self: end;
   white-space: nowrap;
 }
-.actions-ghost{
-  min-width:320px;
-  height:1px;
-}
+.actions-ghost{ min-width:10px; } /* 修正：不需要太寬，避免手機版爆掉 */
 .divider{ height:10px; }
 
-/* RWD 手機版調整：變成可以左右滑動 */
+/* RWD 手機版導覽列調整 */
 @media (max-width: 900px) {
   .topbar {
-    grid-template-columns: auto 1fr; /* 手機版改回兩欄 */
+    grid-template-columns: auto 1fr;
     height: auto;
     padding: 10px 16px;
     gap: 10px;
   }
-  
   .brand { grid-column: 1; }
   .actions { grid-column: 2; }
   
-  /* 選單移到第二行 */
   .nav-links {
     grid-column: 1 / -1;
-    justify-self: stretch; /* 拉滿寬度 */
-    overflow-x: auto;      /* 允許滑動 */
+    justify-self: stretch;
+    overflow-x: auto;
     padding-bottom: 4px;
     gap: 15px;
   }
-  .site-title { display: none; } /* 手機版隱藏文字標題省空間 */
+  .site-title { display: none; }
 }
 
 /* =====================
-   底部資訊條（固定）
+   底部資訊條
 ===================== */
 .footerbar{
   position:sticky; bottom:0; z-index:1000;
@@ -200,53 +186,33 @@ a:hover{ text-decoration:underline; }
   padding-bottom:max(10px, env(safe-area-inset-bottom));
 }
 .foot{
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  gap:20px;
-  flex-wrap:wrap;
-  font-weight:600;
-  text-align:center;
+  display:flex; justify-content:center; align-items:center;
+  gap:20px; flex-wrap:wrap; font-weight:600; text-align:center;
 }
 .foot .ok{ color:var(--green); }
 .foot .warn{ color:var(--warn); }
 
 /* =====================
-   容器與卡片
+   容器與卡片通用
 ===================== */
 .container{
-  max-width:1360px;
-  margin:0 auto;
-  padding:18px 20px;
-}
-@media (min-width:1600px){
-  .container{ max-width:1440px; }
-}
-.grid-3{
-  display:grid;
-  grid-template-columns:1.15fr 0.95fr 1.15fr;
-  gap:0px;
+  max-width:1360px; margin:0 auto; padding:18px 20px;
 }
 .card{
-  background:var(--card);
-  border:1px solid var(--line);
-  border-radius:12px;
-  padding:20px;
-  box-shadow:0 1px 2px rgba(0,0,0,.05);
-  height:100%;
+  background:var(--card); border:1px solid var(--line);
+  border-radius:12px; padding:20px;
+  box-shadow:0 1px 2px rgba(0,0,0,.05); height:100%;
+}
+.card-title{
+  font-size:18px; font-weight:800; margin:0 0 12px 0; color:#2f2f20;
 }
 
 /* =====================
-   元件
+   按鈕元件
 ===================== */
 .btn{
-  border:none;
-  cursor:pointer;
-  padding:8px 14px;
-  border-radius:10px;
-  font-weight:700;
-  color:#fff;
-  background:var(--green);
+  border:none; cursor:pointer; padding:8px 14px;
+  border-radius:10px; font-weight:700; color:#fff; background:var(--green);
 }
 .btn:hover{ filter:brightness(1.05); }
 .btn:active{ transform:translateY(1px); }
@@ -255,479 +221,180 @@ a:hover{ text-decoration:underline; }
 .btn-orange{ background:var(--orange); color:#fff; }
 .btn-gray{ background:var(--graybtn); color:#fff; }
 
-.row{ display:flex; align-items:center; gap:10px; }
-.space-between{ justify-content:space-between; }
-.hint{ color:var(--muted); font-size:13px; }
-.note.warn,.hint.warn{ color:var(--warn); }
-.text-right{ text-align:right; }
-.bold{ font-weight:800; }
-.orange{ color:var(--orange); }
-
 /* =====================
-   基本資料區
-===================== */
-.form-row{
-  display:flex;
-  align-items:center;
-  gap:10px;
-  margin:12px 0;
-  font-size:15px;
-}
-.form-row>label{
-  flex:0 0 90px;
-  white-space:nowrap;
-}
-.form-row .chips,
-.form-row .cms{
-  flex:1 1 auto;
-  display:flex;
-  gap:8px;
-  flex-wrap:nowrap;
-  min-width:0;
-}
-.form-row input[type="number"],
-.form-row input[type="text"]{
-  height:34px;
-  font-size:15px;
-  border-radius:6px;
-  width:100px;
-  padding:2px 6px;
-  border:1px solid var(--line);
-  background:#fffdf6;
-}
-
-/* 選項外觀 */
-.chips{ display:flex; gap:8px; }
-.chip{
-  display:inline-flex;
-  align-items:center;
-  gap:6px;
-  padding:5px 10px;
-  border:1px solid var(--line);
-  border-radius:999px;
-  background:#fff;
-  font-size:14px;
-  cursor:pointer;
-  user-select:none;
-}
-.chip input{ transform:translateY(1px); }
-
-.cms{ display:flex; gap:8px; }
-.cms label{
-  display:inline-flex; align-items:center; gap:4px;
-  background:#fff; border:1px solid var(--line);
-  border-radius:12px; padding:5px 8px; font-size:14px;
-}
-.cms input{ transform:translateY(1px); }
-
-.note.warn{ margin-top:8px; font-size:13px; }
-
-@media (max-width:860px){
-  .form-row{ flex-wrap:wrap; }
-  .form-row>label{ flex:0 0 100%; }
-  .form-row .chips,.form-row .cms{ flex-wrap:wrap; }
-}
-
-/* =====================
-   左卡：AA 加成區
-===================== */
-.addon{ margin-top:8px; border:1px solid var(--line); border-radius:10px; overflow:hidden; }
-.addon-head,.addon-row{ display:grid; grid-template-columns:1fr 160px; align-items:center; }
-.addon-head{ background:#faf6e4; border-bottom:1px solid var(--line); font-weight:800; padding:10px 16px; }
-.addon-row{ padding:10px 16px; border-top:1px dashed var(--line); }
-.addon-row:first-child{ border-top:none; }
-.addon-row .addon-inputs{ display:flex; justify-content:flex-end; }
-.addon-row input[type="number"]{ width:90px; }
-.salary-total{ margin-top:10px; font-weight:800; text-align:right; color:var(--green); }
-
-/* QR 區 */
-.qrbox{ margin-top:16px; display:flex; gap:16px; align-items:center; }
-.qr-left img{ width:84px; height:84px; object-fit:contain; border-radius:10px; border:1px solid var(--line); background:#fff; }
-.qr-right p{ margin:4px 0; }
-.qr-right .bold{ font-weight:800; }
-.qr-right .orange{ color:var(--orange); font-weight:700; }
-.card .qrbox{ margin-top:20px; border-top:1px dashed var(--line); padding-top:14px; }
-
-/* =====================
-   服務表格（桌機）
+   表格樣式 (計算機用)
 ===================== */
 #tables{ width:100%; }
 #tables table{
-  width:100%;
-  border-collapse:separate;
-  border-spacing:0;
-  background:#fff;
-  border:1px solid var(--line);
-  border-radius:12px;
-  overflow:hidden;
+  width:100%; border-collapse:separate; border-spacing:0;
+  background:#fff; border:1px solid var(--line);
+  border-radius:12px; overflow:hidden; table-layout:fixed;
 }
 #tables thead th{
-  position:sticky;
-  top:0;
-  z-index:5;
-  background:#f6f1d9;
-  color:#584f2a;
-  padding:12px 18px;
-  border-bottom:1px solid var(--line);
-  font-weight:800;
+  position:sticky; top:0; z-index:5;
+  background:#f6f1d9; color:#584f2a; padding:12px 18px;
+  border-bottom:1px solid var(--line); font-weight:800; text-align:center;
 }
-#tables th:first-child,
-#tables td:first-child{
-  text-align:left;
-  padding-left:18px;
-}
+#tables th:first-child, #tables td:first-child{ text-align:left; padding-left:18px; }
 #tables td{
-  padding:12px 18px;
-  border-top:1px solid var(--line);
-  vertical-align:middle;
+  padding:12px 18px; border-top:1px solid var(--line);
+  vertical-align:middle; text-align:center; font-variant-numeric:tabular-nums;
 }
-#tables tbody tr:nth-child(even){ background:#fffef9; }
 #tables input[type="number"]{
-  width:70px; height:36px;
-  font-size:15px;
-  text-align:center;
-  margin:0 auto;
-  display:block;
+  width:70px; height:36px; font-size:15px;
+  text-align:center; margin:0 auto; display:block;
+  border:1px solid var(--line); border-radius:6px; background:#fffdf6;
 }
 
 /* =====================
-   手機／平板優化（通用）
+   手機表格 RWD
 ===================== */
 @media (max-width:860px){
-  .grid-3{ grid-template-columns:1fr; gap:14px; }
-  .card{ padding:14px; }
-  .topbar{ padding:14px 16px; }
-  .footerbar{ padding-bottom:max(10px, env(safe-area-inset-bottom)); }
-  #tables{
-    overflow-x:auto;
-    -webkit-overflow-scrolling:touch;
-    padding-bottom:calc(var(--dock-h) + 14px);
-    display:block;
+  #tables{ overflow-x:visible; padding-bottom:calc(var(--dock-h) + 14px); display:block; }
+  #tables table{ width:100%; min-width:0; border-collapse:separate; border-spacing:0 10px; border:none; background:none; }
+  #tables thead{ display:none; }
+  #tables tbody tr{
+    display:block; background:#fff; border:1px solid var(--line);
+    border-radius:12px; padding:8px 10px 6px; margin-bottom:10px;
   }
-  #tables table{
-    min-width:780px;
-    table-layout:fixed;
-    width:max-content;
+  #tables tbody td{
+    display:flex; justify-content:space-between; align-items:center;
+    padding:4px 0; border:none; font-size:13px; text-align:right;
   }
-  #tables th,#tables td{
-    padding:10px 12px;
-    font-size:14px;
-    line-height:1.2;
-    white-space:nowrap;
+  #tables tbody td:first-child{
+    flex-direction:column; align-items:flex-start;
+    padding-bottom:6px; margin-bottom:4px; border-bottom:1px dashed var(--line);
+    font-weight:700; text-align:left;
   }
-  #tables input[type="number"]{ width:58px; height:32px; font-size:14px; }
-  .foot{ gap:12px; font-size:14px; }
+  #tables tbody td:nth-child(n+2)::before{
+    content:attr(data-label); font-size:12px; color:var(--muted); margin-right:6px;
+  }
+  /* 針對特定欄位加標籤 (配合 script.js 生成的結構) */
+  #tables tbody td:nth-child(2)::before{ content:"單價"; }
+  #tables tbody td:nth-child(3)::before{ content:"週次數"; }
+  #tables tbody td:nth-child(4)::before{ content:"月次數"; }
+  #tables tbody td:nth-child(5)::before{ content:"總次數"; }
+  #tables tbody td:nth-child(6)::before{ content:"總金額"; }
+  
+  #tables input[type="number"]{
+    width:52px; height:28px; font-size:12px; padding:0 4px;
+    margin-left:auto !important; margin-right:0 !important;
+  }
 }
 
 /* =====================
-   列印
+   其他計算機元件 (Chips, Input)
 ===================== */
-@media print{
-  .topbar,.footerbar{ display:none !important; }
-  body{ padding:0; background:#fff; }
-  .card{ box-shadow:none; }
-  #tables thead th{ position:static; }
+.form-row{ display:flex; align-items:center; gap:10px; margin:12px 0; font-size:15px; flex-wrap:wrap; }
+.form-row>label{ flex:0 0 90px; white-space:nowrap; }
+.chips, .cms{ display:flex; gap:8px; flex-wrap:wrap; }
+.chip, .cms label{
+  display:inline-flex; align-items:center; gap:4px;
+  padding:5px 10px; border:1px solid var(--line);
+  border-radius:999px; background:#fff; cursor:pointer; font-size:14px;
 }
+.cms label{ border-radius:12px; }
+.form-row input[type="text"], .form-row input[type="number"]{
+  height:34px; padding:2px 6px; border:1px solid var(--line);
+  border-radius:6px; background:#fffdf6; width:100px;
+}
+.note.warn{ color:var(--warn); font-size:13px; }
+.qrbox{ margin-top:20px; display:flex; gap:16px; align-items:center; border-top:1px dashed var(--line); padding-top:14px; }
+.qr-left img{ width:84px; height:84px; border:1px solid var(--line); background:#fff; }
+.grid-2 { display: grid; grid-template-columns: 2.2fr 1.3fr; gap: 16px; align-items: start; }
+@media (max-width: 860px){ .grid-2{ grid-template-columns: 1fr; } }
 
 /* =====================
-   禁止選取文字與拖曳圖片
-===================== */
-*{
-  -webkit-user-select:none;
-  -moz-user-select:none;
-  -ms-user-select:none;
-  user-select:none;
-}
-img,a img{
-  -webkit-user-drag:none;
-  user-drag:none;
-}
-
-/* =========================================================
-   卡片文字樣式
-========================================================= */
-.card-title{
-  font-size:18px;
-  font-weight:800;
-  margin:0 0 12px 0;
-  color:#2f2f20;
-}
-.service-card h3{
-  margin:24px 0 10px 2px !important;
-  font-size:16px !important;
-  font-weight:800 !important;
-  color:#6b6544 !important;
-}
-.kv .kv-row{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  padding:6px 0;
-  font-weight:600;
-  color:#2f2f20;
-}
-.addon-head span:last-child{
-  text-align:right;
-  padding-right:18px;
-}
-.hint{
-  color:var(--muted);
-  font-size:13px;
-}
-#tables thead th{ text-align:center !important; }
-#tables td,#tables th{
-  text-align:center;
-  vertical-align:middle;
-  font-variant-numeric:tabular-nums;
-}
-#tables th:first-child,#tables td:first-child{
-  text-align:left !important;
-  padding-left:18px !important;
-}
-.card .qrbox{
-  margin-top:20px;
-  border-top:1px dashed var(--line);
-  padding-top:14px;
-}
-.text-right{ text-align:right; }
-.bold{ font-weight:800; }
-.orange{ color:var(--orange); }
-
-/* =========================================================
-   手機版 index：卡片式服務列排版
-========================================================= */
-@media (max-width:860px){
-  body[data-page="index"] #tables{
-    overflow-x:visible !important;
-    padding-bottom:14px !important;
-  }
-  body[data-page="index"] #tables table{
-    width:100% !important;
-    min-width:0 !important;
-    table-layout:fixed;
-    border-collapse:separate;
-    border-spacing:0 10px;
-  }
-
-  body[data-page="index"] #tables thead{
-    display:none;
-  }
-
-  body[data-page="index"] #tables tbody tr{
-    display:block;
-    background:#fff;
-    border:1px solid var(--line);
-    border-radius:12px;
-    padding:8px 10px 6px;
-  }
-
-  body[data-page="index"] #tables tbody td{
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-    padding:4px 0;
-    border-top:none;
-    white-space:normal;
-    font-size:13px;
-  }
-
-  body[data-page="index"] #tables tbody td:first-child{
-    flex-direction:column;
-    align-items:flex-start;
-    padding-bottom:6px;
-    margin-bottom:4px;
-    border-bottom:1px dashed var(--line);
-    font-weight:700;
-  }
-  body[data-page="index"] #tables tbody td:first-child::before{
-    content:"服務項目";
-    font-size:12px;
-    color:var(--muted);
-    font-weight:500;
-    margin-bottom:2px;
-  }
-
-  body[data-page="index"] #tables tbody td:nth-child(n+2){
-    text-align:right;
-    gap:8px;
-  }
-  body[data-page="index"] #tables tbody td:nth-child(n+2)::before{
-    font-size:12px;
-    color:var(--muted);
-    font-weight:500;
-    margin-right:6px;
-  }
-  body[data-page="index"] #tables tbody td:nth-child(2)::before{ content:"單價"; }
-  body[data-page="index"] #tables tbody td:nth-child(3)::before{ content:"週次數"; }
-  body[data-page="index"] #tables tbody td:nth-child(4)::before{ content:"月次數"; }
-  body[data-page="index"] #tables tbody td:nth-child(5)::before{ content:"總次數"; }
-  body[data-page="index"] #tables tbody td:nth-child(6)::before{ content:"總金額"; }
-
-  body[data-page="index"] #tables tbody td:nth-child(2),
-  body[data-page="index"] #tables tbody td:nth-child(6){
-    font-variant-numeric:tabular-nums;
-  }
-
-  body[data-page="index"] #tables tbody td:nth-child(3) input[type="number"],
-  body[data-page="index"] #tables tbody td:nth-child(4) input[type="number"],
-  body[data-page="index"] #tables tbody td:nth-child(5) input[type="number"]{
-    margin-left:auto !important;
-    margin-right:0 !important;
-    text-align:right !important;
-    width:64px;
-    height:32px;
-    font-size:13px;
-  }
-
-  body[data-page="index"] #tables tbody td{
-    font-size:13px;
-  }
-}
-
-/* index 手機版輸入框再縮小 */
-@media (max-width:860px){
-  body[data-page="index"] #tables tbody td:nth-child(3) input[type="number"],
-  body[data-page="index"] #tables tbody td:nth-child(4) input[type="number"],
-  body[data-page="index"] #tables tbody td:nth-child(5) input[type="number"]{
-
-/* =====================
-   首頁 (Landing Page) 專用樣式
+   新版首頁 (Landing Page) - Wix 風格
 ===================== */
 
-/* 1. Hero 區塊 (大圖+歡迎詞) */
+/* 1. 全螢幕 Hero 區塊 (背景圖 + 遮罩) */
 .hero-section {
   position: relative;
-  background-color: var(--card); /* 奶油底 */
-  padding: 60px 20px;
+  /* ★ 請在這裡換上你的照片網址 ★ */
+  background-image: url('https://images.unsplash.com/photo-1581578731117-10d52143b0d8?q=80&w=1920&auto=format&fit=crop'); 
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed; /* 視差滾動效果 */
+  height: 85vh; /* 佔據螢幕 85% 高度 */
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 40px;
-  min-height: 500px; /* 至少 500px 高 */
-  overflow: hidden;
+  text-align: center;
+  color: #fff;
+  padding: 0 20px;
 }
 
-/* 裝飾圓形背景 */
-.hero-bg-circle {
-  position: absolute;
-  width: 600px;
-  height: 600px;
-  background: rgba(230, 220, 168, 0.3); /* 淡黃色圓圈 */
-  border-radius: 50%;
-  top: -100px;
-  right: -100px;
-  z-index: 0;
-}
-
-.hero-content {
-  flex: 1;
-  max-width: 500px;
+/* 黑色半透明遮罩 */
+.hero-section::before {
+  content: "";
+  position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0, 0, 0, 0.5); /* 調整透明度 0.5 */
   z-index: 1;
+}
+
+/* 內容層 */
+.hero-content {
+  position: relative; z-index: 2; max-width: 800px;
+  animation: fadeInUp 1s ease-out;
 }
 
 .hero-title {
-  font-size: 3rem;
-  font-weight: 900;
-  color: var(--green);
-  margin-bottom: 16px;
-  line-height: 1.2;
+  font-size: 3.5rem; font-weight: 900; margin-bottom: 20px;
+  letter-spacing: 2px; text-shadow: 0 2px 10px rgba(0,0,0,0.5);
 }
 
 .hero-desc {
-  font-size: 1.1rem;
-  color: var(--muted);
-  margin-bottom: 32px;
-  line-height: 1.6;
+  font-size: 1.25rem; margin-bottom: 40px; line-height: 1.6;
+  opacity: 0.9; text-shadow: 0 1px 5px rgba(0,0,0,0.5);
 }
 
-.hero-image {
-  flex: 1;
-  max-width: 600px;
-  z-index: 1;
-}
-
-.hero-image img {
-  width: 100%;
-  height: auto;
-  border-radius: 20px; /* 圓角照片 */
-  box-shadow: 20px 20px 0px rgba(46, 125, 50, 0.1); /* 陰影效果 */
-}
-
-/* 2. 功能入口卡片 (Grid 排版) */
+/* 2. 功能卡片區塊 (往上浮動) */
 .features-section {
-  padding: 60px 20px;
-  max-width: 1200px;
-  margin: 0 auto;
-}
-
-.section-heading {
-  text-align: center;
-  margin-bottom: 40px;
-}
-.section-heading h2 {
-  font-size: 2rem;
-  color: var(--ink);
-  margin-bottom: 10px;
-}
-.section-heading p {
-  color: var(--muted);
+  position: relative; max-width: 1200px;
+  margin: -80px auto 60px; /* 負邊距造成懸浮效果 */
+  padding: 0 20px; z-index: 5;
 }
 
 .features-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: 24px;
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 30px;
 }
 
+/* Wix 風格卡片 */
 .feature-card {
-  background: #fff;
-  border: 1px solid var(--line);
-  border-radius: 16px;
-  padding: 30px;
-  text-align: center;
-  transition: transform 0.3s, box-shadow 0.3s;
-  cursor: pointer;
-  text-decoration: none; /* 移除連結底線 */
+  background: #ffffff; border-radius: 16px; padding: 40px 30px;
+  text-align: center; text-decoration: none; color: var(--ink);
+  box-shadow: 0 15px 30px rgba(0,0,0,0.1);
+  transition: all 0.3s ease; border-bottom: 4px solid transparent;
   display: block;
 }
 
 .feature-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 10px 20px rgba(0,0,0,0.08);
-  border-color: var(--orange);
+  transform: translateY(-10px);
+  box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+  border-bottom: 4px solid var(--orange);
 }
 
 .feature-icon {
-  font-size: 40px;
-  margin-bottom: 20px;
-  display: inline-block;
-  background: var(--bg);
-  width: 80px;
-  height: 80px;
-  line-height: 80px;
-  border-radius: 50%;
+  font-size: 48px; margin-bottom: 20px; display: inline-block; color: var(--green);
 }
 
 .feature-title {
-  font-size: 1.25rem;
-  font-weight: 700;
-  color: var(--green);
-  margin-bottom: 10px;
+  font-size: 1.4rem; font-weight: 800; margin-bottom: 12px; color: #333;
 }
 
 .feature-text {
-  color: #666;
-  font-size: 0.95rem;
+  font-size: 0.95rem; color: #666; line-height: 1.6;
 }
 
-/* RWD 手機版調整 */
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(30px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
 @media (max-width: 768px) {
-  .hero-section {
-    flex-direction: column-reverse; /* 手機版圖在下，文在上 */
-    text-align: center;
-    padding: 40px 20px;
-  }
   .hero-title { font-size: 2.2rem; }
-  .hero-image img { box-shadow: 10px 10px 0px rgba(46, 125, 50, 0.1); }
-  .features-grid { grid-template-columns: 1fr; } /* 手機單欄 */
+  .features-section { margin-top: 40px; } /* 手機版不懸浮 */
+  .hero-section { height: 60vh; }
 }
