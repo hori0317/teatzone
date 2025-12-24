@@ -77,13 +77,24 @@
     </div>
   </div>
 
+<!-- Firebase Script (強制儲存版 + 詳細錯誤偵錯) -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-    import { getAuth, signInWithRedirect, getRedirectResult, signOut, onAuthStateChanged, GoogleAuthProvider } 
-      from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-    import { getFirestore, doc, getDoc, setDoc, serverTimestamp } 
+    import { 
+        getAuth, 
+        signInWithRedirect, 
+        getRedirectResult, 
+        signOut, 
+        onAuthStateChanged, 
+        GoogleAuthProvider,
+        setPersistence,
+        browserLocalPersistence 
+    } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+    
+    import { getFirestore, collection, addDoc, serverTimestamp, doc, getDoc, setDoc } 
       from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
+    // 設定
     const firebaseConfig = {
       apiKey: "AIzaSyCZMhdUI0HeIoj5masuRh00pzP3SMbF6Yc",
       authDomain: "hori-test-1b93c.firebaseapp.com",
@@ -93,13 +104,16 @@
       appId: "1:549583061796:web:ad58b8bf80c2b6b71c29b1"
     };
 
+    // 初始化
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
     const db = getFirestore(app);
     const provider = new GoogleAuthProvider();
 
+    // DOM 元素取得
     const btnLogin = document.getElementById('btnLogin');
     const btnLogout = document.getElementById('btnLogout');
+    const btnSaveCloud = document.getElementById('btnSaveCloud');
     const memberArea = document.getElementById('member-area');
     const userDisplay = document.getElementById('userDisplay');
     const btnAdminLink = document.getElementById('btnAdminLink');
@@ -108,59 +122,99 @@
     const pfNameInput = document.getElementById('pf-name');
     const pfAgeInput = document.getElementById('pf-age');
     const btnSaveProfile = document.getElementById('btn-save-profile');
-    const modalTitle = profileModal.querySelector('h3');
+    const modalTitle = profileModal ? profileModal.querySelector('h3') : null;
     let currentUser = null;
 
-    if(btnLogin) btnLogin.addEventListener('click', () => signInWithRedirect(auth, provider));
+    // --- 1. 按鈕事件綁定 (加入 Persistence 設定) ---
+    if(btnLogin) {
+        btnLogin.addEventListener('click', () => {
+            // 先告訴按鈕變成處理中
+            btnLogin.textContent = "轉址中...";
+            
+            // 強制設定為本地儲存 (Local)
+            setPersistence(auth, browserLocalPersistence)
+                .then(() => {
+                    // 設定成功後，才執行跳轉
+                    return signInWithRedirect(auth, provider);
+                })
+                .catch((error) => {
+                    alert("儲存設定失敗：" + error.message);
+                });
+        });
+    }
+
     if(btnLogout) btnLogout.addEventListener('click', () => signOut(auth).then(() => { alert("已登出"); location.reload(); }));
 
-    // ★★★ 處理跳轉後的結果 (這裡會抓出為何登入失敗) ★★★
-    getRedirectResult(auth).then((result) => {
-        // 如果登入成功，onAuthStateChanged 會處理，這裡不用做太多事
-        console.log("Redirect Success");
-    }).catch((error) => {
-        console.error("登入錯誤:", error);
-        alert(`登入失敗：${error.message}\n(代碼: ${error.code})`);
-        // 常見錯誤提示
-        if (error.code === 'auth/unauthorized-domain') {
-            alert("❌ 錯誤：目前的網址不在 Firebase 授權清單內。\n請去 Firebase Console -> Authentication -> Settings -> Authorized domains 新增網域。");
-        }
-    });
+    // --- 2. 處理跳轉回來的結果 (偵錯重點) ---
+    // 當頁面從 Google 跳轉回來，這個 Promise 會執行
+    getRedirectResult(auth)
+        .then((result) => {
+            if (result) {
+                console.log("登入成功 (Redirect):", result.user);
+                // 這裡不用做顯示邏輯，交給 onAuthStateChanged
+            }
+        })
+        .catch((error) => {
+            console.error(error);
+            // ★ 如果這裡跳出警告，我們就知道原因了 ★
+            alert(`登入發生錯誤！\n代碼: ${error.code}\n訊息: ${error.message}`);
+        });
 
+    // --- 3. 監聽登入狀態 ---
     onAuthStateChanged(auth, async (user) => {
       if (user) {
+        // --- 登入成功 ---
         currentUser = user;
         if(btnLogin) btnLogin.style.display = 'none';
         if(memberArea) memberArea.style.display = 'flex';
         if(userDisplay) userDisplay.textContent = user.displayName || user.email;
 
+        // 檢查會員資料
         try {
           const docSnap = await getDoc(doc(db, "users", user.uid));
           if (docSnap.exists()) {
+             // 舊用戶：顯示名字
              if(userDisplay && docSnap.data().name) userDisplay.textContent = docSnap.data().name;
           } else {
+             // 新用戶：跳出彈窗
              if(modalTitle) modalTitle.textContent = "歡迎加入！請完善資料";
              if(pfNameInput) pfNameInput.value = user.displayName || "";
              if(profileModal) profileModal.style.display = 'flex';
           }
-        } catch(e) {}
+        } catch(e) { console.error("讀取會員錯誤", e); }
 
+        // 檢查管理員
         try {
           const adminSnap = await getDoc(doc(db, "admins", user.email));
           if (adminSnap.exists() && btnAdminLink) btnAdminLink.style.display = 'inline-block';
         } catch(e) {}
+      
       } else {
+        // --- 未登入 ---
         currentUser = null;
-        if(btnLogin) btnLogin.style.display = 'block';
+        if(btnLogin) {
+            btnLogin.style.display = 'block';
+            btnLogin.textContent = "Google 登入"; // 恢復按鈕文字
+        }
         if(memberArea) memberArea.style.display = 'none';
       }
     });
 
+    // --- 修改資料 ---
     if(btnEditProfile) btnEditProfile.addEventListener('click', async () => {
-        const s = await getDoc(doc(db, "users", currentUser.uid));
-        if(s.exists()){ const d = s.data(); modalTitle.textContent="修改個人資料"; pfNameInput.value=d.name; pfAgeInput.value=d.age; profileModal.style.display='flex'; }
+        try {
+            const s = await getDoc(doc(db, "users", currentUser.uid));
+            if(s.exists()){ 
+                const d = s.data(); 
+                if(modalTitle) modalTitle.textContent = "修改個人資料";
+                if(pfNameInput) pfNameInput.value = d.name || "";
+                if(pfAgeInput) pfAgeInput.value = d.age || "";
+                if(profileModal) profileModal.style.display = 'flex';
+            }
+        } catch(e){ alert("讀取資料失敗"); }
     });
 
+    // --- 儲存個人資料 ---
     if(btnSaveProfile) btnSaveProfile.addEventListener('click', async () => {
       const name = pfNameInput.value.trim();
       const age = pfAgeInput.value.trim();
@@ -169,18 +223,52 @@
       const userRef = doc(db, "users", currentUser.uid);
       try {
           const docSnap = await getDoc(userRef);
-          // 確保新舊會員都有 createdAt
-          let data = { name, age, email: currentUser.email, lastUpdated: serverTimestamp() };
-          if (!docSnap.exists() || !docSnap.data().createdAt) {
-             data.createdAt = serverTimestamp(); 
-          }
+          // 邏輯：不管新舊，如果缺 createdAt 就補上
+          let dataToSave = { name, age, email: currentUser.email, lastUpdated: serverTimestamp() };
           
-          await setDoc(userRef, data, { merge: true });
+          if (!docSnap.exists() || !docSnap.data().createdAt) {
+              dataToSave.createdAt = serverTimestamp();
+          }
+
+          await setDoc(userRef, dataToSave, { merge: true });
           alert("儲存成功");
-          profileModal.style.display = 'none';
+          if(profileModal) profileModal.style.display = 'none';
           if(userDisplay) userDisplay.textContent = name;
       } catch (e) { alert("儲存失敗：" + e.message); }
     });
+
+    // --- 儲存計算結果 (Calculator only) ---
+    if(btnSaveCloud) btnSaveCloud.addEventListener('click', async () => {
+      if (!currentUser) return alert("請先登入");
+      try {
+          const cmsEl = document.querySelector('input[name="cms"]:checked');
+          const idtyEl = document.querySelector('input[name="idty"]:checked');
+          const totalEl = document.getElementById('sumGrand');
+          const selfEl = document.getElementById('sumSelfpay');
+          const govEl = document.getElementById('sumGovSubsidy');
+          
+          const name = userDisplay ? userDisplay.textContent : currentUser.email;
+
+          await addDoc(collection(db, "care_records"), {
+              uid: currentUser.uid, 
+              memberName: name, 
+              email: currentUser.email,
+              cmsLevel: cmsEl ? cmsEl.value : "0", 
+              identity: idtyEl ? idtyEl.value : "未選", 
+              grandTotal: totalEl ? totalEl.textContent : "0",
+              selfPay: selfEl ? selfEl.textContent : "0",
+              govSubsidy: govEl ? govEl.textContent : "0",
+              createdAt: serverTimestamp(),
+              note: "額度計算機儲存"
+          });
+          alert("✅ 備份成功！");
+      } catch (e) { alert("❌ 儲存失敗：" + e.message); }
+    });
+
+    // 關閉彈窗
+    if(profileModal) profileModal.addEventListener('click', (e) => {
+        if (e.target === profileModal && currentUser && userDisplay && userDisplay.textContent !== "" && userDisplay.textContent !== currentUser.email) {
+            profileModal.style.display = 'none';
+        }
+    });
   </script>
-</body>
-</html>
