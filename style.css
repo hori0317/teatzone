@@ -312,7 +312,7 @@ a:hover{ text-decoration:underline; }
 .hero-section {
   position: relative;
   /* ★ 請在這裡換上你的照片網址 ★ */
-  background-image: url('https://images.unsplash.com/photo-1581578731117-10d52143b0d8?q=80&w=1920&auto=format&fit=crop'); 
+  background-image: url('bg-hero.jpg'); 
   background-size: cover;
   background-position: center;
   background-attachment: fixed; /* 視差滾動效果 */
