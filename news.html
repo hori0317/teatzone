@@ -3,12 +3,13 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>最新公告｜長照工具</title>
+  <title>最新公告｜長照工具平台</title>
   <meta name="description" content="單位公告與更新資訊。">
   <link rel="icon" type="image/x-icon" href="YORU.ico" />
   <link rel="stylesheet" href="style.css" />
+  
   <script src="nav.js" defer></script>
-  <script src="script.js" defer></script>
+  <!-- news.html 不需要 script.js (計算邏輯)，可以移除，或留著也不影響 -->
 </head>
 <body data-page="news">
   <header class="topbar">
@@ -16,16 +17,26 @@
       <a href="index.html" class="logo-link"><img src="org-logo.png" alt="logo" onerror="this.style.opacity=0.2" /></a>
       <span class="site-title" id="siteTitle" data-sync-title>最新公告</span>
     </div>
-<nav class="nav-links" aria-label="主選單">
-  <a href="calculator.html">額度計算機</a> <!-- ⚠️ 修正這裡 -->
-  <a href="payroll.html">薪資計算機</a>
-  <a href="video.html">影音專區</a>
-  <a href="care-info.html">長照相關資訊</a>
-  <a href="news.html">最新公告</a>
-  <a href="contact.html">聯繫方式</a>
-  <a href="about.html">關於我們</a>
-</nav>
-    <div class="actions actions-ghost" aria-hidden="true"></div>
+    
+    <nav class="nav-links" aria-label="主選單">
+      <a href="calculator.html">額度計算機</a>
+      <a href="payroll.html">薪資計算機</a>
+      <a href="video.html">影音專區</a>
+      <a href="care-info.html">長照相關資訊</a>
+      <a href="news.html">最新公告</a>
+      <a href="contact.html">聯繫方式</a>
+      <a href="about.html">關於我們</a>
+    </nav>
+    
+    <!-- 右側按鈕區 (必須加上這塊，程式碼才抓得到按鈕) -->
+    <div class="actions" style="align-items: center; gap: 8px;">
+        <button class="btn pill" style="background:#4285F4; color:white;" id="btnLogin" type="button">Google 登入</button>
+        <div id="member-area" style="display:none; align-items: center; gap:5px;">
+            <span id="userDisplay" style="font-size: 13px; font-weight: bold; color: #333; margin-right: 4px;"></span>
+            <a href="admin.html" id="btnAdminLink" class="btn pill" style="background:#673AB7; color:white; font-size:12px; padding:4px 10px; text-decoration:none; display:none;">管理後台</a>
+            <button class="btn pill" style="background:#EA4335; color:white;" id="btnLogout" type="button">登出</button>
+        </div>
+    </div>
   </header>
   <div class="divider"></div>
 
@@ -33,93 +44,96 @@
     <section class="card">
       <h1 class="card-title">最新公告</h1>
       <p class="hint">公告列表區塊</p>
+      <!-- 這裡可以放你的公告內容 -->
+      <ul>
+          <li>2025-01-01：系統正式上線！</li>
+          <li>2025-02-01：新增影音專區功能。</li>
+      </ul>
     </section>
   </main>
 
   <footer id="bottomDock" class="footerbar">
-    <div class="foot"><span class="ok">© hori</span></div>
+    <div class="foot"><span class="ok">© hori 長照工具平台</span></div>
   </footer>
-  <!-- Firebase Header 狀態控制 (通用版) -->
-<script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-  import { getAuth, signInWithPopup, GoogleAuthProvider, signOut, onAuthStateChanged } 
-    from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-  import { getFirestore, doc, getDoc } 
-    from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-  // 你的 Config
-  const firebaseConfig = {
-    apiKey: "AIzaSyCZMhdUI0HeIoj5masuRh00pzP3SMbF6Yc",
-    authDomain: "hori-test-1b93c.firebaseapp.com",
-    projectId: "hori-test-1b93c",
-    storageBucket: "hori-test-1b93c.firebasestorage.app",
-    messagingSenderId: "549583061796",
-    appId: "1:549583061796:web:ad58b8bf80c2b6b71c29b1"
-  };
+  <!-- ★★★ 這裡加入 Firebase Header 控制程式碼 ★★★ -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+    import { getAuth, signInWithPopup, GoogleAuthProvider, signOut, onAuthStateChanged } 
+      from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+    import { getFirestore, doc, getDoc } 
+      from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-  const app = initializeApp(firebaseConfig);
-  const auth = getAuth(app);
-  const db = getFirestore(app);
-  const provider = new GoogleAuthProvider();
+    // 你的 Config
+    const firebaseConfig = {
+      apiKey: "AIzaSyCZMhdUI0HeIoj5masuRh00pzP3SMbF6Yc",
+      authDomain: "hori-test-1b93c.firebaseapp.com",
+      projectId: "hori-test-1b93c",
+      storageBucket: "hori-test-1b93c.firebasestorage.app",
+      messagingSenderId: "549583061796",
+      appId: "1:549583061796:web:ad58b8bf80c2b6b71c29b1"
+    };
 
-  // 取得 Header 元素
-  const btnLogin = document.getElementById('btnLogin');
-  const btnLogout = document.getElementById('btnLogout');
-  const memberArea = document.getElementById('member-area');
-  const userDisplay = document.getElementById('userDisplay');
-  const btnAdminLink = document.getElementById('btnAdminLink');
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+    const provider = new GoogleAuthProvider();
 
-  // 登入
-  if(btnLogin) {
-      btnLogin.addEventListener('click', () => {
-        signInWithPopup(auth, provider).catch(e => {
-            if(e.code === 'auth/unauthorized-domain') alert("請至 Firebase 新增授權網域");
-            else alert(e.message);
+    // 取得 Header 元素
+    const btnLogin = document.getElementById('btnLogin');
+    const btnLogout = document.getElementById('btnLogout');
+    const memberArea = document.getElementById('member-area');
+    const userDisplay = document.getElementById('userDisplay');
+    const btnAdminLink = document.getElementById('btnAdminLink');
+
+    // 登入
+    if(btnLogin) {
+        btnLogin.addEventListener('click', () => {
+          signInWithPopup(auth, provider).catch(e => {
+              if(e.code === 'auth/unauthorized-domain') alert("請至 Firebase 新增授權網域");
+              else alert(e.message);
+          });
         });
-      });
-  }
-
-  // 登出
-  if(btnLogout) {
-      btnLogout.addEventListener('click', () => {
-        signOut(auth).then(() => { alert("已登出"); location.reload(); });
-      });
-  }
-
-  // 監聽狀態
-  onAuthStateChanged(auth, async (user) => {
-    if (user) {
-      // 登入狀態：隱藏登入鈕，顯示會員區
-      if(btnLogin) btnLogin.style.display = 'none';
-      if(memberArea) memberArea.style.display = 'flex';
-      
-      // 顯示名字 (預設顯示 Google 名稱，隨後抓取資料庫自訂名稱)
-      if(userDisplay) userDisplay.textContent = user.displayName || user.email;
-
-      // 抓取自訂姓名
-      try {
-        const docSnap = await getDoc(doc(db, "users", user.uid));
-        if (docSnap.exists() && docSnap.data().name) {
-            if(userDisplay) userDisplay.textContent = docSnap.data().name;
-        }
-      } catch (e) { console.error(e); }
-
-      // 檢查管理員權限
-      try {
-        const adminSnap = await getDoc(doc(db, "admins", user.email));
-        if (adminSnap.exists() && btnAdminLink) {
-            btnAdminLink.style.display = 'inline-block';
-        }
-      } catch(e) {}
-
-    } else {
-      // 未登入狀態
-      if(btnLogin) btnLogin.style.display = 'block';
-      if(memberArea) memberArea.style.display = 'none';
-      if(userDisplay) userDisplay.textContent = '';
-      if(btnAdminLink) btnAdminLink.style.display = 'none';
     }
-  });
-</script>
+
+    // 登出
+    if(btnLogout) {
+        btnLogout.addEventListener('click', () => {
+          signOut(auth).then(() => { alert("已登出"); location.reload(); });
+        });
+    }
+
+    // 監聽狀態
+    onAuthStateChanged(auth, async (user) => {
+      if (user) {
+        if(btnLogin) btnLogin.style.display = 'none';
+        if(memberArea) memberArea.style.display = 'flex';
+        
+        if(userDisplay) userDisplay.textContent = user.displayName || user.email;
+
+        // 抓取自訂姓名
+        try {
+          const docSnap = await getDoc(doc(db, "users", user.uid));
+          if (docSnap.exists() && docSnap.data().name) {
+              if(userDisplay) userDisplay.textContent = docSnap.data().name;
+          }
+        } catch (e) { console.error(e); }
+
+        // 檢查管理員權限
+        try {
+          const adminSnap = await getDoc(doc(db, "admins", user.email));
+          if (adminSnap.exists() && btnAdminLink) {
+              btnAdminLink.style.display = 'inline-block';
+          }
+        } catch(e) {}
+
+      } else {
+        if(btnLogin) btnLogin.style.display = 'block';
+        if(memberArea) memberArea.style.display = 'none';
+        if(userDisplay) userDisplay.textContent = '';
+        if(btnAdminLink) btnAdminLink.style.display = 'none';
+      }
+    });
+  </script>
 </body>
 </html>
