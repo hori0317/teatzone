@@ -901,7 +901,44 @@ width: 90px !important;
 }
 
 /* =========================================================
-[Payroll] 手機版：填空欄位上下置中 + 勞健保區塊修正（尚未解決的部分一起補齊）
+[Payroll] insurance-table：修正投保級距被擋住 + 欄位對齊
+（不改你 HTML，只用 CSS 把顯示問題修好）
+========================================================= */
+body[data-page="payroll"] .insurance-table th,
+body[data-page="payroll"] .insurance-table td {
+text-align: center;
+vertical-align: middle;
+}
+
+/* right class 在 insurance-table 內不該把整格推歪：強制置中格子 */
+body[data-page="payroll"] .insurance-table td.right {
+text-align: center !important;
+}
+
+/* 投保級距下拉：避免數字被截斷（補足右側箭頭空間） */
+body[data-page="payroll"] .insurance-table select#insGrade {
+min-width: 140px;
+padding-right: 30px;
+font-variant-numeric: tabular-nums;
+}
+
+/* 勞保/健保輸入框：跟欄位標題對齊（格子置中、數字仍靠右） */
+body[data-page="payroll"] .insurance-table input#insLabor,
+body[data-page="payroll"] .insurance-table input#insHealth {
+max-width: 140px;
+margin: 0 auto;
+display: block;
+text-align: right;
+}
+
+/* 合計顯示置中，避免看起來被擠偏 */
+body[data-page="payroll"] .insurance-table #insSum {
+text-align: center !important;
+}
+
+/* =========================================================
+[Payroll] 手機版：只把上方 row-mid 的欄位做「上字下欄」置中
+但表格卡片（AA/BA/GA/SC）維持「左標籤右數字 / 右輸入」
 ========================================================= */
 @media (max-width: 860px) {
 
@@ -931,59 +968,44 @@ margin: 0 auto;
 text-align: right;
 }
 
-/* ★ Payroll 手機版：表格「本月支數」那格要「上下置中」（你截圖中希望的樣子） */
+/* ★ 重點修正：手機版「本月支數」不要置中；要跟其他列一致：左標籤、右輸入框 */
 body[data-page="payroll"] .tbl td[data-label="本月支數"] {
-flex-direction: column;
-align-items: center;
-justify-content: center;
-text-align: center !important;
-gap: 6px;
-}
-
-body[data-page="payroll"] .tbl td[data-label="本月支數"]::before {
-flex: 0;
-text-align: center;
-margin-bottom: 0;
-}
-
-/* 讓本月支數輸入框維持置中（不被 td 的 space-between 影響） */
-body[data-page="payroll"] .tbl td[data-label="本月支數"] input[type="number"] {
-margin: 0 auto !important;
-}
-
-/* ★ 勞健保（insurance-table）手機版：避免欄位被擠壓，改成「上標籤、下欄位」的置中排版 */
-body[data-page="payroll"] .insurance-table td {
-flex-direction: column !important;
+flex-direction: row !important;
 align-items: center !important;
-justify-content: center !important;
-text-align: center !important;
-gap: 6px !important;
+justify-content: space-between !important;
+text-align: right !important;
+gap: 12px;
 }
 
-/* insurance-table 的 data-label 前綴置中 */
-body[data-page="payroll"] .insurance-table td[data-label]::before {
-flex: 0 !important;
-text-align: center !important;
+/* 「本月支數」標籤維持靠左 */
+body[data-page="payroll"] .tbl td[data-label="本月支數"]::before {
+content: attr(data-label);
+font-weight: 700;
+color: #5b5534;
+flex: 1;
+text-align: left;
 margin-bottom: 0 !important;
 }
 
-/* insurance-table 內的 input / select：寬度適中並置中 */
-body[data-page="payroll"] .insurance-table input,
-body[data-page="payroll"] .insurance-table select {
-width: 100% !important;
-max-width: 240px !important;
-margin: 0 auto !important;
+/* 「本月支數」輸入框靠右（你要的：填空欄位靠右側） */
+body[data-page="payroll"] .tbl td[data-label="本月支數"] input[type="number"] {
+margin-left: auto !important;
+margin-right: 0 !important;
+display: block;
 text-align: right;
 }
 
-/* 自動膠囊在手機版置中（避免歪一邊） */
-body[data-page="payroll"] .insurance-table .auto-chip {
-justify-content: center !important;
+/* ★ 投保級距表格在手機窄螢幕避免硬擠：改成可滑動，避免數字被擋住 */
+body[data-page="payroll"] .insurance-table {
+display: block;
+overflow-x: auto;
+-webkit-overflow-scrolling: touch;
+min-width: 560px;
 }
 
-/* 合計數字置中顯示，保持乾淨 */
-body[data-page="payroll"] .insurance-table #insSum {
-text-align: center !important;
+body[data-page="payroll"] .insurance-table th,
+body[data-page="payroll"] .insurance-table td {
+white-space: nowrap;
 }
 }
 
