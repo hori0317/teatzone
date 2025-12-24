@@ -10,78 +10,28 @@
   <script src="nav.js" defer></script>
   
   <style>
-    /* 
-       ★ 以下是 Payroll 本頁獨有的樣式與復原格式 
-       ★ 已調整間距與 RWD 手機版
-    */
-
-    /* KPI 卡片 */
-    .kpi { display:flex; gap:16px; flex-wrap:wrap; margin-top:10px; }
-    .kpi .box { flex:1 1 240px; background:#fff; border:1px solid var(--line); border-radius:12px; padding:16px; display:flex; flex-direction:column; gap:6px; box-shadow:0 1px 2px rgba(0,0,0,.05); }
-    .kpi .box .lbl { color:#7a7557; font-weight:700; }
-    .kpi .box .num { font-size:24px; font-weight:900; color:#2e7d32; }
-
-    /* 表格樣式 (複寫 global 設定) */
-    .tbl { width:100%; border-collapse:separate; border-spacing:0; background:#fff; border:1px solid var(--line); border-radius:12px; overflow:hidden; }
-    .tbl th { background:#f6f1d9; color:#5b5534; padding:10px; font-weight:800; border-bottom:1px solid var(--line); }
-    .tbl th.month-col { text-align:center; }
-    .tbl td { padding:10px; border-top:1px solid var(--line); vertical-align: middle; }
-    .tbl tbody tr:nth-child(even) { background:#fffef9; }
+    /* =======================================
+       Payroll 頁面專屬修正樣式
+       ======================================= */
     
-    /* 輸入框與右對齊 */
-    .tbl input[type="number"] { width:90px; height:34px; text-align:right; border:1px solid var(--line); border-radius:4px; }
-    .tbl .right { text-align:right; }
-    .tbl .mono { font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,"Liberation Mono",monospace; }
-
-    /* ★ 調整距離：讓單價離輸入框遠一點 ★ */
-    /* 桌機版生效 */
-    @media (min-width: 861px) {
-        .tbl table-layout: fixed;
-        /* 單價 (第2欄) */
-        .tbl th:nth-child(2), .tbl td:nth-child(2) {
-           text-align: right;
-           padding-right: 50px !important; /* 加大這裡，把單價文字往左擠 */
-        }
-        /* 小計 (第4欄) */
-        .tbl th:nth-child(4), .tbl td:nth-child(4) {
-           text-align: right;
-           padding-right: 20px !important; 
-        }
-        /* 本月支數置中 */
-        .tbl td[data-label="本月支數"] input { margin: 0 auto; display:block; }
+    /* 彈窗 */
+    .modal-overlay { 
+        position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
+        background: rgba(47,47,32,0.6); backdrop-filter: blur(3px); 
+        z-index: 2000; display: flex; justify-content: center; align-items: center; padding: 20px; 
     }
-
-    /* 其他 */
-    .grid-2 { display:grid; grid-template-columns:1fr 1fr; gap:14px; }
-    .row-mid { display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
-    .pill-note { display:inline-block; padding:2px 8px; border:1px solid var(--line); border-radius:999px; background:#fff; font-weight:700; color:#333; }
-
-    /* 手機版 (RWD 恢復為卡片式) */
-    @media (max-width:860px){
-      .grid-2 { grid-template-columns:1fr; }
-      .tbl { display:block; font-size:15px; border:0; background:none; overflow:visible; }
-      .tbl thead { display:none; }
-      .tbl tbody, .tbl tfoot { display:block; width:100%; }
-      .tbl tbody tr { display:block; border:1px solid var(--line); border-radius:12px; padding:10px 12px; margin-bottom:12px; background:#fff; box-shadow:0 1px 2px rgba(0,0,0,.05); }
-      .tbl tbody tr:nth-child(even) { background:#fff; }
-      
-      .tbl td { display:flex; gap:12px; justify-content:space-between; align-items:center; padding:6px 0; border:none; border-top: 1px dashed #eee; white-space: normal; }
-      .tbl td:first-child { border-top: none; }
-      
-      .tbl td[data-label]::before { content:attr(data-label); font-weight:700; color:#5b5534; flex:1; text-align:left; }
-      .tbl td[data-label="代碼＋名稱"] { flex-direction:column; align-items:flex-start; }
-      .tbl td[data-label="代碼＋名稱"]::before { margin-bottom:2px; }
-      
-      .tbl input[type="number"], .tbl select { width:100%; max-width:none; height:38px; text-align:right; }
-      
-      /* 手機版支數靠右 */
-      .tbl td[data-label="本月支數"] input { width:80px; margin-left: auto !important; }
-
-      .tbl tfoot { border:1px solid var(--line); border-radius:12px; background:#fff; padding:10px 12px; }
-      .tbl tfoot th { display:flex; justify-content:space-between; width:100%; background:none; border:none; padding:5px 0; text-align:right; }
+    .modal-content { 
+        background: #fffdf5; border: 1px solid #e6dca8; border-radius: 12px; 
+        padding: 24px; width: 100%; max-width: 420px; box-shadow: 0 10px 25px rgba(0,0,0,0.15); text-align: center; 
     }
+    .modal-content h3 { color: #2e7d32; margin-top: 0; }
+    .modal-content input { 
+        width: 100%; padding: 10px; border: 1px solid #e6dca8; background: #fff; 
+        border-radius: 8px; font-size: 16px; margin-top: 4px; box-sizing: border-box; 
+    }
+    .modal-actions { margin-top: 20px; }
 
-    /* PDF 小工具 (維持原樣) */
+    /* PDF 區塊 */
     .ps-muted{color:#5b6b81}.ps-small{font-size:.86rem}.ps-mono{font-family:ui-monospace,Menlo,Consolas,monospace}
     .ps-pill{display:inline-block;padding:0 6px;border:1px solid #dbe6ff;background:#eef4ff;border-radius:999px}
     .ps-grid{display:grid;gap:12px}@media(min-width:920px){.ps-grid{grid-template-columns:1.1fr .9fr}}
@@ -93,30 +43,91 @@
     .ps-bar{height:100%;width:0;background:#2667ff;transition:width .2s}
     .ps-h3{margin:.2rem 0 8px}
     .ps-table{width:100%;border-collapse:collapse} .ps-table thead th{background:#eef3ff;color:#102a56;text-align:left;padding:8px} .ps-table td{padding:8px;border-bottom:1px solid #edf1f7} .ps-right{text-align:right} .ps-syncbar{border-color:#c7e7c7;background:#f6fff6}
+
+    /* KPI 卡片 */
+    .kpi{display:flex; gap:16px; flex-wrap:wrap;}
+    .kpi .box{flex:1 1 240px; background:#fff; border:1px solid var(--line); border-radius:12px; padding:16px; display:flex; flex-direction:column; gap:6px; box-shadow:0 1px 2px rgba(0,0,0,.05);}
+    .kpi .box .lbl{color:#7a7557; font-weight:700;}
+    .kpi .box .num{font-size:24px; font-weight:900; color:#2e7d32;}
+
+    /* ★★★ 表格與欄位寬度強制修正 ★★★ */
+    .tbl{ width:100%; border-collapse:separate; border-spacing:0; background:#fff; border:1px solid var(--line); border-radius:12px; overflow:hidden; table-layout: fixed; /* 固定表格寬度 */ }
+    
+    .tbl th{ background:#f6f1d9; color:#5b5534; padding:12px; font-weight:800; border-bottom:1px solid var(--line); font-size: 15px;}
+    .tbl td{ padding:12px; border-top:1px solid var(--line); font-size: 15px; vertical-align: middle; }
+    
+    /* === 第1欄: 代碼 (靠左) === */
+    .tbl th:first-child, .tbl td:first-child { 
+        text-align: left; 
+        padding-left: 20px; 
+        white-space: nowrap; /* 不換行 */
+    }
+
+    /* === 第2欄: 單價 (靠右，避免太近) === */
+    .tbl th:nth-child(2), .tbl td:nth-child(2) {
+        text-align: right; 
+        padding-right: 40px !important; /* 往左推 */
+    }
+
+    /* === 第3欄: 本月支數 (置中) === */
+    .tbl th:nth-child(3), .tbl td:nth-child(3) {
+        text-align: center;
+    }
+    
+    /* === 第4欄: 小計 (靠右) === */
+    .tbl th:nth-child(4), .tbl td:nth-child(4) {
+        text-align: right;
+        padding-right: 20px;
+    }
+
+    .tbl tbody tr:nth-child(even){ background:#fffef9; }
+    .tbl input[type="number"]{ width:80px; height:34px; text-align:right; border:1px solid #ddd; border-radius:4px; margin: 0 auto; display:block;}
+    .tbl .right{ text-align:right; }
+    .tbl .mono{ font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; }
+
+    /* 其他排版 */
+    .grid-2{display:grid; grid-template-columns:1fr 1fr; gap:14px;}
+    .row-mid{display:flex; align-items:center; gap:10px; flex-wrap:wrap;}
+    .pill-note{display:inline-block; padding:2px 8px; border:1px solid var(--line); border-radius:999px; background:#fff; font-weight:700; color:#333;}
+    
+    @media (max-width:860px){
+      .grid-2{grid-template-columns:1fr;}
+      .tbl{display:block; font-size:15px; border:0; background:none; overflow:visible;}
+      .tbl thead{display:none;}
+      .tbl tbody,.tbl tfoot{display:block; width:100%;}
+      .tbl tbody tr{display:block; border:1px solid var(--line); border-radius:12px; padding:10px 12px; margin-bottom:12px; background:#fff; box-shadow:0 1px 2px rgba(0,0,0,.05);}
+      .tbl tbody tr:nth-child(even){background:#fff;}
+      .tbl td{display:flex; gap:12px; justify-content:space-between; align-items:center; padding:6px 0; line-height:1.45; white-space:normal; border-top:none; text-align: right !important;}
+      
+      .tbl td[data-label]::before{ content:attr(data-label); font-weight:700; color:#5b5534; flex:1; text-align:left; }
+      .tbl td[data-label="代碼＋名稱"]::before, .tbl td[data-label="代碼"]::before{margin-bottom:2px;}
+      
+      .tbl input[type="number"], .tbl select{width:100%; max-width:none; height:38px; text-align: right;}
+      
+      /* 手機版支數輸入框靠右 */
+      .tbl td[data-label="本月支數"] input { width:80px; margin-left: auto; display: block; }
+      
+      .tbl tfoot th{flex:1 1 auto; background:none; border:none; padding:0; text-align:right;}
+      
+      /* 強制手機版間距復原 */
+      .tbl th:nth-child(2), .tbl td:nth-child(2) { padding-right: 0 !important; }
+      .tbl th:first-child, .tbl td:first-child { padding-left: 0 !important; }
+    }
   </style>
 </head>
 <body data-page="payroll">
   
   <div class="watermark" aria-hidden="true">
-    <span class="wm-item" style="top:5%; left:5%; --dur:9s;">@hori版權所有</span>
-    <span class="wm-item" style="top:5%; left:35%; --dur:11s;">@hori版權所有</span>
+    <span class="wm-item" style="top:5%; left:5%;  --dur:9s;">@hori版權所有</span>
+    <span class="wm-item" style="top:50%; left:50%; --dur:10s;">@hori版權所有</span>
     <span class="wm-item" style="top:5%; left:65%; --dur:10s;">@hori版權所有</span>
     <span class="wm-item" style="top:25%; left:10%; --dur:13s;">@hori版權所有</span>
-    <span class="wm-item" style="top:25%; left:40%; --dur:12s;">@hori版權所有</span>
-    <span class="wm-item" style="top:25%; left:70%; --dur:14s;">@hori版權所有</span>
-    <span class="wm-item" style="top:50%; left:5%; --dur:10s;">@hori版權所有</span>
-    <span class="wm-item" style="top:50%; left:35%; --dur:11s;">@hori版權所有</span>
-    <span class="wm-item" style="top:50%; left:65%; --dur:9s;">@hori版權所有</span>
-    <span class="wm-item" style="top:75%; left:10%; --dur:13s;">@hori版權所有</span>
-    <span class="wm-item" style="top:75%; left:40%; --dur:12s;">@hori版權所有</span>
-    <span class="wm-item" style="top:75%; left:70%; --dur:10s;">@hori版權所有</span>
-    <span class="wm-item" style="top:90%; left:15%; --dur:11s;">@hori版權所有</span>
-    <span class="wm-item" style="top:90%; left:45%; --dur:10s;">@hori版權所有</span>
-    <span class="wm-item" style="top:90%; left:75%; --dur:12s;">@hori版權所有</span>
+    <span class="wm-item" style="top:75%; left:70%; --dur:14s;">@hori版權所有</span>
   </div>
 
   <header class="topbar">
     <div class="brand">
+      <!-- ★ 修改 1：Logo 連結指向 index.html ★ -->
       <a href="index.html" class="logo-link"><img src="org-logo.png" alt="logo" onerror="this.style.opacity=0.2" /></a>
       <span class="site-title" id="siteTitle" data-sync-title>薪資計算機</span>
     </div>
@@ -131,15 +142,17 @@
       <a href="about.html">關於我們</a>
     </nav>
     
-    <div class="actions" style="display:flex; align-items:center; gap:8px;">
+    <div class="actions" style="align-items: center; gap: 8px;">
         <button class="btn pill btn-gray" id="btnPrint" type="button">列印</button>
         <button class="btn pill btn-green" id="btnResetAll" type="button">全部清空</button>
+        
         <div style="width: 1px; height: 20px; background: #ccc; margin: 0 4px;"></div>
+        
         <button class="btn pill" style="background:#4285F4; color:white;" id="btnLogin" type="button">Google 登入</button>
         <div id="member-area" style="display:none; align-items: center; gap:5px;">
             <span id="userDisplay" style="font-size: 13px; font-weight: bold; color: #333; margin-right: 4px;"></span>
-            <a href="admin.html" id="btnAdminLink" class="btn pill" style="display:none;background:#673AB7;color:#fff;font-size:12px;padding:4px 10px;text-decoration:none">後台</a>
-            <button class="btn pill" style="background:#777; color:white; font-size:12px; padding:4px 10px;" id="btnEditProfile" type="button">修改</button>
+            <a href="admin.html" id="btnAdminLink" class="btn pill" style="background:#673AB7; color:white; font-size:12px; padding:4px 10px; text-decoration:none; display:none;">管理後台</a>
+            <button class="btn pill" style="background:#777; color:white; font-size:12px; padding:4px 10px;" id="btnEditProfile" type="button">修改資料</button>
             <button class="btn pill" style="background:#EA4335; color:white;" id="btnLogout" type="button">登出</button>
         </div>
     </div>
@@ -245,60 +258,70 @@
       </div>
     </section>
 
-    <!-- AA -->
+    <!-- ★★★ 表格開始 ★★★ -->
+    <!-- 為了解決寬度與對齊，使用 <col> 標籤明確定義欄位寬度 -->
     <section class="card">
       <h2 class="card-title">② AA 本月支數</h2>
       <table class="tbl" id="tblAA">
         <colgroup>
-          <col class="col-code"><col class="col-price"><col class="col-month"><col class="col-sum">
+          <col class="col-code" style="width: 45%;">
+          <col class="col-price" style="width: 15%;">
+          <col class="col-month" style="width: 15%;">
+          <col class="col-sum" style="width: 25%;">
         </colgroup>
-        <thead><tr><th style="min-width:220px;">代碼</th><th class="right">單價</th><th class="month-col">本月支數</th><th class="right">小計</th></tr></thead>
+        <thead><tr><th>代碼</th><th class="right">單價</th><th class="month-col">本月支數</th><th class="right">小計</th></tr></thead>
         <tbody></tbody>
         <tfoot><tr><th colspan="3" class="right">AA 小計</th><th class="right" id="sumAA">0</th></tr></tfoot>
       </table>
       <p class="hint" style="margin-top:8px;">單價固定：AA05 200、AA06 200、AA07 760、AA08 385、AA09 770、AA11 50。</p>
     </section>
 
-    <!-- BA -->
     <section class="card">
       <h2 class="card-title">③ BA 本月支數</h2>
       <table class="tbl" id="tblBA">
         <colgroup>
-          <col class="col-code"><col class="col-price"><col class="col-month"><col class="col-sum">
+          <col class="col-code" style="width: 45%;">
+          <col class="col-price" style="width: 15%;">
+          <col class="col-month" style="width: 15%;">
+          <col class="col-sum" style="width: 25%;">
         </colgroup>
-        <thead><tr><th style="min-width:260px;">代碼＋名稱</th><th class="right">單價</th><th class="month-col">本月支數</th><th class="right">小計</th></tr></thead>
+        <thead><tr><th>代碼＋名稱</th><th class="right">單價</th><th class="month-col">本月支數</th><th class="right">小計</th></tr></thead>
         <tbody></tbody>
         <tfoot><tr><th colspan="3" class="right">BA 小計</th><th class="right" id="sumBA">0</th></tr></tfoot>
       </table>
     </section>
 
-    <!-- GA -->
     <section class="card">
       <h2 class="card-title">④ GA 本月支數</h2>
       <table class="tbl" id="tblGA">
         <colgroup>
-          <col class="col-code"><col class="col-price"><col class="col-month"><col class="col-sum">
+          <col class="col-code" style="width: 45%;">
+          <col class="col-price" style="width: 15%;">
+          <col class="col-month" style="width: 15%;">
+          <col class="col-sum" style="width: 25%;">
         </colgroup>
-        <thead><tr><th style="min-width:220px;">代碼＋名稱</th><th class="right">單價</th><th class="month-col">本月支數</th><th class="right">小計</th></tr></thead>
+        <thead><tr><th>代碼＋名稱</th><th class="right">單價</th><th class="month-col">本月支數</th><th class="right">小計</th></tr></thead>
         <tbody></tbody>
         <tfoot><tr><th colspan="3" class="right">GA 小計</th><th class="right" id="sumGA">0</th></tr></tfoot>
       </table>
     </section>
 
-    <!-- SC -->
     <section class="card">
       <h2 class="card-title">⑤ SC 本月支數</h2>
       <table class="tbl" id="tblSC">
         <colgroup>
-          <col class="col-code"><col class="col-price"><col class="col-month"><col class="col-sum">
+          <col class="col-code" style="width: 45%;">
+          <col class="col-price" style="width: 15%;">
+          <col class="col-month" style="width: 15%;">
+          <col class="col-sum" style="width: 25%;">
         </colgroup>
-        <thead><tr><th style="min-width:220px;">代碼＋名稱</th><th class="right">單價</th><th class="month-col">本月支數</th><th class="right">小計</th></tr></thead>
+        <thead><tr><th>代碼＋名稱</th><th class="right">單價</th><th class="month-col">本月支數</th><th class="right">小計</th></tr></thead>
         <tbody></tbody>
         <tfoot><tr><th colspan="3" class="right">SC 小計</th><th class="right" id="sumSC">0</th></tr></tfoot>
       </table>
     </section>
+    <!-- ★★★ 表格結束 ★★★ -->
 
-    <!-- 結果與勞健保 -->
     <section class="card">
       <h2 class="card-title">⑥ 薪資結果 & 勞健保扣款</h2>
       <div class="grid-2" style="margin-top:8px;">
@@ -309,7 +332,7 @@
               <tr><td>BA 小計</td><td class="right mono" id="resBA">0</td></tr>
               <tr><td>GA 小計</td><td class="right mono" id="resGA">0</td></tr>
               <tr><td>SC 小計</td><td class="right mono" id="resSC">0</td></tr>
-              <tr><td><b>全月總額（AA+BA+GA+SC）</b></td><td class="right mono" id="resTotal"><b>0</b></td></tr>
+              <tr><td><b>全月總額</b></td><td class="right mono" id="resTotal"><b>0</b></td></tr>
               <tr><td>拆薪比例</td><td class="right mono"><span id="resRatio">60</span>%</td></tr>
               <tr><td><b>拆薪後薪資</b></td><td class="right mono" id="resSalary"><b>0</b></td></tr>
               <tr><td><b>實領（扣勞健保）</b></td><td class="right mono" id="resNet"><b>0</b></td></tr>
@@ -350,7 +373,12 @@
     </section>
   </main>
   
-  <!-- 彈窗 -->
+  <footer id="bottomDock" class="footerbar">
+    <div class="foot">
+      <span class="ok">※ 每年 <b>2 月</b> 和 <b>8 月</b> 調整投保級距，並於次月 <b>1 號</b> 生效。</span>
+    </div>
+  </footer>
+
   <div id="profile-modal" class="modal-overlay" style="display:none;">
     <div class="modal-content">
       <h3>歡迎加入！請完善資料</h3>
@@ -371,13 +399,6 @@
     </div>
   </div>
 
-  <footer id="bottomDock" class="footerbar">
-    <div class="foot">
-      <span class="ok">※ 每年 <b>2 月</b> 和 <b>8 月</b> 調整投保級距，並於次月 <b>1 號</b> 生效。</span>
-    </div>
-  </footer>
-
-  <!-- 邏輯部分 (Javascript) -->
   <script>
     (function(){
       const $ = s => document.querySelector(s);
@@ -516,9 +537,9 @@
       function findGradeBySalary(sal){
         const list = INS_TABLE.map(r=>r.grade).sort((a,b)=>a-b);
         for (const v of list){
-          if (sal <= v) return v;  // 找到第一個「大於等於薪資」的級距
+          if (sal <= v) return v; 
         }
-        return list[list.length-1]; // 超過最高級距時用最後一級
+        return list[list.length-1]; 
       }
       function getRow(grade){ return INS_TABLE.find(r=>r.grade===grade) || INS_TABLE[0]; }
       function syncInsuranceBySalary(salary){
@@ -555,15 +576,43 @@
       }
 
       function wire(){
-        ['#tblAA','#tblBA','#tblGA','#tblSC'].forEach(id=>{ document.querySelectorAll(`${id} input[type="number"]`).forEach(inp=>{ inp.addEventListener('input', updateAll); }); });
+        ['#tblAA','#tblBA','#tblGA','#tblSC'].forEach(id=>{
+          document.querySelectorAll(`${id} input[type="number"]`).forEach(inp=>{
+            inp.addEventListener('input', updateAll);
+          });
+        });
         $('#ratioPct').addEventListener('input', updateAll);
         $('#plMonth').addEventListener('change', saveAll);
-        $('#insGrade').addEventListener('change', ()=>{ if($('#insAuto').checked){ const row=getRow(+$('#insGrade').value); $('#insLabor').value=row.labor; $('#insHealth').value=row.health; } syncInsuranceBySalary(+($('#resSalary').textContent||'').replace(/,/g,'')); saveAll(); });
-        $('#insLabor').addEventListener('input', ()=>{ $('#insAuto').checked=false; syncInsuranceBySalary(+($('#resSalary').textContent||'').replace(/,/g,'')); saveAll(); });
-        $('#insHealth').addEventListener('input', ()=>{ $('#insAuto').checked=false; syncInsuranceBySalary(+($('#resSalary').textContent||'').replace(/,/g,'')); saveAll(); });
-        $('#insAuto').addEventListener('change', ()=>{ syncInsuranceBySalary(+($('#resSalary').textContent||'').replace(/,/g,'')); saveAll(); });
+
+        $('#insGrade').addEventListener('change', ()=>{
+          if ($('#insAuto').checked){
+            const row = getRow(+$('#insGrade').value);
+            $('#insLabor').value = row.labor;
+            $('#insHealth').value = row.health;
+          }
+          syncInsuranceBySalary(+($('#resSalary').textContent||'').replace(/,/g,''));
+          saveAll();
+        });
+        $('#insLabor').addEventListener('input', ()=>{
+          $('#insAuto').checked = false;
+          syncInsuranceBySalary(+($('#resSalary').textContent||'').replace(/,/g,''));
+          saveAll();
+        });
+        $('#insHealth').addEventListener('input', ()=>{
+          $('#insAuto').checked = false;
+          syncInsuranceBySalary(+($('#resSalary').textContent||'').replace(/,/g,''));
+          saveAll();
+        });
+        $('#insAuto').addEventListener('change', ()=>{
+          syncInsuranceBySalary(+($('#resSalary').textContent||'').replace(/,/g,''));
+          saveAll();
+        });
+
         $('#btnPrint').addEventListener('click', ()=>window.print());
-        $('#btnResetAll').addEventListener('click', ()=>{ ['pl-aa','pl-ba','pl-ga','pl-sc','pl-params'].forEach(k=>localStorage.removeItem(k)); location.reload(); });
+        $('#btnResetAll').addEventListener('click', ()=>{
+          ['pl-aa','pl-ba','pl-ga','pl-sc','pl-params'].forEach(k=>localStorage.removeItem(k));
+          location.reload();
+        });
       }
 
       buildAA(); buildGroup('tblBA','BA','pl-ba'); buildGroup('tblGA','GA','pl-ga'); buildGroup('tblSC','SC','pl-sc'); buildInsOptions(); restore(); wire(); updateAll();
