@@ -8,7 +8,6 @@
   <link rel="icon" type="image/x-icon" href="YORU.ico" />
   <link rel="stylesheet" href="style.css" />
   
-  <!-- 會員彈窗樣式 -->
   <style>
     .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(47,47,32,0.6); backdrop-filter: blur(3px); z-index: 2000; display: flex; justify-content: center; align-items: center; padding: 20px; }
     .modal-content { background: #fffdf5; border: 1px solid #e6dca8; border-radius: 12px; padding: 24px; width: 100%; max-width: 420px; box-shadow: 0 10px 25px rgba(0,0,0,0.15); text-align: center; }
@@ -21,7 +20,6 @@
 </head>
 <body data-page="home">
 
-  <!-- 頂部導覽列 -->
   <header class="topbar">
     <div class="brand">
       <a href="index.html" class="logo-link"><img src="org-logo.png" alt="logo" onerror="this.style.opacity=0.2" /></a>
@@ -49,60 +47,47 @@
     </div>
   </header>
 
-  <!-- ★ Hero Section (全螢幕背景圖) ★ -->
   <section class="hero-section">
     <div class="hero-content">
-      <h1 class="hero-title">測試使用的首頁
+      <h1 class="hero-title">守護家人的溫暖依靠</h1>
       <p class="hero-desc">
         專業、便捷、透明。<br>
-        致力於簡化繁瑣的長照計算，<br>
-        ★★★★★★★★★★★。
+        我們致力於簡化繁瑣的長照計算，提供最實用的影音資源，<br>
+        讓您在照顧的路上不再孤單。
       </p>
-      <!-- 下方按鈕 (可選，因為下面已經有大卡片了) -->
       <a href="calculator.html" class="btn pill btn-green" style="padding:12px 30px; font-size:1.1rem; text-decoration:none; box-shadow: 0 4px 15px rgba(46,125,50,0.4);">立即試算額度</a>
     </div>
   </section>
 
-  <!-- ★ 功能卡片區 (懸浮卡片) ★ -->
   <section class="features-section">
     <div class="features-grid">
-      
-      <!-- 卡片 1 -->
       <a href="calculator.html" class="feature-card">
         <div class="feature-icon">🧮</div>
         <h3 class="feature-title">額度計算機</h3>
         <p class="feature-text">輸入 CMS 等級，一鍵試算政府補助額度與自付金額，精準規劃每月預算。</p>
       </a>
-
-      <!-- 卡片 2 -->
       <a href="payroll.html" class="feature-card">
         <div class="feature-icon">💰</div>
         <h3 class="feature-title">薪資計算機</h3>
         <p class="feature-text">專為機構與居服員設計，支援拆帳比例設定與勞健保扣款試算。</p>
       </a>
-
-      <!-- 卡片 3 -->
       <a href="video.html" class="feature-card">
         <div class="feature-icon">🎥</div>
         <h3 class="feature-title">影音專區</h3>
         <p class="feature-text">會員限定！觀看專業長照教學影片，自動記錄學習時數與進度。</p>
       </a>
-
-      <!-- 卡片 4 -->
       <a href="care-info.html" class="feature-card">
         <div class="feature-icon">ℹ️</div>
         <h3 class="feature-title">長照資訊</h3>
         <p class="feature-text">查詢最新長照法規、BA 碼別定義與補助細則，資訊透明公開。</p>
       </a>
-
     </div>
   </section>
 
   <footer id="bottomDock" class="footerbar" style="text-align:center;">
-    <div class="foot"><span class="ok">© hori 長照工具平台｜長照輔助工具</span></div>
+    <div class="foot"><span class="ok">© hori 長照工具平台</span></div>
   </footer>
 
-  <!-- 會員資料填寫彈窗 -->
   <div id="profile-modal" class="modal-overlay" style="display:none;">
     <div class="modal-content">
       <h3>歡迎加入！請完善資料</h3>
@@ -121,15 +106,13 @@
     </div>
   </div>
 
-  <!-- Firebase 邏輯 -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-    import { getAuth, signInWithRedirect, GoogleAuthProvider, signOut, onAuthStateChanged } 
+    import { getAuth, signInWithRedirect, getRedirectResult, signOut, onAuthStateChanged, GoogleAuthProvider } 
       from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
     import { getFirestore, doc, getDoc, setDoc, serverTimestamp } 
       from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-    // 設定
     const firebaseConfig = {
       apiKey: "AIzaSyCZMhdUI0HeIoj5masuRh00pzP3SMbF6Yc",
       authDomain: "hori-test-1b93c.firebaseapp.com",
@@ -149,92 +132,105 @@
     const memberArea = document.getElementById('member-area');
     const userDisplay = document.getElementById('userDisplay');
     const btnAdminLink = document.getElementById('btnAdminLink');
-    
+    const btnEditProfile = document.getElementById('btnEditProfile');
     const profileModal = document.getElementById('profile-modal');
     const pfNameInput = document.getElementById('pf-name');
     const pfAgeInput = document.getElementById('pf-age');
     const btnSaveProfile = document.getElementById('btn-save-profile');
     const modalTitle = profileModal.querySelector('h3');
-    const btnEditProfile = document.getElementById('btnEditProfile');
-
     let currentUser = null;
 
-    btnLogin.addEventListener('click', () => {
-      signInWithPopup(auth, provider).catch(e => {
-          if(e.code === 'auth/unauthorized-domain') alert("請至 Firebase 新增授權網域");
-          else alert(e.message);
-      });
-    });
+    if(btnLogin) {
+        btnLogin.addEventListener('click', () => {
+            // 使用 signInWithRedirect
+            signInWithRedirect(auth, provider);
+        });
+    }
 
-    btnLogout.addEventListener('click', () => {
-      signOut(auth).then(() => { alert("已登出"); location.reload(); });
+    if(btnLogout) btnLogout.addEventListener('click', () => signOut(auth).then(() => { alert("已登出"); location.reload(); }));
+
+    // 處理跳轉後的登入結果 (輔助 onAuthStateChanged)
+    getRedirectResult(auth).catch((error) => {
+        console.error("登入錯誤:", error);
     });
 
     onAuthStateChanged(auth, async (user) => {
       if (user) {
         currentUser = user;
-        btnLogin.style.display = 'none';
-        
-        const userDocRef = doc(db, "users", user.uid);
-        try {
-          const docSnap = await getDoc(userDocRef);
-          if (docSnap.exists()) showMemberUI(docSnap.data().name);
-          else openProfileModal("歡迎加入！請完善資料", user.displayName || "", "");
-        } catch (e) { console.error(e); }
+        if(btnLogin) btnLogin.style.display = 'none';
+        if(memberArea) memberArea.style.display = 'flex';
+        if(userDisplay) userDisplay.textContent = user.displayName || user.email;
 
+        // 1. 抓取會員資料
+        try {
+          const docSnap = await getDoc(doc(db, "users", user.uid));
+          if (docSnap.exists()) {
+             if(userDisplay && docSnap.data().name) userDisplay.textContent = docSnap.data().name;
+          } else {
+             if(modalTitle) modalTitle.textContent = "歡迎加入！請完善資料";
+             if(pfNameInput) pfNameInput.value = user.displayName || "";
+             if(profileModal) profileModal.style.display = 'flex';
+          }
+        } catch(e) { console.error(e); }
+
+        // 2. 檢查管理員
         try {
           const adminSnap = await getDoc(doc(db, "admins", user.email));
           if (adminSnap.exists() && btnAdminLink) btnAdminLink.style.display = 'inline-block';
-        } catch(e) { console.error(e); }
-
+        } catch(e) {}
       } else {
         currentUser = null;
-        btnLogin.style.display = 'block';
-        memberArea.style.display = 'none';
-        if(profileModal) profileModal.style.display = 'none';
-        if(btnAdminLink) btnAdminLink.style.display = 'none';
-        userDisplay.textContent = '';
+        if(btnLogin) btnLogin.style.display = 'block';
+        if(memberArea) memberArea.style.display = 'none';
       }
     });
 
-    function showMemberUI(name) {
-      memberArea.style.display = 'flex';
-      userDisplay.textContent = name;
-    }
-
-    function openProfileModal(title, dName, dAge) {
-      if(modalTitle) modalTitle.textContent = title;
-      pfNameInput.value = dName;
-      pfAgeInput.value = dAge;
-      profileModal.style.display = 'flex';
-    }
-
-    btnEditProfile.addEventListener('click', async () => {
+    if(btnEditProfile) btnEditProfile.addEventListener('click', async () => {
       const s = await getDoc(doc(db, "users", currentUser.uid));
-      if(s.exists()){ const d = s.data(); openProfileModal("修改個人資料", d.name, d.age); }
+      if(s.exists()){ 
+          const d = s.data(); 
+          if(modalTitle) modalTitle.textContent = "修改個人資料";
+          if(pfNameInput) pfNameInput.value = d.name || "";
+          if(pfAgeInput) pfAgeInput.value = d.age || "";
+          if(profileModal) profileModal.style.display = 'flex';
+      }
     });
 
-    btnSaveProfile.addEventListener('click', async () => {
+    if(btnSaveProfile) btnSaveProfile.addEventListener('click', async () => {
       const name = pfNameInput.value.trim();
       const age = pfAgeInput.value.trim();
       if(!name || !age) return alert("請填寫完整");
       
-      await setDoc(doc(db, "users", currentUser.uid), {
-        name, age, email: currentUser.email, lastUpdated: serverTimestamp()
-      }, { merge: true });
-      
-      alert("儲存成功");
-      profileModal.style.display = 'none';
-      showMemberUI(name);
-    });
-    
-    if(profileModal){
-      profileModal.addEventListener('click', (e) => {
-          if (e.target === profileModal && currentUser && userDisplay.textContent !== "") {
-              profileModal.style.display = 'none';
+      try {
+          // 先檢查是否已經有資料 (為了時間戳記)
+          const userRef = doc(db, "users", currentUser.uid);
+          const docSnap = await getDoc(userRef);
+          
+          let dataToSave = {
+              name: name,
+              age: age,
+              email: currentUser.email,
+              lastUpdated: serverTimestamp()
+          };
+
+          // 只有當「沒資料」或「沒註冊時間」時，才補上 createdAt
+          if (!docSnap.exists() || !docSnap.data().createdAt) {
+              dataToSave.createdAt = serverTimestamp();
           }
-      });
-    }
+
+          await setDoc(userRef, dataToSave, { merge: true });
+          alert("儲存成功");
+          if(profileModal) profileModal.style.display = 'none';
+          if(userDisplay) userDisplay.textContent = name;
+
+      } catch(e) { console.error(e); alert("儲存失敗：" + e.message); }
+    });
+
+    if(profileModal) profileModal.addEventListener('click', (e) => {
+      if (e.target === profileModal && currentUser && userDisplay.textContent !== "" && userDisplay.textContent !== currentUser.email) {
+          profileModal.style.display = 'none';
+      }
+    });
   </script>
 </body>
 </html>
