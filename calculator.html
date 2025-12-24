@@ -4,7 +4,6 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>額度計算機｜長照工具</title>
-  <meta name="description" content="長照服務額度計算機，快速查詢CMS等級補助額度、計算自付金額與居服薪資。">
   <link rel="icon" type="image/x-icon" href="YORU.ico" />
   <link rel="stylesheet" href="style.css" />
   <style>
@@ -28,6 +27,7 @@
       <a href="index.html" class="logo-link"><img src="org-logo.png" alt="logo" onerror="this.style.opacity=0.2" /></a>
       <span class="site-title" id="siteTitle" data-sync-title>額度計算機</span>
     </div>
+    
     <nav class="nav-links" aria-label="主選單">
       <a href="calculator.html">額度計算機</a>
       <a href="payroll.html">薪資計算機</a>
@@ -37,12 +37,16 @@
       <a href="contact.html">聯繫方式</a>
       <a href="about.html">關於我們</a>
     </nav>
+    
     <div class="actions" style="align-items: center; gap: 8px;">
         <button class="btn pill btn-orange" id="btnUnitToggle" type="button" data-unit="B">B單位</button>
         <button class="btn pill btn-green" id="btnReset" type="button">重置</button>
         <button class="btn pill btn-gray" id="btnPrint" type="button" onclick="window.print()">列印</button>
+      
         <div style="width: 1px; height: 20px; background: #ccc; margin: 0 4px;"></div>
+      
         <button class="btn pill" style="background:#4285F4; color:white;" id="btnLogin" type="button">Google 登入</button>
+        
         <div id="member-area" style="display:none; align-items: center; gap:5px;">
             <span id="userDisplay" style="font-size: 13px; font-weight: bold; color: #333; margin-right: 4px;"></span>
             <a href="admin.html" id="btnAdminLink" class="btn pill" style="background:#673AB7; color:white; font-size:12px; padding:4px 10px; text-decoration:none; display:none;">管理後台</a>
@@ -143,7 +147,6 @@
     </div>
   </footer>
 
-  <!-- 會員資料彈窗 -->
   <div id="profile-modal" class="modal-overlay" style="display:none;">
     <div class="modal-content">
       <h3>歡迎加入！請完善資料</h3>
@@ -166,7 +169,6 @@
 
   <div id="addonPlaceholders" aria-hidden="true"><span id="addonHint"></span><button id="btnSaveAddons"></button><div id="addonRows"></div><div id="caregiverSalary"></div></div>
 
-  <!-- Firebase Script (Popup) -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
     import { getAuth, signInWithPopup, GoogleAuthProvider, signOut, onAuthStateChanged } 
@@ -180,7 +182,7 @@
     const dom={ login:document.getElementById('btnLogin'), logout:document.getElementById('btnLogout'), member:document.getElementById('member-area'), user:document.getElementById('userDisplay'), admin:document.getElementById('btnAdminLink'), edit:document.getElementById('btnEditProfile'), modal:document.getElementById('profile-modal'), save:document.getElementById('btn-save-profile'), cloud:document.getElementById('btnSaveCloud'), name:document.getElementById('pf-name'), age:document.getElementById('pf-age'), title:document.querySelector('#profile-modal h3') };
 
     if(dom.login) dom.login.addEventListener('click',()=>signInWithPopup(auth,provider).catch(e=>{
-        if(e.code==='auth/popup-blocked')alert("登入視窗被封鎖，請用Chrome/Safari開啟");
+        if(e.code==='auth/popup-blocked')alert("請使用Safari/Chrome開啟(非Line/FB內建瀏覽器)");
         else alert(e.message)
     }));
 
@@ -199,6 +201,7 @@
     });
 
     if(dom.edit) dom.edit.addEventListener('click',async()=>{ const s=await getDoc(doc(db,"users",auth.currentUser.uid)); if(s.exists()){ const d=s.data(); dom.title.textContent="修改"; dom.name.value=d.name; dom.age.value=d.age; dom.modal.style.display='flex'; } });
+    
     if(dom.save) dom.save.addEventListener('click',async()=>{
         const n=dom.name.value, a=dom.age.value; if(!n||!a) return alert("請填寫");
         const ref=doc(db,"users",auth.currentUser.uid); const s=await getDoc(ref);
