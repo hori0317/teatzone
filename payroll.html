@@ -115,6 +115,7 @@
     
     @media (max-width:860px){
       .grid-2{grid-template-columns:1fr;}
+
       .tbl{display:block; font-size:15px; border:0; background:none; overflow:visible;}
       .tbl thead{display:none;}
       .tbl tbody,.tbl tfoot{display:block; width:100%;}
@@ -122,33 +123,73 @@
       .tbl tbody tr:nth-child(even){background:#fff;}
       
       /* ★ 修正：手機版單價與所有數值文字強迫靠右對齊 ★ */
-      .tbl td{display:flex; gap:12px; justify-content:space-between; align-items:center; padding:6px 0; line-height:1.45; white-space:normal; border-top:none; text-align: right !important;}
+      .tbl td{
+        display:flex;
+        gap:12px;
+        justify-content:space-between;
+        align-items:center;
+        padding:6px 0;
+        line-height:1.45;
+        white-space:normal;
+        border-top:none;
+        text-align: right !important;
+      }
       
-      .tbl td[data-label]::before{ content:attr(data-label); font-weight:700; color:#5b5534; flex:1; text-align:left; }
+      .tbl td[data-label]::before{
+        content:attr(data-label);
+        font-weight:700;
+        color:#5b5534;
+        flex:1;
+        text-align:left;
+      }
       .tbl td[data-label="代碼＋名稱"]::before, .tbl td[data-label="代碼"]::before{margin-bottom:2px;}
       
-      .tbl input[type="number"], .tbl select{width:100%; max-width:none; height:38px; text-align: right;}
-      
-      /* 手機版支數輸入框靠中（與上方文字垂直置中對齊） */
-      .tbl td[data-label="本月支數"] input { width:80px; margin: 0 auto; display: block; }
-      
-      /* 手機版：本月支數欄垂直排列，標題在上、輸入框在下，整組置中 */
-      .tbl td[data-label="本月支數"]{
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-      }
-      .tbl td[data-label="本月支數"]::before{
-        width: 100%;
-        text-align: center;
-        margin-bottom: 4px;
+      .tbl input[type="number"], .tbl select{
+        width:100%;
+        max-width:none;
+        height:38px;
+        text-align: right;
       }
 
+      /* 手機版支數輸入框靠右 */
+      .tbl td[data-label="本月支數"] input{
+        width:80px;
+        margin-left: auto;
+        display: block;
+      }
+      
       .tbl tfoot th{flex:1 1 auto; background:none; border:none; padding:0; text-align:right;}
       
       /* 強制手機版間距復原 */
       .tbl th:nth-child(2), .tbl td:nth-child(2) { padding-right: 0 !important; }
       .tbl th:first-child, .tbl td:first-child { padding-left: 0 !important; }
+
+      /* ===== Payroll 手機版：修正「本月支數」不要置中、輸入框靠右 ===== */
+      body[data-page="payroll"] .tbl td[data-label="本月支數"]{
+        display: flex !important;
+        flex-direction: row !important;
+        justify-content: space-between !important;
+        align-items: center !important;
+        flex-wrap: nowrap !important;
+        text-align: right !important;
+      }
+
+      body[data-page="payroll"] .tbl td[data-label="本月支數"]::before{
+        flex: 0 0 auto !important;
+        text-align: left !important;
+        margin: 0 !important;
+      }
+
+      body[data-page="payroll"] .tbl td[data-label="本月支數"] input[type="number"]{
+        width: 90px !important;
+        max-width: 90px !important;
+        min-width: 90px !important;
+        margin-left: auto !important;
+        margin-right: 0 !important;
+        display: block !important;
+        text-align: right !important;
+        box-sizing: border-box !important;
+      }
     }
   </style>
 
@@ -165,35 +206,39 @@
 
   <header class="topbar">
     <div class="brand">
-      <a href="index.html" class="logo-link"><img src="org-logo.png" alt="logo" onerror="this.style.opacity=0.2" /></a>
+      <a href="index.html" class="logo-link" aria-label="回首頁">
+        <img src="org-logo.png" alt="logo" onerror="this.style.opacity=0.2" />
+      </a>
       <span class="site-title" id="siteTitle" data-sync-title>薪資計算機</span>
     </div>
 
-<nav class="nav-links" aria-label="主選單">
-  <a href="calculator.html">額度計算機</a>
-  <a href="payroll.html">薪資計算機</a>
-  <a href="video.html">影音專區</a>
-  <a href="care-info.html">長照資訊</a>
-  <a href="news.html">最新公告</a>
-  <a href="contact.html">聯繫方式</a>
-  <a href="about.html">關於我們</a>
-</nav>
+    <nav class="nav-links" aria-label="主選單">
+      <a href="calculator.html">額度計算機</a>
+      <a href="payroll.html">薪資計算機</a>
+      <a href="video.html">影音專區</a>
+      <a href="care-info.html">長照資訊</a>
+      <a href="news.html">最新公告</a>
+      <a href="contact.html">聯繫方式</a>
+      <a href="about.html">關於我們</a>
+    </nav>
 
-<div class="actions" style="align-items: center; gap: 8px;">
-    <button class="btn pill btn-gray" id="btnPrint" type="button">列印</button>
-    <button class="btn pill btn-green" id="btnResetAll" type="button">全部清空</button>
+    <div class="actions" style="align-items: center; gap: 8px;">
+      <button class="btn pill btn-gray" id="btnPrint" type="button">列印</button>
+      <button class="btn pill btn-green" id="btnResetAll" type="button">全部清空</button>
 
-<div style="width: 1px; height: 20px; background: #ccc; margin: 0 4px;"></div>
+      <div style="width: 1px; height: 20px; background: #ccc; margin: 0 4px;"></div>
 
-<button class="btn pill" style="background:#4285F4; color:white;" id="btnLogin" type="button">Google 登入</button>
-<div id="member-area" style="display:none; align-items: center; gap:5px;">
-    <span id="userDisplay" style="font-size: 13px; font-weight: bold; color: #333; margin-right: 4px;"></span>
-    <a href="admin.html" id="btnAdminLink" class="btn pill" style="background:#673AB7; color:white; font-size:12px; padding:4px 10px; text-decoration:none; display:none;">管理後台</a>
-    <button class="btn pill" style="background:#777; color:white; font-size:12px; padding:4px 10px;" id="btnEditProfile" type="button">修改資料</button>
-    <button class="btn pill" style="background:#EA4335; color:white;" id="btnLogout" type="button">登出</button>
-</div>
-</div>
+      <button class="btn pill" style="background:#4285F4; color:white;" id="btnLogin" type="button">Google 登入</button>
+
+      <div id="member-area" style="display:none; align-items: center; gap:5px;">
+        <span id="userDisplay" style="font-size: 13px; font-weight: bold; color: #333; margin-right: 4px;"></span>
+        <a href="admin.html" id="btnAdminLink" class="btn pill" style="background:#673AB7; color:white; font-size:12px; padding:4px 10px; text-decoration:none; display:none;">管理後台</a>
+        <button class="btn pill" style="background:#777; color:white; font-size:12px; padding:4px 10px;" id="btnEditProfile" type="button">修改資料</button>
+        <button class="btn pill" style="background:#EA4335; color:white;" id="btnLogout" type="button">登出</button>
+      </div>
+    </div>
   </header>
+
   <div class="divider"></div>
 
   <main class="container">
@@ -212,206 +257,209 @@
       </div>
     </section>
 
-<section class="card">
-  <h2 class="card-title">① 拆薪比例</h2>
-  <div class="grid-2" style="margin-top:8px;">
-    <div class="row-mid">
-      <label style="min-width:120px;font-weight:700;">拆薪比例（%）</label>
-      <input id="ratioPct" type="number" min="0" max="100" step="0.1" value="60" style="height:34px;width:120px;text-align:right;">
-      <span class="hint">例：6/4 → 填 60</span>
-    </div>
-    <div class="row-mid">
-      <label style="min-width:120px;font-weight:700;">月份</label>
-      <input id="plMonth" type="month" style="height:34px;width:180px;">
-    </div>
-  </div>
-</section>
-
-<section class="card ps-card" id="ps-widget">
-  <h2 class="card-title">PDF 支數自動統計（帶入表單）</h2>
-  <p class="ps-muted">上傳每月 PDF，統計 <span class="ps-pill">BA</span> / <span class="ps-pill">AA</span> / <span class="ps-pill">GA</span> / <span class="ps-pill">SC</span>。AA 以「金額 ÷ 單價」換算（四捨五入到最接近 0.5），AA 單價固定。</p>
-
-  <label class="ps-drop" id="ps-drop">
-    <input type="file" id="ps-file" accept="application/pdf" />
-    <strong>點我選擇 PDF 或拖曳到這裡</strong>
-    <div class="ps-small ps-muted">無文字層將自動 OCR（繁中＋英文）。</div>
-  </label>
-
-  <div class="ps-btns">
-    <button class="ps-btn" id="ps-demo" type="button">載入示範資料</button>
-    <button class="ps-btn" id="ps-apply" type="button" disabled>帶入上方表單</button>
-    <button class="ps-btn" id="ps-csv" type="button" disabled>匯出 CSV</button>
-    <button class="ps-btn" id="ps-json" type="button" disabled>匯出 JSON</button>
-  </div>
-
-  <label class="ps-small ps-muted" style="display:inline-flex;align-items:center;gap:6px;margin-top:6px;">
-    <input id="ps-auto-sync" type="checkbox"> 匯入後自動同步到下方支數
-  </label>
-
-  <div id="ps-syncbar" class="ps-syncbar ps-box" style="display:none;align-items:center;justify-content:space-between;gap:8px;">
-    <div class="ps-small">已解析出支數，要同步到下方表格（AA/BA/GA/SC）並立即計算薪資嗎？</div>
-    <div style="display:flex;gap:8px;">
-      <button id="ps-sync-yes" class="ps-btn">同步</button>
-      <button id="ps-sync-no" class="ps-btn" style="background:#fff;">先不要</button>
-    </div>
-  </div>
-
-  <div class="ps-box">
-    <div class="ps-small ps-muted">處理進度</div>
-    <div class="ps-progress"><div id="ps-bar" class="ps-bar"></div></div>
-    <div id="ps-status" class="ps-small ps-muted" style="margin-top:6px">待上傳</div>
-  </div>
-  <pre id="ps-debug" class="ps-box ps-small" style="white-space:pre-wrap">偵錯訊息：</pre>
-
-  <div style="display:grid;gap:12px;margin-top:10px;">
-    <div class="ps-box">
-      <h3 class="ps-h3">BA 統計</h3>
-      <table id="ps-t-BA" class="ps-table">
-        <thead><tr><th>碼別</th><th class="ps-right">出現筆數</th><th class="ps-right">Σ 支數</th></tr></thead>
-        <tbody></tbody>
-      </table>
-    </div>
-    <div class="ps-box">
-      <h3 class="ps-h3">AA 統計</h3>
-      <table id="ps-t-AA" class="ps-table">
-        <thead><tr><th>碼別</th><th class="ps-right">出現筆數</th><th class="ps-right">Σ 支數</th></tr></thead>
-        <tbody></tbody>
-      </table>
-    </div>
-    <div class="ps-box">
-      <h3 class="ps-h3">GA 統計</h3>
-      <table id="ps-t-GA" class="ps-table">
-        <thead><tr><th>碼別</th><th class="ps-right">出現筆數</th><th class="ps-right">Σ 支數</th></tr></thead>
-        <tbody></tbody>
-      </table>
-    </div>
-    <div class="ps-box">
-      <h3 class="ps-h3">SC 統計</h3>
-      <table id="ps-t-SC" class="ps-table">
-        <thead><tr><th>碼別</th><th class="ps-right">出現筆數</th><th class="ps-right">Σ 支數</th></tr></thead>
-        <tbody></tbody>
-      </table>
-    </div>
-  </div>
-</section>
-
-<section class="card">
-  <h2 class="card-title">② AA 本月支數</h2>
-  <table class="tbl" id="tblAA">
-    <colgroup>
-      <col class="col-code" style="width: 35%;">
-      <col class="col-price" style="width: 20%;">
-      <col class="col-month" style="width: 25%;">
-      <col class="col-sum" style="width: 20%;">
-    </colgroup>
-    <thead><tr><th>代碼</th><th class="right">單價</th><th class="month-col">本月支數</th><th class="right">小計</th></tr></thead>
-    <tbody></tbody>
-    <tfoot><tr><th colspan="3" class="right">AA 小計</th><th class="right" id="sumAA">0</th></tr></tfoot>
-  </table>
-  <p class="hint" style="margin-top:8px;">單價固定：AA05 200、AA06 200、AA07 760、AA08 385、AA09 770、AA11 50。</p>
-</section>
-
-<section class="card">
-  <h2 class="card-title">③ BA 本月支數</h2>
-  <table class="tbl" id="tblBA">
-    <colgroup>
-      <col class="col-code" style="width: 35%;">
-      <col class="col-price" style="width: 20%;">
-      <col class="col-month" style="width: 25%;">
-      <col class="col-sum" style="width: 20%;">
-    </colgroup>
-    <thead><tr><th>代碼＋名稱</th><th class="right">單價</th><th class="month-col">本月支數</th><th class="right">小計</th></tr></thead>
-    <tbody></tbody>
-    <tfoot><tr><th colspan="3" class="right">BA 小計</th><th class="right" id="sumBA">0</th></tr></tfoot>
-  </table>
-</section>
-
-<section class="card">
-  <h2 class="card-title">④ GA 本月支數</h2>
-  <table class="tbl" id="tblGA">
-    <colgroup>
-      <col class="col-code" style="width: 35%;">
-      <col class="col-price" style="width: 20%;">
-      <col class="col-month" style="width: 25%;">
-      <col class="col-sum" style="width: 20%;">
-    </colgroup>
-    <thead><tr><th>代碼＋名稱</th><th class="right">單價</th><th class="month-col">本月支數</th><th class="right">小計</th></tr></thead>
-    <tbody></tbody>
-    <tfoot><tr><th colspan="3" class="right">GA 小計</th><th class="right" id="sumGA">0</th></tr></tfoot>
-  </table>
-</section>
-
-<section class="card">
-  <h2 class="card-title">⑤ SC 本月支數</h2>
-  <table class="tbl" id="tblSC">
-    <colgroup>
-      <col class="col-code" style="width: 35%;">
-      <col class="col-price" style="width: 20%;">
-      <col class="col-month" style="width: 25%;">
-      <col class="col-sum" style="width: 20%;">
-    </colgroup>
-    <thead><tr><th>代碼＋名稱</th><th class="right">單價</th><th class="month-col">本月支數</th><th class="right">小計</th></tr></thead>
-    <tbody></tbody>
-    <tfoot><tr><th colspan="3" class="right">SC 小計</th><th class="right" id="sumSC">0</th></tr></tfoot>
-  </table>
-</section>
-
-<section class="card">
-  <h2 class="card-title">⑥ 薪資結果 & 勞健保扣款</h2>
-  <div class="grid-2" style="margin-top:8px;">
-    <div class="card" style="padding:14px;">
-      <table class="tbl">
-        <tbody>
-          <tr><td>AA 小計</td><td class="right mono" id="resAA">0</td></tr>
-          <tr><td>BA 小計</td><td class="right mono" id="resBA">0</td></tr>
-          <tr><td>GA 小計</td><td class="right mono" id="resGA">0</td></tr>
-          <tr><td>SC 小計</td><td class="right mono" id="resSC">0</td></tr>
-          <tr><td><b>全月總額</b></td><td class="right mono" id="resTotal"><b>0</b></td></tr>
-          <tr><td>拆薪比例</td><td class="right mono"><span id="resRatio">60</span>%</td></tr>
-          <tr><td><b>拆薪後薪資</b></td><td class="right mono" id="resSalary"><b>0</b></td></tr>
-          <tr><td><b>實領（扣勞健保）</b></td><td class="right mono" id="resNet"><b>0</b></td></tr>
-        </tbody>
-      </table>
-    </div>
-    <div class="card" style="padding:14px;">
-      <div class="row-mid" style="margin-bottom:10px;">
-        <span class="pill-note">自動依「拆薪後薪資」抓 ≥ 薪資的最大投保級距</span>
+    <section class="card">
+      <h2 class="card-title">① 拆薪比例</h2>
+      <div class="grid-2" style="margin-top:8px;">
+        <div class="row-mid">
+          <label style="min-width:120px;font-weight:700;">拆薪比例（%）</label>
+          <input id="ratioPct" type="number" min="0" max="100" step="0.1" value="60" style="height:34px;width:120px;text-align:right;">
+          <span class="hint">例：6/4 → 填 60</span>
+        </div>
+        <div class="row-mid">
+          <label style="min-width:120px;font-weight:700;">月份</label>
+          <input id="plMonth" type="month" style="height:34px;width:180px;">
+        </div>
       </div>
-      <table class="tbl insurance-table">
+    </section>
+
+    <section class="card ps-card" id="ps-widget">
+      <h2 class="card-title">PDF 支數自動統計（帶入表單）</h2>
+      <p class="ps-muted">上傳每月 PDF，統計 <span class="ps-pill">BA</span> / <span class="ps-pill">AA</span> / <span class="ps-pill">GA</span> / <span class="ps-pill">SC</span>。AA 以「金額 ÷ 單價」換算（四捨五入到最接近 0.5），AA 單價固定。</p>
+
+      <label class="ps-drop" id="ps-drop">
+        <input type="file" id="ps-file" accept="application/pdf" />
+        <strong>點我選擇 PDF 或拖曳到這裡</strong>
+        <div class="ps-small ps-muted">無文字層將自動 OCR（繁中＋英文）。</div>
+      </label>
+
+      <div class="ps-btns">
+        <button class="ps-btn" id="ps-demo" type="button">載入示範資料</button>
+        <button class="ps-btn" id="ps-apply" type="button" disabled>帶入上方表單</button>
+        <button class="ps-btn" id="ps-csv" type="button" disabled>匯出 CSV</button>
+        <button class="ps-btn" id="ps-json" type="button" disabled>匯出 JSON</button>
+      </div>
+
+      <label class="ps-small ps-muted" style="display:inline-flex;align-items:center;gap:6px;margin-top:6px;">
+        <input id="ps-auto-sync" type="checkbox"> 匯入後自動同步到下方支數
+      </label>
+
+      <div id="ps-syncbar" class="ps-syncbar ps-box" style="display:none;align-items:center;justify-content:space-between;gap:8px;">
+        <div class="ps-small">已解析出支數，要同步到下方表格（AA/BA/GA/SC）並立即計算薪資嗎？</div>
+        <div style="display:flex;gap:8px;">
+          <button id="ps-sync-yes" class="ps-btn">同步</button>
+          <button id="ps-sync-no" class="ps-btn" style="background:#fff;">先不要</button>
+        </div>
+      </div>
+
+      <div class="ps-box">
+        <div class="ps-small ps-muted">處理進度</div>
+        <div class="ps-progress"><div id="ps-bar" class="ps-bar"></div></div>
+        <div id="ps-status" class="ps-small ps-muted" style="margin-top:6px">待上傳</div>
+      </div>
+      <pre id="ps-debug" class="ps-box ps-small" style="white-space:pre-wrap">偵錯訊息：</pre>
+
+      <div style="display:grid;gap:12px;margin-top:10px;">
+        <div class="ps-box">
+          <h3 class="ps-h3">BA 統計</h3>
+          <table id="ps-t-BA" class="ps-table">
+            <thead><tr><th>碼別</th><th class="ps-right">出現筆數</th><th class="ps-right">Σ 支數</th></tr></thead>
+            <tbody></tbody>
+          </table>
+        </div>
+        <div class="ps-box">
+          <h3 class="ps-h3">AA 統計</h3>
+          <table id="ps-t-AA" class="ps-table">
+            <thead><tr><th>碼別</th><th class="ps-right">出現筆數</th><th class="ps-right">Σ 支數</th></tr></thead>
+            <tbody></tbody>
+          </table>
+        </div>
+        <div class="ps-box">
+          <h3 class="ps-h3">GA 統計</h3>
+          <table id="ps-t-GA" class="ps-table">
+            <thead><tr><th>碼別</th><th class="ps-right">出現筆數</th><th class="ps-right">Σ 支數</th></tr></thead>
+            <tbody></tbody>
+          </table>
+        </div>
+        <div class="ps-box">
+          <h3 class="ps-h3">SC 統計</h3>
+          <table id="ps-t-SC" class="ps-table">
+            <thead><tr><th>碼別</th><th class="ps-right">出現筆數</th><th class="ps-right">Σ 支數</th></tr></thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2 class="card-title">② AA 本月支數</h2>
+      <table class="tbl" id="tblAA">
         <colgroup>
-            <col style="width:28%;">
-            <col style="width:22%;">
-            <col style="width:22%;">
-            <col style="width:14%;">
-            <col style="width:14%;">
+          <col class="col-code" style="width: 35%;">
+          <col class="col-price" style="width: 20%;">
+          <col class="col-month" style="width: 25%;">
+          <col class="col-sum" style="width: 20%;">
         </colgroup>
-        <thead>
-            <tr>
+        <thead><tr><th>代碼</th><th class="right">單價</th><th class="month-col">本月支數</th><th class="right">小計</th></tr></thead>
+        <tbody></tbody>
+        <tfoot><tr><th colspan="3" class="right">AA 小計</th><th class="right" id="sumAA">0</th></tr></tfoot>
+      </table>
+      <p class="hint" style="margin-top:8px;">單價固定：AA05 200、AA06 200、AA07 760、AA08 385、AA09 770、AA11 50。</p>
+    </section>
+
+    <section class="card">
+      <h2 class="card-title">③ BA 本月支數</h2>
+      <table class="tbl" id="tblBA">
+        <colgroup>
+          <col class="col-code" style="width: 35%;">
+          <col class="col-price" style="width: 20%;">
+          <col class="col-month" style="width: 25%;">
+          <col class="col-sum" style="width: 20%;">
+        </colgroup>
+        <thead><tr><th>代碼＋名稱</th><th class="right">單價</th><th class="month-col">本月支數</th><th class="right">小計</th></tr></thead>
+        <tbody></tbody>
+        <tfoot><tr><th colspan="3" class="right">BA 小計</th><th class="right" id="sumBA">0</th></tr></tfoot>
+      </table>
+    </section>
+
+    <section class="card">
+      <h2 class="card-title">④ GA 本月支數</h2>
+      <table class="tbl" id="tblGA">
+        <colgroup>
+          <col class="col-code" style="width: 35%;">
+          <col class="col-price" style="width: 20%;">
+          <col class="col-month" style="width: 25%;">
+          <col class="col-sum" style="width: 20%;">
+        </colgroup>
+        <thead><tr><th>代碼＋名稱</th><th class="right">單價</th><th class="month-col">本月支數</th><th class="right">小計</th></tr></thead>
+        <tbody></tbody>
+        <tfoot><tr><th colspan="3" class="right">GA 小計</th><th class="right" id="sumGA">0</th></tr></tfoot>
+      </table>
+    </section>
+
+    <section class="card">
+      <h2 class="card-title">⑤ SC 本月支數</h2>
+      <table class="tbl" id="tblSC">
+        <colgroup>
+          <col class="col-code" style="width: 35%;">
+          <col class="col-price" style="width: 20%;">
+          <col class="col-month" style="width: 25%;">
+          <col class="col-sum" style="width: 20%;">
+        </colgroup>
+        <thead><tr><th>代碼＋名稱</th><th class="right">單價</th><th class="month-col">本月支數</th><th class="right">小計</th></tr></thead>
+        <tbody></tbody>
+        <tfoot><tr><th colspan="3" class="right">SC 小計</th><th class="right" id="sumSC">0</th></tr></tfoot>
+      </table>
+    </section>
+
+    <section class="card">
+      <h2 class="card-title">⑥ 薪資結果 & 勞健保扣款</h2>
+      <div class="grid-2" style="margin-top:8px;">
+        <div class="card" style="padding:14px;">
+          <table class="tbl">
+            <tbody>
+              <tr><td>AA 小計</td><td class="right mono" id="resAA">0</td></tr>
+              <tr><td>BA 小計</td><td class="right mono" id="resBA">0</td></tr>
+              <tr><td>GA 小計</td><td class="right mono" id="resGA">0</td></tr>
+              <tr><td>SC 小計</td><td class="right mono" id="resSC">0</td></tr>
+              <tr><td><b>全月總額</b></td><td class="right mono" id="resTotal"><b>0</b></td></tr>
+              <tr><td>拆薪比例</td><td class="right mono"><span id="resRatio">60</span>%</td></tr>
+              <tr><td><b>拆薪後薪資</b></td><td class="right mono" id="resSalary"><b>0</b></td></tr>
+              <tr><td><b>實領（扣勞健保）</b></td><td class="right mono" id="resNet"><b>0</b></td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="card" style="padding:14px;">
+          <div class="row-mid" style="margin-bottom:10px;">
+            <span class="pill-note">自動依「拆薪後薪資」抓 ≥ 薪資的最大投保級距</span>
+          </div>
+
+          <table class="tbl insurance-table">
+            <colgroup>
+              <col style="width:28%;">
+              <col style="width:22%;">
+              <col style="width:22%;">
+              <col style="width:14%;">
+              <col style="width:14%;">
+            </colgroup>
+            <thead>
+              <tr>
                 <th>投保級距</th>
                 <th>勞保<br><span class="sub-text">(員工)</span></th>
                 <th>健保<br><span class="sub-text">(員工)</span></th>
                 <th>合計</th>
                 <th>設定</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
                 <td data-label="投保級距"><select id="insGrade" style="width:100%;"></select></td>
                 <td class="right" data-label="勞保(員工)"><input id="insLabor" type="number" min="0" step="1" value="0" style="height:34px;width:100%;text-align:right;"></td>
                 <td class="right" data-label="健保(員工)"><input id="insHealth" type="number" min="0" step="1" value="0" style="height:34px;width:100%;text-align:right;"></td>
                 <td class="right mono" id="insSum" data-label="合計">0</td>
                 <td data-label="設定">
-                    <label class="chip auto-chip"><input id="insAuto" type="checkbox" checked> 自動</label>
+                  <label class="chip auto-chip"><input id="insAuto" type="checkbox" checked> 自動</label>
                 </td>
-            </tr>
-        </tbody>
-      </table>
-      <div class="row-mid" style="margin-top:12px;">
-        <div class="pill-note">實領（拆薪後薪資－勞健保合計）：<b class="mono" id="netPay">0</b></div>
+              </tr>
+            </tbody>
+          </table>
+
+          <div class="row-mid" style="margin-top:12px;">
+            <div class="pill-note">實領（拆薪後薪資－勞健保合計）：<b class="mono" id="netPay">0</b></div>
+          </div>
+        </div>
       </div>
-    </div>
-  </div>
-</section>
+    </section>
   </main>
 
   <footer id="bottomDock" class="footerbar">
@@ -492,7 +540,7 @@
         { grade:92100, labor:1145, health:1428 }, { grade:96600, labor:1145, health:1498 },
         { grade:101100, labor:1145, health:1568 }, { grade:105600, labor:1145, health:1638 },
         { grade:110100, labor:1145, health:1708 }, { grade:115500, labor:1145, health:1791 },
-        { grade:120900, labor:1145, health:1875 }, { grade:126300, labor:1145, health:1959 },
+        { grade:120900, labor:1145,, health:1875 }, { grade:126300, labor:1145, health:1959 },
         { grade:131700, labor:1145, health:2043 }, { grade:137100, labor:1145, health:2126 },
         { grade:142500, labor:1145, health:2210 }, { grade:147900, labor:1145, health:2294 },
         { grade:150000, labor:1145, health:2327 }
@@ -605,16 +653,37 @@
       }
 
       function saveAll(){
-        const aa = {}; Object.keys(PRICE.AA).forEach(code=> aa[code]=+(document.querySelector(`input[data-aa="${code}"]`).value||0)); localStorage.setItem('pl-aa', JSON.stringify(aa));
-        ['BA','GA','SC'].forEach(key=>{ const k=key.toLowerCase(); const obj={}; PRICE[key].forEach(item=> obj[item.code]=+(document.querySelector(`input[data-${k}="${item.code}"]`).value||0)); localStorage.setItem(`pl-${k}`, JSON.stringify(obj)); });
-        const params = { month:$('#plMonth').value||'', ratio:+($('#ratioPct').value)||0, insGrade:+($('#insGrade').value)||0, insLabor:+($('#insLabor').value)||0, insHealth:+($('#insHealth').value)||0, insAuto:$('#insAuto').checked?1:0 };
+        const aa = {};
+        Object.keys(PRICE.AA).forEach(code=> aa[code]=+(document.querySelector(`input[data-aa="${code}"]`).value||0));
+        localStorage.setItem('pl-aa', JSON.stringify(aa));
+
+        ['BA','GA','SC'].forEach(key=>{
+          const k=key.toLowerCase();
+          const obj={};
+          PRICE[key].forEach(item=> obj[item.code]=+(document.querySelector(`input[data-${k}="${item.code}"]`).value||0));
+          localStorage.setItem(`pl-${k}`, JSON.stringify(obj));
+        });
+
+        const params = {
+          month:$('#plMonth').value||'',
+          ratio:+($('#ratioPct').value)||0,
+          insGrade:+($('#insGrade').value)||0,
+          insLabor:+($('#insLabor').value)||0,
+          insHealth:+($('#insHealth').value)||0,
+          insAuto:$('#insAuto').checked?1:0
+        };
         localStorage.setItem('pl-params', JSON.stringify(params));
       }
       function loadLS(key, fb){ try{ return JSON.parse(localStorage.getItem(key)||'') || fb; }catch(e){ return fb; } }
       function restore(){
         const p = loadLS('pl-params', null);
         if (p){
-          if(p.month)$('#plMonth').value=p.month; if(p.ratio!=null)$('#ratioPct').value=p.ratio; if(p.insGrade)$('#insGrade').value=p.insGrade; if(p.insLabor!=null)$('#insLabor').value=p.insLabor; if(p.insHealth!=null)$('#insHealth').value=p.insHealth; $('#insAuto').checked=!!p.insAuto;
+          if(p.month)$('#plMonth').value=p.month;
+          if(p.ratio!=null)$('#ratioPct').value=p.ratio;
+          if(p.insGrade)$('#insGrade').value=p.insGrade;
+          if(p.insLabor!=null)$('#insLabor').value=p.insLabor;
+          if(p.insHealth!=null)$('#insHealth').value=p.insHealth;
+          $('#insAuto').checked=!!p.insAuto;
         }
       }
 
@@ -658,7 +727,14 @@
         });
       }
 
-      buildAA(); buildGroup('tblBA','BA','pl-ba'); buildGroup('tblGA','GA','pl-ga'); buildGroup('tblSC','SC','pl-sc'); buildInsOptions(); restore(); wire(); updateAll();
+      buildAA();
+      buildGroup('tblBA','BA','pl-ba');
+      buildGroup('tblGA','GA','pl-ga');
+      buildGroup('tblSC','SC','pl-sc');
+      buildInsOptions();
+      restore();
+      wire();
+      updateAll();
 
       document.addEventListener('contextmenu', e => e.preventDefault());
       document.addEventListener('keydown', e => {
@@ -684,6 +760,7 @@
       const toCanon = c => CODE_ALIAS[c] || c;
 
       let pdfReady=null;
+      let pdfVer=null;
       const loadScript = src => new Promise((res,rej)=>{const s=document.createElement('script'); s.src=src; s.onload=res; s.onerror=rej; document.head.appendChild(s);});
       async function ensurePdfjs(){
         if (window.pdfjsLib) return;
@@ -727,10 +804,12 @@
           const pdf=await pdfjsLib.getDocument({data:ab}).promise;
           let texts=[],total=0;
           for(let i=1;i<=pdf.numPages;i++){
-              const page=await pdf.getPage(i);
-              const c=await page.getTextContent({normalizeWhitespace:true,disableCombineTextItems:false});
-              const s=c.items.map(it=>it.str).join(' ');
-              texts.push(s); total+=s.length; setBar(100*i/pdf.numPages);
+            const page=await pdf.getPage(i);
+            const c=await page.getTextContent({normalizeWhitespace:true,disableCombineTextItems:false});
+            const s=c.items.map(it=>it.str).join(' ');
+            texts.push(s);
+            total+=s.length;
+            setBar(100*i/pdf.numPages);
           }
           return {text:texts.join('\n'), pdf, charCount:total};
         }catch(e){ log('PDF error: '+e.message); throw e; }
@@ -741,13 +820,14 @@
         const worker=await Tesseract.createWorker('chi_tra+eng');
         let all=[];
         for(let i=1;i<=pdf.numPages;i++){
-           const p=await pdf.getPage(i), v=p.getViewport({scale:2});
-           const cvs=document.createElement('canvas'), ctx=cvs.getContext('2d');
-           cvs.width=v.width; cvs.height=v.height;
-           await p.render({canvasContext:ctx,viewport:v}).promise;
-           if(statusEl) statusEl.textContent=`OCR 執行中 ${i}/${pdf.numPages}`;
-           const r=await worker.recognize(cvs);
-           all.push(r.data.text); setBar(100*i/pdf.numPages);
+          const p=await pdf.getPage(i), v=p.getViewport({scale:2});
+          const cvs=document.createElement('canvas'), ctx=cvs.getContext('2d');
+          cvs.width=v.width; cvs.height=v.height;
+          await p.render({canvasContext:ctx,viewport:v}).promise;
+          if(statusEl) statusEl.textContent=`OCR 執行中 ${i}/${pdf.numPages}`;
+          const r=await worker.recognize(cvs);
+          all.push(r.data.text);
+          setBar(100*i/pdf.numPages);
         }
         await worker.terminate();
         return all.join('\n');
@@ -755,7 +835,9 @@
 
       function analyze(text){
         const units=getAAUnit(), fam={BA:{},AA:{},GA:{},SC:{}};
-        const codeRe=/\b(BA|AA|GA|SC)\d{2}(?:-\d+)?\b/g, toHalf=v=>Math.round(v*2)/2, normalize=c=>c.toUpperCase().replace(/[^A-Z0-9-]/g,'');
+        const codeRe=/\b(BA|AA|GA|SC)\d{2}(?:-\d+)?\b/g;
+        const toHalf=v=>Math.round(v*2)/2;
+        const normalize=c=>c.toUpperCase().replace(/[^A-Z0-9-]/g,'');
         for (const raw of text.split(/\r?\n/)){
           const line=raw.trim(); if(!line) continue;
           const codes=[...line.matchAll(codeRe)]; if(!codes.length) continue;
@@ -785,8 +867,10 @@
       }
 
       function renderAll(res){
-          const t={BA:$('#ps-t-BA tbody'),AA:$('#ps-t-AA tbody'),GA:$('#ps-t-GA tbody'),SC:$('#ps-t-SC tbody')};
-          for(const k in t){ t[k].innerHTML=res[k].map(r=>`<tr><td><span class="ps-pill">${r.code}</span></td><td class="ps-right">${r.occ}</td><td class="ps-right">${r.sum}</td></tr>`).join(''); }
+        const t={BA:$('#ps-t-BA tbody'),AA:$('#ps-t-AA tbody'),GA:$('#ps-t-GA tbody'),SC:$('#ps-t-SC tbody')};
+        for(const k in t){
+          t[k].innerHTML=res[k].map(r=>`<tr><td><span class="ps-pill">${r.code}</span></td><td class="ps-right">${r.occ}</td><td class="ps-right">${r.sum}</td></tr>`).join('');
+        }
       }
       function exportCSV(res){
         const fmtCount = c => c;
@@ -871,20 +955,29 @@
 
       let last=null;
       async function handleFile(f){
-        if(!debug) return; debug.textContent='偵錯訊息：\n';
-        setBar(0); if(statusEl) statusEl.textContent='準備解析…';
+        if(!debug) return;
+        debug.textContent='偵錯訊息：\n';
+        setBar(0);
+        if(statusEl) statusEl.textContent='準備解析…';
         let pdfRes=null, text='';
         try{ pdfRes=await extractPdfText(f); }catch(e){ log('PDF.js fail, try OCR'); }
         if(pdfRes && pdfRes.charCount>0){
-          text=pdfRes.text; setBar(100);
+          text=pdfRes.text;
+          setBar(100);
           if(statusEl) statusEl.textContent='PDF 文字擷取完成';
         } else {
           try{
             const pdf= pdfRes?.pdf || await pdfjsLib.getDocument({data:await f.arrayBuffer()}).promise;
-            if(statusEl) statusEl.textContent='啟用 OCR…'; setBar(1);
-            text=await ocrPdfToText(pdf); setBar(100);
+            if(statusEl) statusEl.textContent='啟用 OCR…';
+            setBar(1);
+            text=await ocrPdfToText(pdf);
+            setBar(100);
             if(statusEl) statusEl.textContent='OCR 完成';
-          }catch(e){ log('OCR 也失敗'); alert('此 PDF 無法解析，可能是加密或損壞。'); return; }
+          }catch(e){
+            log('OCR 也失敗');
+            alert('此 PDF 無法解析，可能是加密或損壞。');
+            return;
+          }
         }
         const res=analyze(text);
         renderAll(res);
@@ -935,44 +1028,99 @@
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
     import { getAuth, signInWithPopup, GoogleAuthProvider, signOut, onAuthStateChanged } 
       from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-    import { getFirestore, doc, getDoc, setDoc, serverTimestamp, addDoc, collection } 
+    import { getFirestore, doc, getDoc, setDoc, serverTimestamp } 
       from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-    const config={ apiKey: "AIzaSyCZMhdUI0HeIoj5masuRh00pzP3SMbF6Yc", authDomain: "hori-test-1b93c.firebaseapp.com", projectId: "hori-test-1b93c", storageBucket: "hori-test-1b93c.firebasestorage.app", messagingSenderId: "549583061796", appId: "1:549583061796:web:ad58b8bf80c2b6b71c29b1" };
+    /* ⚠️ 安全提醒：
+       你之前 GitHub 警報顯示 apiKey 外流，建議在 Firebase Console 旋轉/更換 key。
+       這裡我先用占位符，避免你再次把真正 key 直接 commit 到公開 repo。
+       請把 YOUR_FIREBASE_API_KEY 換成「你新生成且已限制網域/服務」的 key。 */
+    const config={
+      apiKey: "YOUR_FIREBASE_API_KEY",
+      authDomain: "hori-test-1b93c.firebaseapp.com",
+      projectId: "hori-test-1b93c",
+      storageBucket: "hori-test-1b93c.firebasestorage.app",
+      messagingSenderId: "549583061796",
+      appId: "1:549583061796:web:ad58b8bf80c2b6b71c29b1"
+    };
+
     const app=initializeApp(config), auth=getAuth(app), db=getFirestore(app), provider=new GoogleAuthProvider();
 
-    const dom={ login:document.getElementById('btnLogin'), logout:document.getElementById('btnLogout'), member:document.getElementById('member-area'), user:document.getElementById('userDisplay'), admin:document.getElementById('btnAdminLink'), edit:document.getElementById('btnEditProfile'), modal:document.getElementById('profile-modal'), save:document.getElementById('btn-save-profile'), cloud:document.getElementById('btnSaveCloud'), name:document.getElementById('pf-name'), age:document.getElementById('pf-age'), title:document.querySelector('#profile-modal h3') };
+    const dom={
+      login:document.getElementById('btnLogin'),
+      logout:document.getElementById('btnLogout'),
+      member:document.getElementById('member-area'),
+      user:document.getElementById('userDisplay'),
+      admin:document.getElementById('btnAdminLink'),
+      edit:document.getElementById('btnEditProfile'),
+      modal:document.getElementById('profile-modal'),
+      save:document.getElementById('btn-save-profile'),
+      name:document.getElementById('pf-name'),
+      age:document.getElementById('pf-age'),
+      title:document.querySelector('#profile-modal h3')
+    };
 
     if(dom.login) dom.login.addEventListener('click',()=>signInWithPopup(auth,provider).catch(e=>{
-        if(e.code==='auth/popup-blocked')alert("請使用 Chrome/Safari 瀏覽器開啟 (非 LINE/FB 內建)");
-        else alert(e.message)
+      if(e.code==='auth/popup-blocked')alert("請使用 Chrome/Safari 瀏覽器開啟 (非 LINE/FB 內建)");
+      else alert(e.message)
     }));
 
     if(dom.logout) dom.logout.addEventListener('click',()=>signOut(auth).then(()=>location.reload()));
     
     onAuthStateChanged(auth, async u=>{
       if(u){
-        dom.login.style.display='none'; dom.member.style.display='flex'; dom.user.textContent=u.displayName||u.email;
+        dom.login.style.display='none';
+        dom.member.style.display='flex';
+        dom.user.textContent=u.displayName||u.email;
+
         try{ 
-            const s=await getDoc(doc(db,"users",u.uid));
-            if(s.exists()){ if(s.data().name) dom.user.textContent=s.data().name; }
-            else{ dom.title.textContent="歡迎加入！請完善資料"; dom.name.value=u.displayName||""; dom.modal.style.display='flex'; }
+          const s=await getDoc(doc(db,"users",u.uid));
+          if(s.exists()){
+            if(s.data().name) dom.user.textContent=s.data().name;
+          }else{
+            dom.title.textContent="歡迎加入！請完善資料";
+            dom.name.value=u.displayName||"";
+            dom.modal.style.display='flex';
+          }
         }catch(e){}
-        try{ const a=await getDoc(doc(db,"admins",u.email)); if(a.exists()) dom.admin.style.display='inline-block'; }catch(e){}
-      }else{ dom.login.style.display='block'; dom.member.style.display='none'; }
+
+        try{
+          const a=await getDoc(doc(db,"admins",u.email));
+          if(a.exists()) dom.admin.style.display='inline-block';
+        }catch(e){}
+      }else{
+        dom.login.style.display='block';
+        dom.member.style.display='none';
+      }
     });
 
-    if(dom.edit) dom.edit.addEventListener('click',async()=>{ const s=await getDoc(doc(db,"users",auth.currentUser.uid)); if(s.exists()){ const d=s.data(); dom.title.textContent="修改個人資料"; dom.name.value=d.name; dom.age.value=d.age; dom.modal.style.display='flex'; } });
+    if(dom.edit) dom.edit.addEventListener('click',async()=>{
+      const s=await getDoc(doc(db,"users",auth.currentUser.uid));
+      if(s.exists()){
+        const d=s.data();
+        dom.title.textContent="修改個人資料";
+        dom.name.value=d.name;
+        dom.age.value=d.age;
+        dom.modal.style.display='flex';
+      }
+    });
     
     if(dom.save) dom.save.addEventListener('click',async()=>{
-        const n=dom.name.value, a=dom.age.value; if(!n||!a) return alert("請填寫完整");
-        const ref=doc(db,"users",auth.currentUser.uid); const s=await getDoc(ref);
-        let d={name:n,age:a,email:auth.currentUser.email,lastUpdated:serverTimestamp()};
-        if(!s.exists()||!s.data().createdAt) d.createdAt=serverTimestamp();
-        await setDoc(ref,d,{merge:true}); alert("已儲存"); dom.modal.style.display='none'; dom.user.textContent=n;
+      const n=dom.name.value, a=dom.age.value;
+      if(!n||!a) return alert("請填寫完整");
+      const ref=doc(db,"users",auth.currentUser.uid);
+      const s=await getDoc(ref);
+      let d={name:n,age:a,email:auth.currentUser.email,lastUpdated:serverTimestamp()};
+      if(!s.exists()||!s.data().createdAt) d.createdAt=serverTimestamp();
+      await setDoc(ref,d,{merge:true});
+      alert("已儲存");
+      dom.modal.style.display='none';
+      dom.user.textContent=n;
     });
 
-    if(dom.modal) dom.modal.addEventListener('click',e=>{if(e.target===dom.modal&&auth.currentUser&&dom.user.textContent!="")dom.modal.style.display='none'});
+    if(dom.modal) dom.modal.addEventListener('click',e=>{
+      if(e.target===dom.modal && auth.currentUser && dom.user.textContent!="") dom.modal.style.display='none'
+    });
   </script>
 
 </body>
