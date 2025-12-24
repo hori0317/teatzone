@@ -7,177 +7,177 @@
   <meta name="description" content="輸入本月 AA / BA / GA / SC 的支數，計總額並依比例拆薪；可從 PDF 自動統計並選擇是否同步，右側即時比對勞健保扣款，得出實領。">
   <link rel="icon" type="image/x-icon" href="YORU.ico" />
   <link rel="stylesheet" href="style.css" />
-  <link rel="stylesheet" href="topbar-fixed.css" />
   <script src="nav.js" defer></script>
+  
   <style>
-    :root{
-      --wm-text:"@hori版權所有"; --wm-size:36px; --wm-angle:-25deg; --wm-alpha:.05; --wm-shift:120px;
+    /* =======================================
+       Payroll 頁面專屬修正樣式
+       ======================================= */
+    
+    /* 彈窗 */
+    .modal-overlay { 
+        position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
+        background: rgba(47,47,32,0.6); backdrop-filter: blur(3px); 
+        z-index: 2000; display: flex; justify-content: center; align-items: center; padding: 20px; 
     }
-    .watermark{position:fixed; inset:0; pointer-events:none; z-index:9999; overflow:hidden;}
-    .wm-item{position:absolute; font-weight:700; font-size:var(--wm-size); color:rgba(0,0,0,var(--wm-alpha));
-      transform:rotate(var(--wm-angle)); white-space:nowrap; user-select:none;
-      animation:wm-sway var(--dur,12s) ease-in-out infinite alternate;}
-    @keyframes wm-sway{0%{transform:translateX(0) rotate(var(--wm-angle));}
-      100%{transform:translateX(var(--wm-shift)) rotate(var(--wm-angle));}}
-    @media print{.watermark{opacity:.08}}
-
-    /* 本頁小元件 */
-    .kpi{display:flex; gap:16px; flex-wrap:wrap;}
-    .kpi .box{flex:1 1 240px; background:#fff; border:1px solid var(--line); border-radius:12px; padding:16px;
-      display:flex; flex-direction:column; gap:6px; box-shadow:0 1px 2px rgba(0,0,0,.05);}
-    .kpi .box .lbl{color:#7a7557; font-weight:700;}
-    .kpi .box .num{font-size:24px; font-weight:900; color:#2e7d32;}
-    .tbl{width:100%; border-collapse:separate; border-spacing:0; background:#fff; border:1px solid var(--line);
-      border-radius:12px; overflow:hidden;}
-    .tbl th{background:#f6f1d9; color:#5b5534; padding:10px; font-weight:800; border-bottom:1px solid var(--line);}
-    .tbl th.month-col{text-align:center;}
-    .tbl td{padding:10px; border-top:1px solid var(--line);}
-    .tbl tbody tr:nth-child(even){background:#fffef9;}
-    .tbl input[type="number"]{width:80px; height:34px; text-align:right;}
-
-    /* ★ 修正圖 1：投保級距表格自適應與橫向膠囊 ★ */
-    .insurance-table { table-layout: auto !important; width: 100%; overflow: visible; }
-    .insurance-table select { width: 100%; min-width: 100px; }
-    .insurance-table input { text-align: right; width: 100%; }
-    .sub-text { font-size: 11px; display: block; color: #777; line-height: 1.2; }
-
-    /* ★ 修正：將自動改為橫的，勾勾靠左，確保在膠囊內 ★ */
-    .auto-chip {
-        display: inline-flex !important;
-        flex-direction: row !important;
-        align-items: center !important;
-        justify-content: flex-start !important;
-        padding: 4px 12px !important;
-        background: #fff;
-        border: 1px solid var(--line);
-        border-radius: 999px;
-        white-space: nowrap !important;
-        gap: 6px !important;
-        cursor: pointer;
+    .modal-content { 
+        background: #fffdf5; border: 1px solid #e6dca8; border-radius: 12px; 
+        padding: 24px; width: 100%; max-width: 420px; box-shadow: 0 10px 25px rgba(0,0,0,0.15); text-align: center; 
     }
-    .auto-chip input {
-        margin: 0 !important;
-        width: auto !important;
-        height: auto !important;
+    .modal-content h3 { color: #2e7d32; margin-top: 0; }
+    .modal-content input { 
+        width: 100%; padding: 10px; border: 1px solid #e6dca8; background: #fff; 
+        border-radius: 8px; font-size: 16px; margin-top: 4px; box-sizing: border-box; 
     }
+    .modal-actions { margin-top: 20px; }
 
-    @media (max-width:860px){
-      .tbl{display:block; font-size:15px; border:0; background:none; overflow:visible;}
-      .tbl thead{display:none;}
-      .tbl tbody,.tbl tfoot{display:block; width:100%;}
-      .tbl tbody tr{display:block; border:1px solid var(--line); border-radius:12px; padding:10px 12px;
-        margin-bottom:12px; background:#fff; box-shadow:0 1px 2px rgba(0,0,0,.05);}
-      .tbl tbody tr:nth-child(even){background:#fff;}
-      
-      /* ★ 修正圖 2：單價與金額在手機版縮小時強迫靠右對齊 ★ */
-      .tbl td{display:flex; gap:12px; justify-content:space-between; align-items:center; padding:6px 0; line-height:1.45;
-        white-space:normal; border-top:none; text-align: right !important;}
-      
-      .tbl td[data-label]{text-align:right;}
-      .tbl td[data-label]::before{content:attr(data-label); font-weight:700; color:#5b5534; flex:1; text-align:left;}
-      .tbl td[data-label="代碼＋名稱"],
-      .tbl td[data-label="代碼"]{flex-direction:column; align-items:flex-start; text-align: left !important;}
-      .tbl td[data-label="代碼＋名稱"]::before,
-      .tbl td[data-label="代碼"]::before{margin-bottom:2px;}
-      .tbl td.right{justify-content:space-between;}
-      .tbl input[type="number"],
-      .tbl select{width:100%; max-width:none; height:38px; text-align: right;}
-      
-      /* 手機版設定欄位改橫向顯示防止勾勾被遮擋 */
-      .tbl td[data-label="設定"]{flex-direction:row; align-items:center; justify-content: space-between; gap:6px;}
-
-      .tbl tfoot{border:1px solid var(--line); border-radius:12px; background:#fff; padding:10px 12px;}
-      .tbl tfoot tr{display:flex; flex-wrap:wrap; justify-content:flex-end; gap:8px;}
-      .tbl tfoot th{flex:1 1 auto; background:none; border:none; padding:0; text-align:right;}
-      .tbl tfoot th:last-child{flex:0 0 auto; min-width:90px; font-size:18px;}
-    }
-    .right{text-align:right;} .mono{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,"Liberation Mono",monospace;}
-    .grid-2{display:grid; grid-template-columns:1fr 1fr; gap:14px;}
-    @media (max-width:860px){.grid-2{grid-template-columns:1fr;}}
-    .row-mid{display:flex; align-items:center; gap:10px; flex-wrap:wrap;}
-    .pill-note{display:inline-block; padding:2px 8px; border:1px solid var(--line); border-radius:999px; background:#fff; font-weight:700; color:#333;}
-    .month-col{text-align:center;}
-    @media (min-width:861px){
-      :is(#tblAA,#tblBA,#tblGA,#tblSC){table-layout:fixed;}
-      :is(#tblAA,#tblBA,#tblGA,#tblSC) col.col-price{width:130px;}
-      :is(#tblAA,#tblBA,#tblGA,#tblSC) col.col-month{width:170px;}
-      :is(#tblAA,#tblBA,#tblGA,#tblSC) col.col-sum{width:160px;}
-      :is(#tblAA,#tblBA,#tblGA,#tblSC) td[data-label="本月支數"]{text-align:center;}
-      :is(#tblAA,#tblBA,#tblGA,#tblSC) td[data-label="本月支數"] input{margin:0 auto; text-align:center;}
-    }
-    @media (max-width:860px){
-      :is(#tblAA,#tblBA,#tblGA,#tblSC) td[data-label="本月支數"]{align-items:center;}
-      :is(#tblAA,#tblBA,#tblGA,#tblSC) td[data-label="本月支數"]::before{flex:1;}
-      :is(#tblAA,#tblBA,#tblGA,#tblSC) td[data-label="本月支數"] input{
-        display:block;
-        margin-left:auto;
-        margin-right:0;
-        width:80px;
-        height:32px;
-        font-size:14px;
-        padding:0 4px;
-        text-align:right;
-      }
-    }
-
-    /* PDF 支數小工具（ps- 前綴） */
+    /* PDF 區塊 */
     .ps-muted{color:#5b6b81}.ps-small{font-size:.86rem}.ps-mono{font-family:ui-monospace,Menlo,Consolas,monospace}
     .ps-pill{display:inline-block;padding:0 6px;border:1px solid #dbe6ff;background:#eef4ff;border-radius:999px}
     .ps-grid{display:grid;gap:12px}@media(min-width:920px){.ps-grid{grid-template-columns:1.1fr .9fr}}
-    .ps-drop{border:2px dashed #c7d3ee;border-radius:12px;padding:18px;text-align:center;cursor:pointer;background:#f9fbff;display:block}
-    .ps-drop:hover{background:#eef4ff}
+    .ps-drop{border:2px dashed #c7d3ee;border-radius:12px;padding:18px;text-align:center;cursor:pointer;background:#f9fbff;display:block} .ps-drop:hover{background:#eef4ff}
     .ps-btns{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
-    .ps-btn{border:1px solid #c7d3ee;background:#f3f6ff;color:#102a56;padding:8px 12px;border-radius:10px;cursor:pointer}
-    .ps-btn:disabled{opacity:.5;cursor:not-allowed}
+    .ps-btn{border:1px solid #c7d3ee;background:#f3f6ff;color:#102a56;padding:8px 12px;border-radius:10px;cursor:pointer} .ps-btn:disabled{opacity:.5}
     .ps-box{background:#fff;border:1px solid #e1e6ef;border-radius:12px;padding:12px;margin-top:10px}
     .ps-progress{height:10px;background:#eef3ff;border-radius:999px;overflow:hidden}
     .ps-bar{height:100%;width:0;background:#2667ff;transition:width .2s}
     .ps-h3{margin:.2rem 0 8px}
-    .ps-table{width:100%;border-collapse:collapse}
-    .ps-table thead th{background:#eef3ff;color:#102a56;text-align:left;padding:8px;border-bottom:1px solid #d8e2ff}
-    .ps-table tbody td{padding:8px;border-bottom:1px solid #edf1f7}
-    .ps-table tbody tr:hover{background:#f5f8ff}
-    .ps-right{text-align:right}
-    .ps-syncbar{border-color:#c7e7c7;background:#f6fff6}
+    .ps-table{width:100%;border-collapse:collapse} .ps-table thead th{background:#eef3ff;color:#102a56;text-align:left;padding:8px} .ps-table td{padding:8px;border-bottom:1px solid #edf1f7} .ps-right{text-align:right} .ps-syncbar{border-color:#c7e7c7;background:#f6fff6}
+
+    /* KPI 卡片 */
+    .kpi{display:flex; gap:16px; flex-wrap:wrap;}
+    .kpi .box{flex:1 1 240px; background:#fff; border:1px solid var(--line); border-radius:12px; padding:16px; display:flex; flex-direction:column; gap:6px; box-shadow:0 1px 2px rgba(0,0,0,.05);}
+    .kpi .box .lbl{color:#7a7557; font-weight:700;}
+    .kpi .box .num{font-size:24px; font-weight:900; color:#2e7d32;}
+
+    /* ★★★ 表格與欄位寬度強制修正 ★★★ */
+    .tbl{ width:100%; border-collapse:separate; border-spacing:0; background:#fff; border:1px solid var(--line); border-radius:12px; overflow:hidden; table-layout: fixed; }
+    
+    .tbl th{ background:#f6f1d9; color:#5b5534; padding:12px; font-weight:800; border-bottom:1px solid var(--line); font-size: 15px;}
+    .tbl td{ padding:12px; border-top:1px solid var(--line); font-size: 15px; vertical-align: middle; }
+    
+    /* === 第1欄: 代碼 (靠左) === */
+    .tbl th:first-child, .tbl td:first-child { 
+        text-align: left; 
+        padding-left: 20px; 
+        white-space: nowrap; 
+    }
+
+    /* === 第2欄: 單價 (靠右) === */
+    .tbl th:nth-child(2), .tbl td:nth-child(2) {
+        text-align: right !important; 
+        padding-right: 40px !important; 
+    }
+
+    /* === 第3欄: 本月支數 (置中) === */
+    .tbl th:nth-child(3), .tbl td:nth-child(3) {
+        text-align: center;
+    }
+    
+    /* === 第4欄: 小計 (靠右) === */
+    .tbl th:nth-child(4), .tbl td:nth-child(4) {
+        text-align: right;
+        padding-right: 20px;
+    }
+
+    .tbl tbody tr:nth-child(even){ background:#fffef9; }
+    .tbl input[type="number"]{ width:80px; height:34px; text-align:right; border:1px solid #ddd; border-radius:4px; margin: 0 auto; display:block;}
+    .tbl .right{ text-align:right; }
+    .tbl .mono{ font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; }
+
+    /* ★ 修正投保級距表格與「自動」膠囊樣式 ★ */
+    .insurance-table { table-layout: auto !important; width: 100%; }
+    .insurance-table input { width: 100% !important; min-width: 60px; }
+    .sub-text { font-size: 11px; display: block; color: #777; line-height: 1.2; }
+    
+    /* ★ 修正：將自動改為橫的，勾勾靠左，確保在膠囊內 ★ */
+    .auto-chip {
+        display: flex !important;
+        flex-direction: row !important;
+        align-items: center !important;
+        justify-content: flex-start !important; /* 勾勾靠左 */
+        padding: 4px 12px !important;
+        white-space: nowrap !important;
+        gap: 6px !important; /* 縮小勾選框與文字間距 */
+    }
+    .auto-chip input {
+        margin: 0 !important;
+        width: auto !important;
+        min-width: 0 !important;
+        cursor: pointer;
+    }
+
+    /* 其他排版 */
+    .grid-2{display:grid; grid-template-columns:1fr 1fr; gap:14px;}
+    .row-mid{display:flex; align-items:center; gap:10px; flex-wrap:wrap;}
+    .pill-note{display:inline-block; padding:2px 8px; border:1px solid var(--line); border-radius:999px; background:#fff; font-weight:700; color:#333;}
+    
+    @media (max-width:860px){
+      .grid-2{grid-template-columns:1fr;}
+      .tbl{display:block; font-size:15px; border:0; background:none; overflow:visible;}
+      .tbl thead{display:none;}
+      .tbl tbody,.tbl tfoot{display:block; width:100%;}
+      .tbl tbody tr{display:block; border:1px solid var(--line); border-radius:12px; padding:10px 12px; margin-bottom:12px; background:#fff; box-shadow:0 1px 2px rgba(0,0,0,.05);}
+      .tbl tbody tr:nth-child(even){background:#fff;}
+      
+      /* ★ 修正：手機版單價與所有數值文字強迫靠右對齊 ★ */
+      .tbl td{display:flex; gap:12px; justify-content:space-between; align-items:center; padding:6px 0; line-height:1.45; white-space:normal; border-top:none; text-align: right !important;}
+      
+      .tbl td[data-label]::before{ content:attr(data-label); font-weight:700; color:#5b5534; flex:1; text-align:left; }
+      .tbl td[data-label="代碼＋名稱"]::before, .tbl td[data-label="代碼"]::before{margin-bottom:2px;}
+      
+      .tbl input[type="number"], .tbl select{width:100%; max-width:none; height:38px; text-align: right;}
+      
+      /* 手機版支數輸入框靠右 */
+      .tbl td[data-label="本月支數"] input { width:80px; margin-left: auto; display: block; }
+      
+      .tbl tfoot th{flex:1 1 auto; background:none; border:none; padding:0; text-align:right;}
+      
+      /* 強制手機版間距復原 */
+      .tbl th:nth-child(2), .tbl td:nth-child(2) { padding-right: 0 !important; }
+      .tbl th:first-child, .tbl td:first-child { padding-left: 0 !important; }
+    }
   </style>
 </head>
 <body data-page="payroll">
+  
   <div class="watermark" aria-hidden="true">
     <span class="wm-item" style="top:5%; left:5%;  --dur:9s;">@hori版權所有</span>
-    <span class="wm-item" style="top:5%; left:35%; --dur:11s;">@hori版權所有</span>
+    <span class="wm-item" style="top:50%; left:50%; --dur:10s;">@hori版權所有</span>
     <span class="wm-item" style="top:5%; left:65%; --dur:10s;">@hori版權所有</span>
     <span class="wm-item" style="top:25%; left:10%; --dur:13s;">@hori版權所有</span>
-    <span class="wm-item" style="top:25%; left:40%; --dur:12s;">@hori版權所有</span>
-    <span class="wm-item" style="top:25%; left:70%; --dur:14s;">@hori版權所有</span>
-    <span class="wm-item" style="top:50%; left:5%;  --dur:10s;">@hori版權所有</span>
-    <span class="wm-item" style="top:50%; left:35%; --dur:11s;">@hori版權所有</span>
-    <span class="wm-item" style="top:50%; left:65%; --dur:9s;">@hori版權所有</span>
-    <span class="wm-item" style="top:75%; left:10%; --dur:13s;">@hori版權所有</span>
-    <span class="wm-item" style="top:75%; left:40%; --dur:12s;">@hori版權所有</span>
-    <span class="wm-item" style="top:75%; left:70%; --dur:10s;">@hori版權所有</span>
-    <span class="wm-item" style="top:90%; left:15%; --dur:11s;">@hori版權所有</span>
-    <span class="wm-item" style="top:90%; left:45%; --dur:10s;">@hori版權所有</span>
-    <span class="wm-item" style="top:90%; left:75%; --dur:12s;">@hori版權所有</span>
+    <span class="wm-item" style="top:75%; left:70%; --dur:14s;">@hori版權所有</span>
   </div>
 
   <header class="topbar">
     <div class="brand">
-      <a href="index.html" class="logo-link" aria-label="回首頁">
-        <img src="org-logo.png" alt="logo" onerror="this.style.opacity=0.2" />
-      </a>
+      <a href="index.html" class="logo-link"><img src="org-logo.png" alt="logo" onerror="this.style.opacity=0.2" /></a>
       <span class="site-title" id="siteTitle" data-sync-title>薪資計算機</span>
     </div>
+    
     <nav class="nav-links" aria-label="主選單">
-      <a href="index.html">額度計算機</a>
+      <a href="calculator.html">額度計算機</a>
       <a href="payroll.html">薪資計算機</a>
-      <a href="care-info.html">長照相關資訊</a>
+      <a href="video.html">影音專區</a>
+      <a href="care-info.html">長照資訊</a>
       <a href="news.html">最新公告</a>
       <a href="contact.html">聯繫方式</a>
       <a href="about.html">關於我們</a>
     </nav>
-    <div class="actions">
-      <button class="btn pill btn-gray" id="btnPrint" type="button">列印</button>
-      <button class="btn pill btn-green" id="btnResetAll" type="button">全部清空</button>
+    
+    <div class="actions" style="align-items: center; gap: 8px;">
+        <button class="btn pill btn-gray" id="btnPrint" type="button">列印</button>
+        <button class="btn pill btn-green" id="btnResetAll" type="button">全部清空</button>
+        
+        <div style="width: 1px; height: 20px; background: #ccc; margin: 0 4px;"></div>
+        
+        <button class="btn pill" style="background:#4285F4; color:white;" id="btnLogin" type="button">Google 登入</button>
+        <div id="member-area" style="display:none; align-items: center; gap:5px;">
+            <span id="userDisplay" style="font-size: 13px; font-weight: bold; color: #333; margin-right: 4px;"></span>
+            <a href="admin.html" id="btnAdminLink" class="btn pill" style="background:#673AB7; color:white; font-size:12px; padding:4px 10px; text-decoration:none; display:none;">管理後台</a>
+            <button class="btn pill" style="background:#777; color:white; font-size:12px; padding:4px 10px;" id="btnEditProfile" type="button">修改資料</button>
+            <button class="btn pill" style="background:#EA4335; color:white;" id="btnLogout" type="button">登出</button>
+        </div>
     </div>
   </header>
   <div class="divider"></div>
@@ -285,12 +285,12 @@
       <h2 class="card-title">② AA 本月支數</h2>
       <table class="tbl" id="tblAA">
         <colgroup>
-          <col class="col-code">
-          <col class="col-price">
-          <col class="col-month">
-          <col class="col-sum">
+          <col class="col-code" style="width: 35%;">
+          <col class="col-price" style="width: 20%;">
+          <col class="col-month" style="width: 25%;">
+          <col class="col-sum" style="width: 20%;">
         </colgroup>
-        <thead><tr><th style="min-width:220px;">代碼</th><th class="right">單價</th><th class="month-col">本月支數</th><th class="right">小計</th></tr></thead>
+        <thead><tr><th>代碼</th><th class="right">單價</th><th class="month-col">本月支數</th><th class="right">小計</th></tr></thead>
         <tbody></tbody>
         <tfoot><tr><th colspan="3" class="right">AA 小計</th><th class="right" id="sumAA">0</th></tr></tfoot>
       </table>
@@ -301,12 +301,12 @@
       <h2 class="card-title">③ BA 本月支數</h2>
       <table class="tbl" id="tblBA">
         <colgroup>
-          <col class="col-code">
-          <col class="col-price">
-          <col class="col-month">
-          <col class="col-sum">
+          <col class="col-code" style="width: 35%;">
+          <col class="col-price" style="width: 20%;">
+          <col class="col-month" style="width: 25%;">
+          <col class="col-sum" style="width: 20%;">
         </colgroup>
-        <thead><tr><th style="min-width:260px;">代碼＋名稱</th><th class="right">單價</th><th class="month-col">本月支數</th><th class="right">小計</th></tr></thead>
+        <thead><tr><th>代碼＋名稱</th><th class="right">單價</th><th class="month-col">本月支數</th><th class="right">小計</th></tr></thead>
         <tbody></tbody>
         <tfoot><tr><th colspan="3" class="right">BA 小計</th><th class="right" id="sumBA">0</th></tr></tfoot>
       </table>
@@ -316,12 +316,12 @@
       <h2 class="card-title">④ GA 本月支數</h2>
       <table class="tbl" id="tblGA">
         <colgroup>
-          <col class="col-code">
-          <col class="col-price">
-          <col class="col-month">
-          <col class="col-sum">
+          <col class="col-code" style="width: 35%;">
+          <col class="col-price" style="width: 20%;">
+          <col class="col-month" style="width: 25%;">
+          <col class="col-sum" style="width: 20%;">
         </colgroup>
-        <thead><tr><th style="min-width:220px;">代碼＋名稱</th><th class="right">單價</th><th class="month-col">本月支數</th><th class="right">小計</th></tr></thead>
+        <thead><tr><th>代碼＋名稱</th><th class="right">單價</th><th class="month-col">本月支數</th><th class="right">小計</th></tr></thead>
         <tbody></tbody>
         <tfoot><tr><th colspan="3" class="right">GA 小計</th><th class="right" id="sumGA">0</th></tr></tfoot>
       </table>
@@ -331,12 +331,12 @@
       <h2 class="card-title">⑤ SC 本月支數</h2>
       <table class="tbl" id="tblSC">
         <colgroup>
-          <col class="col-code">
-          <col class="col-price">
-          <col class="col-month">
-          <col class="col-sum">
+          <col class="col-code" style="width: 35%;">
+          <col class="col-price" style="width: 20%;">
+          <col class="col-month" style="width: 25%;">
+          <col class="col-sum" style="width: 20%;">
         </colgroup>
-        <thead><tr><th style="min-width:220px;">代碼＋名稱</th><th class="right">單價</th><th class="month-col">本月支數</th><th class="right">小計</th></tr></thead>
+        <thead><tr><th>代碼＋名稱</th><th class="right">單價</th><th class="month-col">本月支數</th><th class="right">小計</th></tr></thead>
         <tbody></tbody>
         <tfoot><tr><th colspan="3" class="right">SC 小計</th><th class="right" id="sumSC">0</th></tr></tfoot>
       </table>
@@ -352,7 +352,7 @@
               <tr><td>BA 小計</td><td class="right mono" id="resBA">0</td></tr>
               <tr><td>GA 小計</td><td class="right mono" id="resGA">0</td></tr>
               <tr><td>SC 小計</td><td class="right mono" id="resSC">0</td></tr>
-              <tr><td><b>全月總額（AA+BA+GA+SC）</b></td><td class="right mono" id="resTotal"><b>0</b></td></tr>
+              <tr><td><b>全月總額</b></td><td class="right mono" id="resTotal"><b>0</b></td></tr>
               <tr><td>拆薪比例</td><td class="right mono"><span id="resRatio">60</span>%</td></tr>
               <tr><td><b>拆薪後薪資</b></td><td class="right mono" id="resSalary"><b>0</b></td></tr>
               <tr><td><b>實領（扣勞健保）</b></td><td class="right mono" id="resNet"><b>0</b></td></tr>
@@ -372,26 +372,24 @@
                 <col style="width:14%;">
             </colgroup>
             <thead>
-              <tr>
-                <th>投保級距</th>
-                <th class="right">勞保(員工)</th>
-                <th class="right">健保(員工)</th>
-                <th class="right">合計</th>
-                <th style="width:180px;">設定</th>
-              </tr>
+                <tr>
+                    <th>投保級距</th>
+                    <th>勞保<br><span class="sub-text">(員工)</span></th>
+                    <th>健保<br><span class="sub-text">(員工)</span></th>
+                    <th>合計</th>
+                    <th>設定</th>
+                </tr>
             </thead>
             <tbody>
-              <tr>
-                <td data-label="投保級距"><select id="insGrade" style="height:34px;width:100%;"></select></td>
-                <td class="right" data-label="勞保"><input id="insLabor" type="number" min="0" step="1" value="0" style="height:34px;width:100%;text-align:right;"></td>
-                <td class="right" data-label="健保"><input id="insHealth" type="number" min="0" step="1" value="0" style="height:34px;width:100%;text-align:right;"></td>
-                <td class="right mono" id="insSum" data-label="合計">0</td>
-                <td data-label="設定">
-                  <label class="auto-chip">
-                    <input id="insAuto" type="checkbox" checked> 自動
-                  </label>
-                </td>
-              </tr>
+                <tr>
+                    <td data-label="投保級距"><select id="insGrade" style="width:100%;"></select></td>
+                    <td class="right" data-label="勞保(員工)"><input id="insLabor" type="number" min="0" step="1" value="0" style="height:34px;width:100%;text-align:right;"></td>
+                    <td class="right" data-label="健保(員工)"><input id="insHealth" type="number" min="0" step="1" value="0" style="height:34px;width:100%;text-align:right;"></td>
+                    <td class="right mono" id="insSum" data-label="合計">0</td>
+                    <td data-label="設定">
+                        <label class="chip auto-chip"><input id="insAuto" type="checkbox" checked> 自動</label>
+                    </td>
+                </tr>
             </tbody>
           </table>
           <div class="row-mid" style="margin-top:12px;">
@@ -401,7 +399,7 @@
       </div>
     </section>
   </main>
-
+  
   <footer id="bottomDock" class="footerbar">
     <div class="foot">
       <span class="ok">※ 每年 <b>2 月</b> 和 <b>8 月</b> 調整投保級距，並於次月 <b>1 號</b> 生效。</span>
@@ -493,7 +491,7 @@
         Object.keys(PRICE.AA).forEach(code=>{
           const price = PRICE.AA[code];
           const tr = document.createElement('tr');
-          // ★ 順序修正：代碼 -> 單價 -> 本月支數 -> 小計 ★
+          // 順序修正：代碼 -> 單價 -> 本月支數 -> 小計
           tr.innerHTML = `<td data-label="代碼">${code}</td><td class="right mono" data-label="單價">${F(price)}</td><td data-label="本月支數"><input type="number" min="0" step="1" value="${N(saved[code]||0)}" data-aa="${code}"></td><td class="right mono" data-label="小計" data-aa-sum="${code}">0</td>`;
           host.appendChild(tr);
         });
@@ -505,7 +503,7 @@
         const k = key.toLowerCase();
         PRICE[key].forEach(item=>{
           const tr = document.createElement('tr');
-          // ★ 順序修正：代碼 -> 單價 -> 本月支數 -> 小計 ★
+          // 順序修正：代碼 -> 單價 -> 本月支數 -> 小計
           tr.innerHTML = `<td data-label="代碼＋名稱">${item.code}${item.name ? ' ' + item.name : ''}</td><td class="right mono" data-label="單價">${F(item.price)}</td><td data-label="本月支數"><input type="number" min="0" step="1" value="${N(saved[item.code]||0)}" data-${k}="${item.code}"></td><td class="right mono" data-label="小計" data-${k}-sum="${item.code}">0</td>`;
           host.appendChild(tr);
         });
@@ -648,7 +646,6 @@
 
       buildAA(); buildGroup('tblBA','BA','pl-ba'); buildGroup('tblGA','GA','pl-ga'); buildGroup('tblSC','SC','pl-sc'); buildInsOptions(); restore(); wire(); updateAll();
 
-      // 防盜拷腳本
       document.addEventListener('contextmenu', e => e.preventDefault());
       document.addEventListener('keydown', e => {
         if ((e.ctrlKey || e.metaKey) && ['u','s','p'].includes(e.key.toLowerCase())) e.preventDefault();
