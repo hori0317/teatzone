@@ -41,3 +41,85 @@
   </footer>
 </body>
 </html>
+<!-- Firebase Header 狀態控制 (通用版) -->
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+  import { getAuth, signInWithPopup, GoogleAuthProvider, signOut, onAuthStateChanged } 
+    from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+  import { getFirestore, doc, getDoc } 
+    from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+  // 你的 Config
+  const firebaseConfig = {
+    apiKey: "AIzaSyCZMhdUI0HeIoj5masuRh00pzP3SMbF6Yc",
+    authDomain: "hori-test-1b93c.firebaseapp.com",
+    projectId: "hori-test-1b93c",
+    storageBucket: "hori-test-1b93c.firebasestorage.app",
+    messagingSenderId: "549583061796",
+    appId: "1:549583061796:web:ad58b8bf80c2b6b71c29b1"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const db = getFirestore(app);
+  const provider = new GoogleAuthProvider();
+
+  // 取得 Header 元素
+  const btnLogin = document.getElementById('btnLogin');
+  const btnLogout = document.getElementById('btnLogout');
+  const memberArea = document.getElementById('member-area');
+  const userDisplay = document.getElementById('userDisplay');
+  const btnAdminLink = document.getElementById('btnAdminLink');
+
+  // 登入
+  if(btnLogin) {
+      btnLogin.addEventListener('click', () => {
+        signInWithPopup(auth, provider).catch(e => {
+            if(e.code === 'auth/unauthorized-domain') alert("請至 Firebase 新增授權網域");
+            else alert(e.message);
+        });
+      });
+  }
+
+  // 登出
+  if(btnLogout) {
+      btnLogout.addEventListener('click', () => {
+        signOut(auth).then(() => { alert("已登出"); location.reload(); });
+      });
+  }
+
+  // 監聽狀態
+  onAuthStateChanged(auth, async (user) => {
+    if (user) {
+      // 登入狀態：隱藏登入鈕，顯示會員區
+      if(btnLogin) btnLogin.style.display = 'none';
+      if(memberArea) memberArea.style.display = 'flex';
+      
+      // 顯示名字 (預設顯示 Google 名稱，隨後抓取資料庫自訂名稱)
+      if(userDisplay) userDisplay.textContent = user.displayName || user.email;
+
+      // 抓取自訂姓名
+      try {
+        const docSnap = await getDoc(doc(db, "users", user.uid));
+        if (docSnap.exists() && docSnap.data().name) {
+            if(userDisplay) userDisplay.textContent = docSnap.data().name;
+        }
+      } catch (e) { console.error(e); }
+
+      // 檢查管理員權限
+      try {
+        const adminSnap = await getDoc(doc(db, "admins", user.email));
+        if (adminSnap.exists() && btnAdminLink) {
+            btnAdminLink.style.display = 'inline-block';
+        }
+      } catch(e) {}
+
+    } else {
+      // 未登入狀態
+      if(btnLogin) btnLogin.style.display = 'block';
+      if(memberArea) memberArea.style.display = 'none';
+      if(userDisplay) userDisplay.textContent = '';
+      if(btnAdminLink) btnAdminLink.style.display = 'none';
+    }
+  });
+</script>
