@@ -78,7 +78,7 @@
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-    import { getAuth, signInWithPopup, GoogleAuthProvider, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+    import { getAuth, signInWithRedirect, GoogleAuthProvider, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
     import { getFirestore, doc, getDoc, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
     const firebaseConfig = {
@@ -108,8 +108,19 @@
     const modalTitle = profileModal.querySelector('h3');
     let currentUser = null;
 
-    if(btnLogin) btnLogin.addEventListener('click', () => signInWithPopup(auth, provider).catch(e => alert(e.message)));
-    if(btnLogout) btnLogout.addEventListener('click', () => signOut(auth).then(() => { alert("已登出"); location.reload(); }));
+    if(btnLogin) {
+        btnLogin.addEventListener('click', () => {
+          // 直接跳轉，不處理錯誤 (錯誤會在跳回來後處理，但通常不會有錯)
+          signInWithRedirect(auth, provider);
+        });
+    }
+
+    // --- 登出 ---
+    if(btnLogout) {
+        btnLogout.addEventListener('click', () => {
+          signOut(auth).then(() => { alert("已登出"); location.reload(); });
+        });
+    }
 
     onAuthStateChanged(auth, async (user) => {
       if (user) {
