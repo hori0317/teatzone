@@ -671,6 +671,96 @@ function findGradeBySalary(sal){
     })();
   </script>
 
+  <!-- Firebase Script -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+    import { getAuth, signInWithPopup, GoogleAuthProvider, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+    import { getFirestore, doc, getDoc, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyCZMhdUI0HeIoj5masuRh00pzP3SMbF6Yc",
+      authDomain: "hori-test-1b93c.firebaseapp.com",
+      projectId: "hori-test-1b93c",
+      storageBucket: "hori-test-1b93c.firebasestorage.app",
+      messagingSenderId: "549583061796",
+      appId: "1:549583061796:web:ad58b8bf80c2b6b71c29b1"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+    const provider = new GoogleAuthProvider();
+
+    const btnLogin = document.getElementById('btnLogin');
+    const btnLogout = document.getElementById('btnLogout');
+    const memberArea = document.getElementById('member-area');
+    const userDisplay = document.getElementById('userDisplay');
+    const btnAdminLink = document.getElementById('btnAdminLink');
+    const btnEditProfile = document.getElementById('btnEditProfile');
+    const profileModal = document.getElementById('profile-modal');
+    const pfNameInput = document.getElementById('pf-name');
+    const pfAgeInput = document.getElementById('pf-age');
+    const btnSaveProfile = document.getElementById('btn-save-profile');
+    const modalTitle = profileModal.querySelector('h3');
+    let currentUser = null;
+
+    if(btnLogin) btnLogin.addEventListener('click', () => signInWithPopup(auth, provider).catch(e => alert(e.message)));
+    if(btnLogout) btnLogout.addEventListener('click', () => signOut(auth).then(() => { alert("已登出"); location.reload(); }));
+
+    onAuthStateChanged(auth, async (user) => {
+      if (user) {
+        currentUser = user;
+        if(btnLogin) btnLogin.style.display = 'none';
+        if(memberArea) memberArea.style.display = 'flex';
+        if(userDisplay) userDisplay.textContent = user.displayName || user.email;
+
+        try {
+          const docSnap = await getDoc(doc(db, "users", user.uid));
+          if (docSnap.exists()) {
+             if(userDisplay && docSnap.data().name) userDisplay.textContent = docSnap.data().name;
+          } else {
+             openProfileModal("歡迎加入！請完善資料", user.displayName || "", "");
+          }
+        } catch(e){}
+
+        try {
+          const adminSnap = await getDoc(doc(db, "admins", user.email));
+          if (adminSnap.exists() && btnAdminLink) btnAdminLink.style.display = 'inline-block';
+        } catch(e){}
+      } else {
+        currentUser = null;
+        if(btnLogin) btnLogin.style.display = 'block';
+        if(memberArea) memberArea.style.display = 'none';
+      }
+    });
+
+    function openProfileModal(title, dName, dAge) {
+      if(modalTitle) modalTitle.textContent = title;
+      pfNameInput.value = dName;
+      pfAgeInput.value = dAge;
+      profileModal.style.display = 'flex';
+    }
+
+    if(btnEditProfile) btnEditProfile.addEventListener('click', async () => {
+      const s = await getDoc(doc(db, "users", currentUser.uid));
+      if(s.exists()){ const d = s.data(); openProfileModal("修改個人資料", d.name, d.age); }
+    });
+
+    if(btnSaveProfile) btnSaveProfile.addEventListener('click', async () => {
+      const name = pfNameInput.value.trim();
+      const age = pfAgeInput.value.trim();
+      if(!name || !age) return alert("請填寫完整");
+      await setDoc(doc(db, "users", currentUser.uid), { name, age, email: currentUser.email, lastUpdated: serverTimestamp() }, { merge: true });
+      alert("儲存成功");
+      profileModal.style.display = 'none';
+      if(userDisplay) userDisplay.textContent = name;
+    });
+
+    if(profileModal) profileModal.addEventListener('click', (e) => {
+      if (e.target === profileModal && currentUser && userDisplay.textContent !== "") profileModal.style.display = 'none';
+    });
+  </script>
+  
   <!-- PDF 解析 + 帶入表單（含 OCR 後援；同步前清空；AA 0.5 進位；BA05-1=BA05；BA16-1/-2=BA16） -->
   <script>
     (() => {
