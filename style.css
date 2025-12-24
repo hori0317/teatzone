@@ -5,15 +5,19 @@
 --bg: #fff6d5;
 --card: #fffdf5;
 --line: #e6dca8;
+
 --ink: #2f2f20;
 --muted: #7a7557;
+
 --green: #2e7d32;
 --green-2: #0f766e;
 --orange: #f59e0b;
 --graybtn: #9ca3af;
 --warn: #b00020;
+
 --topbar-h: 70px; /* 已配合新版調整為 70px */
 --dock-h: 56px;
+
 /* 浮水印變數 */
 --wm-text: "@hori版權所有";
 --wm-size: 36px;
@@ -21,19 +25,24 @@
 --wm-alpha: .05;
 --wm-shift: 120px;
 }
+
 /* =====================
 全域
 ===================== */
+
 * {
 box-sizing: border-box;
 }
+
 html, body {
 height: 100%;
 }
+
 /* ★ 重要新增：強制顯示右側捲軸，防止切換頁面時網頁左右跳動 ★ */
 html {
 overflow-y: scroll;
 }
+
 body {
 margin: 0;
 font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Noto Sans TC", "Microsoft JhengHei", "PingFang TC", system-ui, sans-serif;
@@ -42,16 +51,20 @@ background: var(--bg);
 line-height: 1.5;
 padding-bottom: var(--dock-h);
 }
+
 .hidden {
 display: none !important;
 }
+
 a {
 color: var(--green);
 text-decoration: none;
 }
+
 a:hover {
 text-decoration: underline;
 }
+
 /* =====================
 浮水印（固定＋左右緩慢擺動）
 ===================== */
@@ -62,6 +75,7 @@ pointer-events: none;
 z-index: 0;
 overflow: hidden;
 }
+
 .wm-item {
 position: absolute;
 font-weight: 800;
@@ -73,6 +87,7 @@ user-select: none;
 will-change: transform;
 animation: wm-sway var(--dur, 12s) ease-in-out infinite alternate;
 }
+
 @keyframes wm-sway {
 0% {
 transform: translateX(0) rotate(var(--wm-angle));
@@ -81,11 +96,13 @@ transform: translateX(0) rotate(var(--wm-angle));
 transform: translateX(var(--wm-shift)) rotate(var(--wm-angle));
 }
 }
+
 @media print {
 .watermark {
 opacity: .08;
 }
 }
+
 /* =====================
 頂部列（固定）- Grid 修正版
 (改為三欄 Grid 確保絕對置中，避免左右跳動)
@@ -104,6 +121,7 @@ backdrop-filter: blur(6px);
 border-bottom: 1px solid var(--line);
 height: 70px;
 }
+
 .brand {
 display: flex;
 align-items: center;
@@ -114,21 +132,25 @@ justify-self: start; /* 靠左對齊 */
 min-width: max-content;
 white-space: nowrap;
 }
+
 .brand img {
 height: 50px;
 width: auto;
 transition: transform .3s ease;
 display: block;
 }
+
 .brand img:hover {
 transform: scale(1.08);
 }
+
 .site-title {
 font-size: 20px;
 font-weight: 700;
 margin-right: 28px;
 white-space: nowrap;
 }
+
 /* 導覽列：中間置中 */
 .nav-links {
 justify-self: center; /* Grid 置中 */
@@ -138,6 +160,7 @@ align-items: center;
 gap: 40px;
 white-space: nowrap;
 }
+
 .nav-links a {
 text-decoration: none;
 color: #333;
@@ -147,13 +170,16 @@ white-space: nowrap;
 position: relative;
 padding: 8px 4px;
 }
+
 .nav-links a:hover {
 color: var(--orange);
 transform: translateY(-1px);
 }
+
 .nav-links a.active {
 color: var(--orange);
 }
+
 .nav-links a.active::after {
 content: "";
 position: absolute;
@@ -164,6 +190,7 @@ height: 3px;
 background: var(--orange);
 border-radius: 3px;
 }
+
 /* 新增：透過 data-page 控制每個頁面的亮起狀態 (全頁面通用) */
 body[data-page="index"] .nav-links a[href="calculator.html"],
 body[data-page="calculator"] .nav-links a[href="calculator.html"],
@@ -176,6 +203,7 @@ body[data-page="about"] .nav-links a[href="about.html"] {
 color: var(--orange);
 transform: translateY(-1px);
 }
+
 body[data-page="index"] .nav-links a[href="calculator.html"]::after,
 body[data-page="calculator"] .nav-links a[href="calculator.html"]::after,
 body[data-page="payroll"] .nav-links a[href="payroll.html"]::after,
@@ -193,6 +221,7 @@ height: 3px;
 background: var(--orange);
 border-radius: 3px;
 }
+
 /* 右側按鈕區 */
 .actions {
 justify-self: end; /* 靠右對齊 */
@@ -201,13 +230,16 @@ align-items: center;
 gap: 10px;
 white-space: nowrap;
 }
+
 .actions-ghost {
 min-width: 320px;
 height: 1px;
 }
+
 .divider {
 height: 10px;
 }
+
 /* RWD 手機版調整 */
 @media (max-width: 1180px) {
 .topbar {
@@ -218,6 +250,7 @@ gap: 10px;
 }
 .brand { grid-column: 1; justify-self: start; }
 .actions { grid-column: 2; justify-self: end; }
+
 /* 導覽列移到第二行 */
 .nav-links {
 grid-column: 1 / -1;
@@ -236,6 +269,7 @@ padding-top: 10px;
 display: none;
 }
 }
+
 /* =====================
 底部資訊條（固定）
 ===================== */
@@ -249,6 +283,7 @@ border-top: 1px solid var(--line);
 padding: 10px 16px;
 padding-bottom: max(10px, env(safe-area-inset-bottom));
 }
+
 .foot {
 display: flex;
 justify-content: center;
@@ -258,12 +293,15 @@ flex-wrap: wrap;
 font-weight: 600;
 text-align: center;
 }
+
 .foot .ok {
 color: var(--green);
 }
+
 .foot .warn {
 color: var(--warn);
 }
+
 /* =====================
 容器與卡片
 ===================== */
@@ -272,16 +310,19 @@ max-width: 1360px;
 margin: 0 auto;
 padding: 18px 20px;
 }
+
 @media (min-width: 1600px) {
 .container {
 max-width: 1440px;
 }
 }
+
 .grid-3 {
 display: grid;
 grid-template-columns: 1.15fr 0.95fr 1.15fr;
 gap: 0px;
 }
+
 .card {
 background: var(--card);
 border: 1px solid var(--line);
@@ -290,6 +331,7 @@ padding: 20px;
 box-shadow: 0 1px 2px rgba(0, 0, 0, .05);
 height: 100%;
 }
+
 /* =====================
 元件
 ===================== */
@@ -302,53 +344,67 @@ font-weight: 700;
 color: #fff;
 background: var(--green);
 }
+
 .btn:hover {
 filter: brightness(1.05);
 }
+
 .btn:active {
 transform: translateY(1px);
 }
+
 .btn.pill {
 border-radius: 999px;
 padding: 8px 16px;
 }
+
 .btn-green {
 background: var(--green);
 color: #fff;
 }
+
 .btn-orange {
 background: var(--orange);
 color: #fff;
 }
+
 .btn-gray {
 background: var(--graybtn);
 color: #fff;
 }
+
 .row {
 display: flex;
 align-items: center;
 gap: 10px;
 }
+
 .space-between {
 justify-content: space-between;
 }
+
 .hint {
 color: var(--muted);
 font-size: 13px;
 }
+
 .note.warn,
 .hint.warn {
 color: var(--warn);
 }
+
 .text-right {
 text-align: right;
 }
+
 .bold {
 font-weight: 800;
 }
+
 .orange {
 color: var(--orange);
 }
+
 /* =====================
 基本資料區
 ===================== */
@@ -359,10 +415,12 @@ gap: 10px;
 margin: 12px 0;
 font-size: 15px;
 }
+
 .form-row>label {
 flex: 0 0 90px;
 white-space: nowrap;
 }
+
 .form-row .chips,
 .form-row .cms {
 flex: 1 1 auto;
@@ -371,6 +429,7 @@ gap: 8px;
 flex-wrap: nowrap;
 min-width: 0;
 }
+
 .form-row input[type="number"],
 .form-row input[type="text"] {
 height: 34px;
@@ -381,11 +440,13 @@ padding: 2px 6px;
 border: 1px solid var(--line);
 background: #fffdf6;
 }
+
 /* 選項外觀 */
 .chips {
 display: flex;
 gap: 8px;
 }
+
 .chip {
 display: inline-flex;
 align-items: center;
@@ -398,13 +459,16 @@ font-size: 14px;
 cursor: pointer;
 user-select: none;
 }
+
 .chip input {
 transform: translateY(1px);
 }
+
 .cms {
 display: flex;
 gap: 8px;
 }
+
 .cms label {
 display: inline-flex;
 align-items: center;
@@ -412,27 +476,34 @@ gap: 4px;
 background: #fff;
 border: 1px solid var(--line);
 border-radius: 12px;
-padding: 5px 8px; font-size: 14px;
+padding: 5px 8px;
+font-size: 14px;
 }
+
 .cms input {
 transform: translateY(1px);
 }
+
 .note.warn {
 margin-top: 8px;
 font-size: 13px;
 }
+
 @media (max-width: 860px) {
 .form-row {
 flex-wrap: wrap;
 }
+
 .form-row>label {
 flex: 0 0 100%;
 }
+
 .form-row .chips,
 .form-row .cms {
 flex-wrap: wrap;
 }
 }
+
 /* =====================
 左卡：AA 加成區
 ===================== */
@@ -442,38 +513,46 @@ border: 1px solid var(--line);
 border-radius: 10px;
 overflow: hidden;
 }
+
 .addon-head,
 .addon-row {
 display: grid;
 grid-template-columns: 1fr 160px;
 align-items: center;
 }
+
 .addon-head {
 background: #faf6e4;
 border-bottom: 1px solid var(--line);
 font-weight: 800;
 padding: 10px 16px;
 }
+
 .addon-row {
 padding: 10px 16px;
 border-top: 1px dashed var(--line);
 }
+
 .addon-row:first-child {
 border-top: none;
 }
+
 .addon-row .addon-inputs {
 display: flex;
 justify-content: flex-end;
 }
+
 .addon-row input[type="number"] {
 width: 90px;
 }
+
 .salary-total {
 margin-top: 10px;
 font-weight: 800;
 text-align: right;
 color: var(--green);
 }
+
 /* QR 區 */
 .qrbox {
 margin-top: 16px;
@@ -481,6 +560,7 @@ display: flex;
 gap: 16px;
 align-items: center;
 }
+
 .qr-left img {
 width: 84px;
 height: 84px;
@@ -489,21 +569,26 @@ border-radius: 10px;
 border: 1px solid var(--line);
 background: #fff;
 }
+
 .qr-right p {
 margin: 4px 0;
 }
+
 .qr-right .bold {
 font-weight: 800;
 }
+
 .qr-right .orange {
 color: var(--orange);
 font-weight: 700;
 }
+
 .card .qrbox {
 margin-top: 20px;
 border-top: 1px dashed var(--line);
 padding-top: 14px;
 }
+
 /* =====================
 服務表格通用 (#tables)
 注意：Payroll 使用它自己的 HTML 內嵌樣式或專屬調整，這裡是通用基礎
@@ -511,6 +596,7 @@ padding-top: 14px;
 #tables {
 width: 100%;
 }
+
 #tables table {
 width: 100%;
 border-collapse: separate;
@@ -520,6 +606,7 @@ border: 1px solid var(--line);
 border-radius: 12px;
 overflow: hidden;
 }
+
 #tables thead th {
 position: sticky;
 top: 0;
@@ -530,47 +617,56 @@ padding: 12px 18px;
 border-bottom: 1px solid var(--line);
 font-weight: 800;
 }
+
 #tables th:first-child,
 #tables td:first-child {
 text-align: left;
 padding-left: 18px;
 }
+
 #tables td {
 padding: 12px 18px;
 border-top: 1px solid var(--line);
 vertical-align: middle;
 }
+
 #tables tbody tr:nth-child(even) {
 background: #fffef9;
 }
+
 #tables input[type="number"] {
 width: 70px;
 height: 36px;
 font-size: 15px;
-text-align: center !important; /* ★ 修正需求 1：置中對齊 ★ */
+text-align: center;
 margin: 0 auto;
 display: block;
 }
+
 /* 手機版優化（通用基礎） */
 @media (max-width: 860px) {
 .grid-3 {
 grid-template-columns: 1fr;
 gap: 14px;
 }
+
 .card {
 padding: 14px;
 }
+
 #tables {
 overflow-x: auto;
 -webkit-overflow-scrolling: touch;
 padding-bottom: calc(var(--dock-h) + 14px);
 display: block;
 }
+
 #tables table {
 min-width: 780px;
 table-layout: fixed;
 width: max-content;
 }
+
 #tables th,
 #tables td {
 padding: 10px 12px;
@@ -578,17 +674,19 @@ font-size: 14px;
 line-height: 1.2;
 white-space: nowrap;
 }
+
 #tables input[type="number"] {
 width: 58px;
 height: 32px;
 font-size: 14px;
-text-align: center !important; /* ★ 置中 ★ */
 }
+
 .foot {
 gap: 12px;
 font-size: 14px;
 }
 }
+
 /* =====================
 列印設定
 ===================== */
@@ -596,30 +694,37 @@ font-size: 14px;
 .topbar, .footerbar {
 display: none !important;
 }
+
 body {
 padding: 0;
 background: #fff;
 }
+
 .card {
 box-shadow: none;
 }
+
 #tables thead th {
 position: static;
 }
 }
+
 /* =====================
 禁止選取與拖曳
 ===================== */
+
 * {
 -webkit-user-select: none;
 -moz-user-select: none;
 -ms-user-select: none;
 user-select: none;
 }
+
 img, a img {
 -webkit-user-drag: none;
 user-drag: none;
 }
+
 /* =========================================================
 卡片與排版修正區
 ========================================================= */
@@ -629,12 +734,14 @@ font-weight: 800;
 margin: 0 0 12px 0;
 color: #2f2f20;
 }
+
 .service-card h3 {
 margin: 24px 0 10px 2px !important;
 font-size: 16px !important;
 font-weight: 800 !important;
 color: #6b6544 !important;
 }
+
 .kv .kv-row {
 display: flex;
 justify-content: space-between;
@@ -643,27 +750,33 @@ padding: 6px 0;
 font-weight: 600;
 color: #2f2f20;
 }
+
 .addon-head span:last-child {
 text-align: right;
 padding-right: 18px;
 }
+
 .hint {
 color: var(--muted);
 font-size: 13px;
 }
+
 /* 通用對齊設定 */
 #tables thead th {
 text-align: center !important;
 }
+
 #tables td, #tables th {
 text-align: center;
 vertical-align: middle;
 font-variant-numeric: tabular-nums;
 }
+
 #tables th:first-child, #tables td:first-child {
 text-align: left !important;
 padding-left: 18px !important;
 }
+
 /* =========================================================
 手機版 index / calculator：卡片式服務列排版 (專屬優化)
 ========================================================= */
@@ -673,6 +786,7 @@ body[data-page="calculator"] #tables {
 overflow-x: visible !important;
 padding-bottom: 14px !important;
 }
+
 body[data-page="index"] #tables table,
 body[data-page="calculator"] #tables table {
 width: 100% !important;
@@ -681,10 +795,12 @@ table-layout: fixed;
 border-collapse: separate;
 border-spacing: 0 10px;
 }
+
 body[data-page="index"] #tables thead,
 body[data-page="calculator"] #tables thead {
 display: none;
 }
+
 body[data-page="index"] #tables tbody tr,
 body[data-page="calculator"] #tables tbody tr {
 display: block;
@@ -693,6 +809,7 @@ border: 1px solid var(--line);
 border-radius: 12px;
 padding: 8px 10px 6px;
 }
+
 body[data-page="index"] #tables tbody td,
 body[data-page="calculator"] #tables tbody td {
 display: flex;
@@ -702,9 +819,8 @@ padding: 4px 0;
 border-top: none;
 white-space: normal;
 font-size: 13px;
-/* ★ 修正需求 2：強迫齊右 ★ */
-text-align: right !important;
 }
+
 body[data-page="index"] #tables tbody td:first-child,
 body[data-page="calculator"] #tables tbody td:first-child {
 flex-direction: column;
@@ -713,8 +829,8 @@ padding-bottom: 6px;
 margin-bottom: 4px;
 border-bottom: 1px dashed var(--line);
 font-weight: 700;
-text-align: left !important;
 }
+
 body[data-page="index"] #tables tbody td:first-child::before,
 body[data-page="calculator"] #tables tbody td:first-child::before {
 content: "服務項目";
@@ -723,11 +839,13 @@ color: var(--muted);
 font-weight: 500;
 margin-bottom: 2px;
 }
+
 body[data-page="index"] #tables tbody td:nth-child(n+2),
 body[data-page="calculator"] #tables tbody td:nth-child(n+2) {
 text-align: right;
 gap: 8px;
 }
+
 /* 加入表格內容前綴 (Pseudo Element) */
 body[data-page="index"] #tables tbody td:nth-child(2)::before,
 body[data-page="calculator"] #tables tbody td:nth-child(2)::before { content: "單價"; color: var(--muted); margin-right: 6px; }
@@ -739,6 +857,7 @@ body[data-page="index"] #tables tbody td:nth-child(5)::before,
 body[data-page="calculator"] #tables tbody td:nth-child(5)::before { content: "總次數"; color: var(--muted); margin-right: 6px; }
 body[data-page="index"] #tables tbody td:nth-child(6)::before,
 body[data-page="calculator"] #tables tbody td:nth-child(6)::before { content: "總金額"; color: var(--muted); margin-right: 6px; }
+
 body[data-page="index"] #tables tbody td:nth-child(3) input[type="number"],
 body[data-page="index"] #tables tbody td:nth-child(4) input[type="number"],
 body[data-page="index"] #tables tbody td:nth-child(5) input[type="number"],
@@ -747,39 +866,131 @@ body[data-page="calculator"] #tables tbody td:nth-child(4) input[type="number"],
 body[data-page="calculator"] #tables tbody td:nth-child(5) input[type="number"] {
 margin-left: auto !important;
 margin-right: 0 !important;
-text-align: center !important; /* ★ 置中 ★ */
+text-align: right !important;
 width: 64px;
 height: 32px;
 font-size: 13px;
 }
 }
+
 /* ============================================================
 [Payroll 專用調整] 這裡的 CSS 確保 Payroll 的單價往左、支數置中
 這些屬性與上面的通用樣式分開，不會相互干擾
 ============================================================ */
-body[data-page="payroll"] table th:nth-child(2),
-body[data-page="payroll"] table td:nth-child(2) {
+
+/* ★ 修正：桌機版才套用欄位 padding，避免手機版卡片式跑版；且只鎖 .tbl，避免影響 PDF 統計表格等其他 table ★ */
+@media (min-width: 861px) {
+body[data-page="payroll"] .tbl th:nth-child(2),
+body[data-page="payroll"] .tbl td:nth-child(2) {
 padding-right: 60px !important; /* 單價靠右，增加右邊距擠向左 */
-text-align: right !important; /* ★ 強制靠右 ★ */
+text-align: right;
 }
-body[data-page="payroll"] table th:nth-child(3),
-body[data-page="payroll"] table td:nth-child(3) {
+body[data-page="payroll"] .tbl th:nth-child(3),
+body[data-page="payroll"] .tbl td:nth-child(3) {
 text-align: center !important; /* 支數置中 */
 }
-body[data-page="payroll"] table th:nth-child(4),
-body[data-page="payroll"] table td:nth-child(4) {
+body[data-page="payroll"] .tbl th:nth-child(4),
+body[data-page="payroll"] .tbl td:nth-child(4) {
 padding-right: 20px !important;
 text-align: right;
 }
 /* Payroll 表格內的 input 設為 90px */
-body[data-page="payroll"] input[type="number"] {
+body[data-page="payroll"] .tbl input[type="number"] {
 width: 90px !important;
-text-align: center !important; /* ★ 修正需求 1：置中對齊 ★ */
-margin: 0 auto;
 }
+}
+
+/* =========================================================
+[Payroll] 手機版：填空欄位上下置中 + 勞健保區塊修正（尚未解決的部分一起補齊）
+========================================================= */
+@media (max-width: 860px) {
+
+/* ① 拆薪比例 / 月份 等 row-mid：改成「上文字、下欄位」並置中 */
+body[data-page="payroll"] .row-mid {
+flex-direction: column;
+align-items: center;
+justify-content: center;
+text-align: center;
+gap: 6px;
+}
+
+body[data-page="payroll"] .row-mid > label {
+min-width: 0 !important;
+text-align: center;
+margin-bottom: 2px;
+}
+
+/* row-mid 內所有輸入／下拉：置中呈現，數字仍靠右方便輸入 */
+body[data-page="payroll"] .row-mid input[type="number"],
+body[data-page="payroll"] .row-mid input[type="text"],
+body[data-page="payroll"] .row-mid input[type="month"],
+body[data-page="payroll"] .row-mid select {
+width: 100%;
+max-width: 240px;
+margin: 0 auto;
+text-align: right;
+}
+
+/* ★ Payroll 手機版：表格「本月支數」那格要「上下置中」（你截圖中希望的樣子） */
+body[data-page="payroll"] .tbl td[data-label="本月支數"] {
+flex-direction: column;
+align-items: center;
+justify-content: center;
+text-align: center !important;
+gap: 6px;
+}
+
+body[data-page="payroll"] .tbl td[data-label="本月支數"]::before {
+flex: 0;
+text-align: center;
+margin-bottom: 0;
+}
+
+/* 讓本月支數輸入框維持置中（不被 td 的 space-between 影響） */
+body[data-page="payroll"] .tbl td[data-label="本月支數"] input[type="number"] {
+margin: 0 auto !important;
+}
+
+/* ★ 勞健保（insurance-table）手機版：避免欄位被擠壓，改成「上標籤、下欄位」的置中排版 */
+body[data-page="payroll"] .insurance-table td {
+flex-direction: column !important;
+align-items: center !important;
+justify-content: center !important;
+text-align: center !important;
+gap: 6px !important;
+}
+
+/* insurance-table 的 data-label 前綴置中 */
+body[data-page="payroll"] .insurance-table td[data-label]::before {
+flex: 0 !important;
+text-align: center !important;
+margin-bottom: 0 !important;
+}
+
+/* insurance-table 內的 input / select：寬度適中並置中 */
+body[data-page="payroll"] .insurance-table input,
+body[data-page="payroll"] .insurance-table select {
+width: 100% !important;
+max-width: 240px !important;
+margin: 0 auto !important;
+text-align: right;
+}
+
+/* 自動膠囊在手機版置中（避免歪一邊） */
+body[data-page="payroll"] .insurance-table .auto-chip {
+justify-content: center !important;
+}
+
+/* 合計數字置中顯示，保持乾淨 */
+body[data-page="payroll"] .insurance-table #insSum {
+text-align: center !important;
+}
+}
+
 /* =========================================
 [NEW] 新功能區 (Hero/Video/Modal)
 ========================================= */
+
 /* Hero (Wix 風格首頁) */
 .hero-section {
 position: relative;
@@ -796,6 +1007,7 @@ background: rgba(0, 0, 0, 0.5); z-index: 1;
 .hero-content { position: relative; z-index: 2; max-width: 800px; animation: fadeInUp 1s ease-out; }
 .hero-title { font-size: 3.5rem; font-weight: 900; margin-bottom: 20px; text-shadow: 0 2px 10px rgba(0,0,0,0.5); }
 .hero-desc { font-size: 1.25rem; margin-bottom: 40px; line-height: 1.6; opacity: 0.9; text-shadow: 0 1px 5px rgba(0,0,0,0.5); }
+
 /* Features 卡片區 */
 .features-section { position: relative; max-width: 1200px; margin: -80px auto 60px; padding: 0 20px; z-index: 5; }
 .features-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 30px; }
@@ -809,8 +1021,11 @@ border-bottom: 4px solid transparent; display: block;
 .feature-icon { font-size: 48px; margin-bottom: 20px; display: inline-block; }
 .feature-title { font-size: 1.4rem; font-weight: 800; margin-bottom: 12px; color: #333; }
 .feature-text { font-size: 0.95rem; color: #666; line-height: 1.6; }
+
 @keyframes fadeInUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+
 @media (max-width: 768px) { .hero-title { font-size: 2.2rem; } .features-section { margin-top: 40px; } .hero-section { height: 60vh; } }
+
 /* 彈窗樣式 */
 .modal-overlay {
 position: fixed; top: 0; left: 0; width: 100%; height: 100%;
@@ -827,6 +1042,7 @@ width: 100%; padding: 10px; border: 1px solid #e6dca8; background: #fff;
 border-radius: 8px; font-size: 16px; margin-top: 4px; box-sizing: border-box;
 }
 .modal-actions { margin-top: 20px; }
+
 /* 影片播放樣式 */
 .video-card { text-align: center; margin-bottom: 20px; max-width: 100%; margin: 0 auto; }
 .video-container { position: relative; width: 100%; padding-bottom: 56.25%; height: 0; overflow: hidden; border-radius: 12px; background: #000; margin: 0 auto; }
