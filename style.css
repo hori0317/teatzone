@@ -1,959 +1,965 @@
-/* =====================
-   顏色主題（奶油黃×森綠）
-===================== */
-:root {
-  --bg: #fff6d5;
-  --card: #fffdf5;
-  --line: #e6dca8;
-
-  --ink: #2f2f20;
-  --muted: #7a7557;
-
-  --green: #2e7d32;
-  --green-2: #0f766e;
-  --orange: #f59e0b;
-  --graybtn: #9ca3af;
-  --warn: #b00020;
-
-  --topbar-h: 70px; /* 已配合新版調整為 70px */
-  --dock-h: 56px;
-
-  /* 浮水印變數 */
-  --wm-text: "@hori版權所有";
-  --wm-size: 36px;
-  --wm-angle: -25deg;
-  --wm-alpha: .05;
-  --wm-shift: 120px;
-}
-
-/* =====================
-   全域
-===================== */
-* {
-  box-sizing: border-box;
-}
-
-html, body {
-  height: 100%;
-}
-
-/* ★ 重要新增：強制顯示右側捲軸，防止切換頁面時網頁左右跳動 ★ */
-html {
-  overflow-y: scroll;
-}
-
-body {
-  margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Noto Sans TC", "Microsoft JhengHei", "PingFang TC", system-ui, sans-serif;
-  color: var(--ink);
-  background: var(--bg);
-  line-height: 1.5;
-  padding-bottom: var(--dock-h);
-}
-
-.hidden {
-  display: none !important;
-}
-
-a {
-  color: var(--green);
-  text-decoration: none;
-}
-
-a:hover {
-  text-decoration: underline;
-}
-
-/* =====================
-   浮水印（固定＋左右緩慢擺動）
-===================== */
-.watermark {
-  position: fixed;
-  inset: 0;
-  pointer-events: none;
-  z-index: 0;
-  overflow: hidden;
-}
-
-.wm-item {
-  position: absolute;
-  font-weight: 800;
-  font-size: var(--wm-size);
-  color: rgba(0, 0, 0, var(--wm-alpha));
-  transform: rotate(var(--wm-angle));
-  white-space: nowrap;
-  user-select: none;
-  will-change: transform;
-  animation: wm-sway var(--dur, 12s) ease-in-out infinite alternate;
-}
-
-@keyframes wm-sway {
-  0% {
-    transform: translateX(0) rotate(var(--wm-angle));
-  }
-  100% {
-    transform: translateX(var(--wm-shift)) rotate(var(--wm-angle));
-  }
-}
-
-@media print {
-  .watermark {
-    opacity: .08;
-  }
-}
-
-/* =====================
-   頂部列（固定）- Grid 修正版
-   (改為三欄 Grid 確保絕對置中，避免左右跳動)
-===================== */
-.topbar {
-  position: sticky;
-  top: 0;
-  z-index: 1000;
-  display: grid !important;
-  /* 左右均分，中間自適應：這能確保 Nav 絕對置中 */
-  grid-template-columns: 1fr auto 1fr; 
-  align-items: center;
-  padding: 0 24px;
-  background: rgba(255, 253, 245, .9);
-  backdrop-filter: blur(6px);
-  border-bottom: 1px solid var(--line);
-  height: 70px;
-}
-
-.brand {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  font-weight: 700;
-  letter-spacing: 1px;
-  justify-self: start; /* 靠左對齊 */
-  min-width: max-content;
-  white-space: nowrap;
-}
-
-.brand img {
-  height: 50px; 
-  width: auto;
-  transition: transform .3s ease;
-  display: block;
-}
-
-.brand img:hover {
-  transform: scale(1.08);
-}
-
-.site-title {
-  font-size: 20px;
-  font-weight: 700;
-  margin-right: 28px;
-  white-space: nowrap;
-}
-
-/* 導覽列：中間置中 */
-.nav-links {
-  justify-self: center; /* Grid 置中 */
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 40px;
-  white-space: nowrap;
-}
-
-.nav-links a {
-  text-decoration: none;
-  color: #333;
-  font-weight: 600;
-  transition: color .2s, transform .2s;
-  white-space: nowrap;
-  position: relative;
-  padding: 8px 4px;
-}
-
-.nav-links a:hover {
-  color: var(--orange);
-  transform: translateY(-1px);
-}
-
-.nav-links a.active {
-  color: var(--orange);
-}
-
-.nav-links a.active::after {
-  content: "";
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  height: 3px;
-  background: var(--orange);
-  border-radius: 3px;
-}
-
-/* 新增：透過 data-page 控制每個頁面的亮起狀態 (全頁面通用) */
-body[data-page="index"] .nav-links a[href="calculator.html"],
-body[data-page="calculator"] .nav-links a[href="calculator.html"],
-body[data-page="payroll"] .nav-links a[href="payroll.html"],
-body[data-page="care-info"] .nav-links a[href="care-info.html"],
-body[data-page="video"] .nav-links a[href="video.html"],
-body[data-page="news"] .nav-links a[href="news.html"],
-body[data-page="contact"] .nav-links a[href="contact.html"],
-body[data-page="about"] .nav-links a[href="about.html"] {
-  color: var(--orange);
-  transform: translateY(-1px);
-}
-
-body[data-page="index"] .nav-links a[href="calculator.html"]::after,
-body[data-page="calculator"] .nav-links a[href="calculator.html"]::after,
-body[data-page="payroll"] .nav-links a[href="payroll.html"]::after,
-body[data-page="care-info"] .nav-links a[href="care-info.html"]::after,
-body[data-page="video"] .nav-links a[href="video.html"]::after,
-body[data-page="news"] .nav-links a[href="news.html"]::after,
-body[data-page="contact"] .nav-links a[href="contact.html"]::after,
-body[data-page="about"] .nav-links a[href="about.html"]::after {
-  content: "";
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  height: 3px;
-  background: var(--orange);
-  border-radius: 3px;
-}
-
-/* 右側按鈕區 */
-.actions {
-  justify-self: end; /* 靠右對齊 */
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  white-space: nowrap;
-}
-
-.actions-ghost {
-  min-width: 320px;
-  height: 1px;
-}
-
-.divider {
-  height: 10px;
-}
-
-/* RWD 手機版調整 */
-@media (max-width: 1180px) {
-  .topbar {
-    grid-template-columns: auto 1fr;
-    height: auto;
-    padding: 10px 16px;
-    gap: 10px;
-  }
-  .brand { grid-column: 1; justify-self: start; }
-  .actions { grid-column: 2; justify-self: end; }
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>薪資計算機｜長照工具</title>
+  <meta name="description" content="輸入本月 AA / BA / GA / SC 的支數，計總額並依比例拆薪；可從 PDF 自動統計並選擇是否同步，右側即時比對勞健保扣款，得出實領。">
+  <link rel="icon" type="image/x-icon" href="YORU.ico" />
+  <link rel="stylesheet" href="style.css" />
+  <script src="nav.js" defer></script>
   
-  /* 導覽列移到第二行 */
-  .nav-links {
-    grid-column: 1 / -1;
-    justify-self: stretch;
-    justify-content: flex-start;
-    overflow-x: auto;
-    padding-bottom: 4px;
-    gap: 15px;
-    width: 100%;
-    -webkit-overflow-scrolling: touch;
-    border-top: 1px dashed rgba(0,0,0,0.1);
-    margin-top: 10px;
-    padding-top: 10px;
-  }
-  .site-title {
-     display: none; 
-  }
-}
-
-/* =====================
-   底部資訊條（固定）
-===================== */
-.footerbar {
-  position: sticky;
-  bottom: 0;
-  z-index: 1000;
-  background: rgba(255, 253, 245, .9);
-  backdrop-filter: blur(6px);
-  border-top: 1px solid var(--line);
-  padding: 10px 16px;
-  padding-bottom: max(10px, env(safe-area-inset-bottom));
-}
-
-.foot {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 20px;
-  flex-wrap: wrap;
-  font-weight: 600;
-  text-align: center;
-}
-
-.foot .ok {
-  color: var(--green);
-}
-
-.foot .warn {
-  color: var(--warn);
-}
-
-/* =====================
-   容器與卡片
-===================== */
-.container {
-  max-width: 1360px;
-  margin: 0 auto;
-  padding: 18px 20px;
-}
-
-@media (min-width: 1600px) {
-  .container {
-    max-width: 1440px;
-  }
-}
-
-.grid-3 {
-  display: grid;
-  grid-template-columns: 1.15fr 0.95fr 1.15fr;
-  gap: 0px;
-}
-
-.card {
-  background: var(--card);
-  border: 1px solid var(--line);
-  border-radius: 12px;
-  padding: 20px;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, .05);
-  height: 100%;
-}
-
-/* =====================
-   元件
-===================== */
-.btn {
-  border: none;
-  cursor: pointer;
-  padding: 8px 14px;
-  border-radius: 10px;
-  font-weight: 700;
-  color: #fff;
-  background: var(--green);
-}
-
-.btn:hover {
-  filter: brightness(1.05);
-}
-
-.btn:active {
-  transform: translateY(1px);
-}
-
-.btn.pill {
-  border-radius: 999px;
-  padding: 8px 16px;
-}
-
-.btn-green {
-  background: var(--green);
-  color: #fff;
-}
-
-.btn-orange {
-  background: var(--orange);
-  color: #fff;
-}
-
-.btn-gray {
-  background: var(--graybtn);
-  color: #fff;
-}
-
-.row {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.space-between {
-  justify-content: space-between;
-}
-
-.hint {
-  color: var(--muted);
-  font-size: 13px;
-}
-
-.note.warn,
-.hint.warn {
-  color: var(--warn);
-}
-
-.text-right {
-  text-align: right;
-}
-
-.bold {
-  font-weight: 800;
-}
-
-.orange {
-  color: var(--orange);
-}
-
-/* =====================
-   基本資料區
-===================== */
-.form-row {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  margin: 12px 0;
-  font-size: 15px;
-}
-
-.form-row>label {
-  flex: 0 0 90px;
-  white-space: nowrap;
-}
-
-.form-row .chips,
-.form-row .cms {
-  flex: 1 1 auto;
-  display: flex;
-  gap: 8px;
-  flex-wrap: nowrap;
-  min-width: 0;
-}
-
-.form-row input[type="number"],
-.form-row input[type="text"] {
-  height: 34px;
-  font-size: 15px;
-  border-radius: 6px;
-  width: 100px;
-  padding: 2px 6px;
-  border: 1px solid var(--line);
-  background: #fffdf6;
-}
-
-/* 選項外觀 */
-.chips {
-  display: flex;
-  gap: 8px;
-}
-
-.chip {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 5px 10px;
-  border: 1px solid var(--line);
-  border-radius: 999px;
-  background: #fff;
-  font-size: 14px;
-  cursor: pointer;
-  user-select: none;
-}
-
-.chip input {
-  transform: translateY(1px);
-}
-
-.cms {
-  display: flex;
-  gap: 8px;
-}
-
-.cms label {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  background: #fff;
-  border: 1px solid var(--line);
-  border-radius: 12px;
-  padding: 5px 8px;
-  font-size: 14px;
-}
-
-.cms input {
-  transform: translateY(1px);
-}
-
-.note.warn {
-  margin-top: 8px;
-  font-size: 13px;
-}
-
-@media (max-width: 860px) {
-  .form-row {
-    flex-wrap: wrap;
-  }
-
-  .form-row>label {
-    flex: 0 0 100%;
-  }
-
-  .form-row .chips,
-  .form-row .cms {
-    flex-wrap: wrap;
-  }
-}
-
-/* =====================
-   左卡：AA 加成區
-===================== */
-.addon {
-  margin-top: 8px;
-  border: 1px solid var(--line);
-  border-radius: 10px;
-  overflow: hidden;
-}
-
-.addon-head,
-.addon-row {
-  display: grid;
-  grid-template-columns: 1fr 160px;
-  align-items: center;
-}
-
-.addon-head {
-  background: #faf6e4;
-  border-bottom: 1px solid var(--line);
-  font-weight: 800;
-  padding: 10px 16px;
-}
-
-.addon-row {
-  padding: 10px 16px;
-  border-top: 1px dashed var(--line);
-}
-
-.addon-row:first-child {
-  border-top: none;
-}
-
-.addon-row .addon-inputs {
-  display: flex;
-  justify-content: flex-end;
-}
-
-.addon-row input[type="number"] {
-  width: 90px;
-}
-
-.salary-total {
-  margin-top: 10px;
-  font-weight: 800;
-  text-align: right;
-  color: var(--green);
-}
-
-/* QR 區 */
-.qrbox {
-  margin-top: 16px;
-  display: flex;
-  gap: 16px;
-  align-items: center;
-}
-
-.qr-left img {
-  width: 84px;
-  height: 84px;
-  object-fit: contain;
-  border-radius: 10px;
-  border: 1px solid var(--line);
-  background: #fff;
-}
-
-.qr-right p {
-  margin: 4px 0;
-}
-
-.qr-right .bold {
-  font-weight: 800;
-}
-
-.qr-right .orange {
-  color: var(--orange);
-  font-weight: 700;
-}
-
-.card .qrbox {
-  margin-top: 20px;
-  border-top: 1px dashed var(--line);
-  padding-top: 14px;
-}
-
-/* =====================
-   服務表格通用 (#tables)
-   注意：Payroll 使用它自己的 HTML 內嵌樣式或專屬調整，這裡是通用基礎
-===================== */
-#tables {
-  width: 100%;
-}
-
-#tables table {
-  width: 100%;
-  border-collapse: separate;
-  border-spacing: 0;
-  background: #fff;
-  border: 1px solid var(--line);
-  border-radius: 12px;
-  overflow: hidden;
-}
-
-#tables thead th {
-  position: sticky;
-  top: 0;
-  z-index: 5;
-  background: #f6f1d9;
-  color: #584f2a;
-  padding: 12px 18px;
-  border-bottom: 1px solid var(--line);
-  font-weight: 800;
-}
-
-#tables th:first-child,
-#tables td:first-child {
-  text-align: left;
-  padding-left: 18px;
-}
-
-#tables td {
-  padding: 12px 18px;
-  border-top: 1px solid var(--line);
-  vertical-align: middle;
-}
-
-#tables tbody tr:nth-child(even) {
-  background: #fffef9;
-}
-
-#tables input[type="number"] {
-  width: 70px;
-  height: 36px;
-  font-size: 15px;
-  text-align: center;
-  margin: 0 auto;
-  display: block;
-}
-
-/* 手機版優化（通用基礎） */
-@media (max-width: 860px) {
-  .grid-3 {
-    grid-template-columns: 1fr;
-    gap: 14px;
-  }
-
-  .card {
-    padding: 14px;
-  }
-
-  #tables {
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
-    padding-bottom: calc(var(--dock-h) + 14px);
-    display: block;
-  }
-
-  #tables table {
-    min-width: 780px;
-    table-layout: fixed;
-    width: max-content;
-  }
-
-  #tables th,
-  #tables td {
-    padding: 10px 12px;
-    font-size: 14px;
-    line-height: 1.2;
-    white-space: nowrap;
-  }
-
-  #tables input[type="number"] {
-    width: 58px;
-    height: 32px;
-    font-size: 14px;
-  }
-
-  .foot {
-    gap: 12px;
-    font-size: 14px;
-  }
-}
-
-/* =====================
-   列印設定
-===================== */
-@media print {
-  .topbar, .footerbar {
-    display: none !important;
-  }
-
-  body {
-    padding: 0;
-    background: #fff;
-  }
-
-  .card {
-    box-shadow: none;
-  }
-
-  #tables thead th {
-    position: static;
-  }
-}
-
-/* =====================
-   禁止選取與拖曳
-===================== */
-* {
-  -webkit-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
-  user-select: none;
-}
-
-img, a img {
-  -webkit-user-drag: none;
-  user-drag: none;
-}
-
-/* =========================================================
-   卡片與排版修正區
-========================================================= */
-.card-title {
-  font-size: 18px;
-  font-weight: 800;
-  margin: 0 0 12px 0;
-  color: #2f2f20;
-}
-
-.service-card h3 {
-  margin: 24px 0 10px 2px !important;
-  font-size: 16px !important;
-  font-weight: 800 !important;
-  color: #6b6544 !important;
-}
-
-.kv .kv-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 6px 0;
-  font-weight: 600;
-  color: #2f2f20;
-}
-
-.addon-head span:last-child {
-  text-align: right;
-  padding-right: 18px;
-}
-
-.hint {
-  color: var(--muted);
-  font-size: 13px;
-}
-
-/* 通用對齊設定 */
-#tables thead th {
-  text-align: center !important;
-}
-
-#tables td, #tables th {
-  text-align: center;
-  vertical-align: middle;
-  font-variant-numeric: tabular-nums;
-}
-
-#tables th:first-child, #tables td:first-child {
-  text-align: left !important;
-  padding-left: 18px !important;
-}
-
-/* =========================================================
-   手機版 index / calculator：卡片式服務列排版 (專屬優化)
-========================================================= */
-@media (max-width: 860px) {
-  body[data-page="index"] #tables,
-  body[data-page="calculator"] #tables {
-    overflow-x: visible !important;
-    padding-bottom: 14px !important;
-  }
-
-  body[data-page="index"] #tables table,
-  body[data-page="calculator"] #tables table {
-    width: 100% !important;
-    min-width: 0 !important;
-    table-layout: fixed;
-    border-collapse: separate;
-    border-spacing: 0 10px;
-  }
-
-  body[data-page="index"] #tables thead,
-  body[data-page="calculator"] #tables thead {
-    display: none;
-  }
-
-  body[data-page="index"] #tables tbody tr,
-  body[data-page="calculator"] #tables tbody tr {
-    display: block;
-    background: #fff;
-    border: 1px solid var(--line);
-    border-radius: 12px;
-    padding: 8px 10px 6px;
-  }
-
-  body[data-page="index"] #tables tbody td,
-  body[data-page="calculator"] #tables tbody td {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 4px 0;
-    border-top: none;
-    white-space: normal;
-    font-size: 13px;
-  }
-
-  body[data-page="index"] #tables tbody td:first-child,
-  body[data-page="calculator"] #tables tbody td:first-child {
-    flex-direction: column;
-    align-items: flex-start;
-    padding-bottom: 6px;
-    margin-bottom: 4px;
-    border-bottom: 1px dashed var(--line);
-    font-weight: 700;
-  }
-
-  body[data-page="index"] #tables tbody td:first-child::before,
-  body[data-page="calculator"] #tables tbody td:first-child::before {
-    content: "服務項目";
-    font-size: 12px;
-    color: var(--muted);
-    font-weight: 500;
-    margin-bottom: 2px;
-  }
-
-  body[data-page="index"] #tables tbody td:nth-child(n+2),
-  body[data-page="calculator"] #tables tbody td:nth-child(n+2) {
-    text-align: right;
-    gap: 8px;
-  }
-
-  /* 加入表格內容前綴 (Pseudo Element) */
-  body[data-page="index"] #tables tbody td:nth-child(2)::before,
-  body[data-page="calculator"] #tables tbody td:nth-child(2)::before { content: "單價"; color: var(--muted); margin-right: 6px; }
-  body[data-page="index"] #tables tbody td:nth-child(3)::before,
-  body[data-page="calculator"] #tables tbody td:nth-child(3)::before { content: "週次數"; color: var(--muted); margin-right: 6px; }
-  body[data-page="index"] #tables tbody td:nth-child(4)::before,
-  body[data-page="calculator"] #tables tbody td:nth-child(4)::before { content: "月次數"; color: var(--muted); margin-right: 6px; }
-  body[data-page="index"] #tables tbody td:nth-child(5)::before,
-  body[data-page="calculator"] #tables tbody td:nth-child(5)::before { content: "總次數"; color: var(--muted); margin-right: 6px; }
-  body[data-page="index"] #tables tbody td:nth-child(6)::before,
-  body[data-page="calculator"] #tables tbody td:nth-child(6)::before { content: "總金額"; color: var(--muted); margin-right: 6px; }
-
-  body[data-page="index"] #tables tbody td:nth-child(3) input[type="number"],
-  body[data-page="index"] #tables tbody td:nth-child(4) input[type="number"],
-  body[data-page="index"] #tables tbody td:nth-child(5) input[type="number"],
-  body[data-page="calculator"] #tables tbody td:nth-child(3) input[type="number"],
-  body[data-page="calculator"] #tables tbody td:nth-child(4) input[type="number"],
-  body[data-page="calculator"] #tables tbody td:nth-child(5) input[type="number"] {
-    margin-left: auto !important;
-    margin-right: 0 !important;
-    text-align: right !important;
-    width: 64px;
-    height: 32px;
-    font-size: 13px;
-  }
-}
-
-/* ============================================================
-   [Payroll 專用調整] 這裡的 CSS 確保 Payroll 的單價往左、支數置中
-   這些屬性與上面的通用樣式分開，不會相互干擾
-   ============================================================ */
-body[data-page="payroll"] table th:nth-child(2),
-body[data-page="payroll"] table td:nth-child(2) {
-  padding-right: 60px !important; /* 單價靠右，增加右邊距擠向左 */
-  text-align: right;
-}
-body[data-page="payroll"] table th:nth-child(3),
-body[data-page="payroll"] table td:nth-child(3) {
-  text-align: center !important; /* 支數置中 */
-}
-body[data-page="payroll"] table th:nth-child(4),
-body[data-page="payroll"] table td:nth-child(4) {
-  padding-right: 20px !important;
-  text-align: right;
-}
-/* Payroll 表格內的 input 設為 90px */
-body[data-page="payroll"] input[type="number"] {
-  width: 90px !important;
-}
-
-/* =========================================
-   [NEW] 新功能區 (Hero/Video/Modal)
-========================================= */
-
-/* Hero (Wix 風格首頁) */
-.hero-section {
-  position: relative;
-  /* 請記得準備 bg-hero.jpg 檔案 */
-  background-image: url('bg-hero.jpg'); 
-  background-size: cover; background-position: center; background-attachment: fixed;
-  height: 85vh; display: flex; align-items: center; justify-content: center;
-  text-align: center; color: #fff; padding: 0 20px;
-}
-.hero-section::before {
-  content: ""; position: absolute; top: 0; left: 0; right: 0; bottom: 0;
-  background: rgba(0, 0, 0, 0.5); z-index: 1;
-}
-.hero-content { position: relative; z-index: 2; max-width: 800px; animation: fadeInUp 1s ease-out; }
-.hero-title { font-size: 3.5rem; font-weight: 900; margin-bottom: 20px; text-shadow: 0 2px 10px rgba(0,0,0,0.5); }
-.hero-desc { font-size: 1.25rem; margin-bottom: 40px; line-height: 1.6; opacity: 0.9; text-shadow: 0 1px 5px rgba(0,0,0,0.5); }
-
-/* Features 卡片區 */
-.features-section { position: relative; max-width: 1200px; margin: -80px auto 60px; padding: 0 20px; z-index: 5; }
-.features-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 30px; }
-.feature-card {
-  background: #ffffff; border-radius: 16px; padding: 40px 30px;
-  text-align: center; text-decoration: none; color: var(--ink);
-  box-shadow: 0 15px 30px rgba(0,0,0,0.1); transition: all 0.3s ease;
-  border-bottom: 4px solid transparent; display: block;
-}
-.feature-card:hover { transform: translateY(-10px); box-shadow: 0 20px 40px rgba(0,0,0,0.15); border-bottom: 4px solid var(--orange); }
-.feature-icon { font-size: 48px; margin-bottom: 20px; display: inline-block; }
-.feature-title { font-size: 1.4rem; font-weight: 800; margin-bottom: 12px; color: #333; }
-.feature-text { font-size: 0.95rem; color: #666; line-height: 1.6; }
-
-@keyframes fadeInUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
-
-@media (max-width: 768px) { .hero-title { font-size: 2.2rem; } .features-section { margin-top: 40px; } .hero-section { height: 60vh; } }
-
-/* 彈窗樣式 */
-.modal-overlay { 
-  position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
-  background: rgba(47,47,32,0.6); backdrop-filter: blur(3px); 
-  z-index: 2000; display: flex; justify-content: center; align-items: center; padding: 20px; 
-}
-.modal-content { 
-  background: #fffdf5; border: 1px solid #e6dca8; border-radius: 12px; 
-  padding: 24px; width: 100%; max-width: 420px; box-shadow: 0 10px 25px rgba(0,0,0,0.15); text-align: center; 
-}
-.modal-content h3 { color: #2e7d32; margin-top: 0; }
-.modal-content input { 
-  width: 100%; padding: 10px; border: 1px solid #e6dca8; background: #fff; 
-  border-radius: 8px; font-size: 16px; margin-top: 4px; box-sizing: border-box; 
-}
-.modal-actions { margin-top: 20px; }
-
-/* 影片播放樣式 */
-.video-card { text-align: center; margin-bottom: 20px; max-width: 100%; margin: 0 auto; }
-.video-container { position: relative; width: 100%; padding-bottom: 56.25%; height: 0; overflow: hidden; border-radius: 12px; background: #000; margin: 0 auto; }
-.video-container iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; }
-.video-mask-top { position: absolute; top: 0; left: 0; width: 100%; height: 80px; background: transparent; z-index: 10; cursor: default; }
-.video-mask-logo { position: absolute; bottom: 0; right: 0; width: 120px; height: 50px; background: transparent; z-index: 10; cursor: default; }
-.login-warning-box { padding: 40px 20px; background: #f5f5f5; border: 2px dashed #ccc; border-radius: 12px; color: #666; font-weight: 700; }
+  <style>
+    /* =======================================
+       Payroll 頁面專屬修正樣式
+       ======================================= */
+    
+    /* 彈窗 */
+    .modal-overlay { 
+        position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
+        background: rgba(47,47,32,0.6); backdrop-filter: blur(3px); 
+        z-index: 2000; display: flex; justify-content: center; align-items: center; padding: 20px; 
+    }
+    .modal-content { 
+        background: #fffdf5; border: 1px solid #e6dca8; border-radius: 12px; 
+        padding: 24px; width: 100%; max-width: 420px; box-shadow: 0 10px 25px rgba(0,0,0,0.15); text-align: center; 
+    }
+    .modal-content h3 { color: #2e7d32; margin-top: 0; }
+    .modal-content input { 
+        width: 100%; padding: 10px; border: 1px solid #e6dca8; background: #fff; 
+        border-radius: 8px; font-size: 16px; margin-top: 4px; box-sizing: border-box; 
+    }
+    .modal-actions { margin-top: 20px; }
+
+    /* PDF 區塊 */
+    .ps-muted{color:#5b6b81}.ps-small{font-size:.86rem}.ps-mono{font-family:ui-monospace,Menlo,Consolas,monospace}
+    .ps-pill{display:inline-block;padding:0 6px;border:1px solid #dbe6ff;background:#eef4ff;border-radius:999px}
+    .ps-grid{display:grid;gap:12px}@media(min-width:920px){.ps-grid{grid-template-columns:1.1fr .9fr}}
+    .ps-drop{border:2px dashed #c7d3ee;border-radius:12px;padding:18px;text-align:center;cursor:pointer;background:#f9fbff;display:block} .ps-drop:hover{background:#eef4ff}
+    .ps-btns{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
+    .ps-btn{border:1px solid #c7d3ee;background:#f3f6ff;color:#102a56;padding:8px 12px;border-radius:10px;cursor:pointer} .ps-btn:disabled{opacity:.5}
+    .ps-box{background:#fff;border:1px solid #e1e6ef;border-radius:12px;padding:12px;margin-top:10px}
+    .ps-progress{height:10px;background:#eef3ff;border-radius:999px;overflow:hidden}
+    .ps-bar{height:100%;width:0;background:#2667ff;transition:width .2s}
+    .ps-h3{margin:.2rem 0 8px}
+    .ps-table{width:100%;border-collapse:collapse} .ps-table thead th{background:#eef3ff;color:#102a56;text-align:left;padding:8px} .ps-table td{padding:8px;border-bottom:1px solid #edf1f7} .ps-right{text-align:right} .ps-syncbar{border-color:#c7e7c7;background:#f6fff6}
+
+    /* KPI 卡片 */
+    .kpi{display:flex; gap:16px; flex-wrap:wrap;}
+    .kpi .box{flex:1 1 240px; background:#fff; border:1px solid var(--line); border-radius:12px; padding:16px; display:flex; flex-direction:column; gap:6px; box-shadow:0 1px 2px rgba(0,0,0,.05);}
+    .kpi .box .lbl{color:#7a7557; font-weight:700;}
+    .kpi .box .num{font-size:24px; font-weight:900; color:#2e7d32;}
+
+    /* ★★★ 表格與欄位寬度強制修正 ★★★ */
+    .tbl{ width:100%; border-collapse:separate; border-spacing:0; background:#fff; border:1px solid var(--line); border-radius:12px; overflow:hidden; table-layout: fixed; }
+    
+    .tbl th{ background:#f6f1d9; color:#5b5534; padding:12px; font-weight:800; border-bottom:1px solid var(--line); font-size: 15px;}
+    .tbl td{ padding:12px; border-top:1px solid var(--line); font-size: 15px; vertical-align: middle; }
+    
+    /* === 第1欄: 代碼 (靠左) === */
+    .tbl th:first-child, .tbl td:first-child { 
+        text-align: left; 
+        padding-left: 20px; 
+        white-space: nowrap; 
+    }
+
+    /* === 第2欄: 單價 (靠右) === */
+    .tbl th:nth-child(2), .tbl td:nth-child(2) {
+        text-align: right !important; 
+        padding-right: 40px !important; 
+    }
+
+    /* === 第3欄: 本月支數 (置中對齊) === */
+    .tbl th:nth-child(3), .tbl td:nth-child(3), .tbl th.month-col {
+        text-align: center !important;
+    }
+    
+    /* === 第4欄: 小計 (靠右) === */
+    .tbl th:nth-child(4), .tbl td:nth-child(4) {
+        text-align: right;
+        padding-right: 20px;
+    }
+
+    .tbl tbody tr:nth-child(even){ background:#fffef9; }
+    /* ★ 修正：電腦版填空欄位置中對齊 ★ */
+    .tbl input[type="number"]{ width:80px; height:34px; text-align:center; border:1px solid #ddd; border-radius:4px; margin: 0 auto; display:block;}
+    .tbl .right{ text-align:right; }
+    .tbl .mono{ font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; }
+
+    /* ★ 修正投保級距表格與「自動」膠囊樣式 ★ */
+    .insurance-table { table-layout: auto !important; width: 100%; }
+    .insurance-table input { width: 100% !important; min-width: 60px; text-align: right; }
+    .sub-text { font-size: 11px; display: block; color: #777; line-height: 1.2; }
+    
+    /* ★ 修正：將自動改為橫的，勾勾靠左，確保在膠囊內 ★ */
+    .auto-chip {
+        display: flex !important;
+        flex-direction: row !important;
+        align-items: center !important;
+        justify-content: flex-start !important; /* 勾勾靠左 */
+        padding: 4px 12px !important;
+        white-space: nowrap !important;
+        gap: 6px !important; /* 縮小勾選框與文字間距 */
+    }
+    .auto-chip input {
+        margin: 0 !important;
+        width: auto !important;
+        min-width: 0 !important;
+        cursor: pointer;
+    }
+
+    /* 其他排版 */
+    .grid-2{display:grid; grid-template-columns:1fr 1fr; gap:14px;}
+    .row-mid{display:flex; align-items:center; gap:10px; flex-wrap:wrap;}
+    .pill-note{display:inline-block; padding:2px 8px; border:1px solid var(--line); border-radius:999px; background:#fff; font-weight:700; color:#333;}
+    
+    @media (max-width:860px){
+      .grid-2{grid-template-columns:1fr;}
+      .tbl{display:block; font-size:15px; border:0; background:none; overflow:visible;}
+      .tbl thead{display:none;}
+      .tbl tbody,.tbl tfoot{display:block; width:100%;}
+      .tbl tbody tr{display:block; border:1px solid var(--line); border-radius:12px; padding:10px 12px; margin-bottom:12px; background:#fff; box-shadow:0 1px 2px rgba(0,0,0,.05);}
+      .tbl tbody tr:nth-child(even){background:#fff;}
+      
+      /* ★ 修正需求：手機版單價與所有數值文字強迫靠右對齊 ★ */
+      .tbl td{display:flex; gap:12px; justify-content:space-between; align-items:center; padding:6px 0; line-height:1.45; white-space:normal; border-top:none; text-align: right !important;}
+      
+      .tbl td[data-label]::before{ content:attr(data-label); font-weight:700; color:#5b5534; flex:1; text-align:left; }
+      .tbl td[data-label="代碼＋名稱"]::before, .tbl td[data-label="代碼"]::before{margin-bottom:2px;}
+      
+      .tbl input[type="number"], .tbl select{width:100%; max-width:none; height:38px; text-align: right;}
+      
+      /* 手機版支數輸入框靠右 */
+      .tbl td[data-label="本月支數"] input { width:80px; margin-left: auto; display: block; text-align: right; }
+      
+      .tbl tfoot th{flex:1 1 auto; background:none; border:none; padding:0; text-align:right;}
+      
+      /* 強制手機版間距復原 */
+      .tbl th:nth-child(2), .tbl td:nth-child(2) { padding-right: 0 !important; }
+      .tbl th:first-child, .tbl td:first-child { padding-left: 0 !important; }
+    }
+  </style>
+</head>
+<body data-page="payroll">
+  
+  <div class="watermark" aria-hidden="true">
+    <span class="wm-item" style="top:5%; left:5%;  --dur:9s;">@hori版權所有</span>
+    <span class="wm-item" style="top:50%; left:50%; --dur:10s;">@hori版權所有</span>
+    <span class="wm-item" style="top:5%; left:65%; --dur:10s;">@hori版權所有</span>
+    <span class="wm-item" style="top:25%; left:10%; --dur:13s;">@hori版權所有</span>
+    <span class="wm-item" style="top:75%; left:70%; --dur:14s;">@hori版權所有</span>
+  </div>
+
+  <header class="topbar">
+    <div class="brand">
+      <a href="index.html" class="logo-link"><img src="org-logo.png" alt="logo" onerror="this.style.opacity=0.2" /></a>
+      <span class="site-title" id="siteTitle" data-sync-title>薪資計算機</span>
+    </div>
+    
+    <nav class="nav-links" aria-label="主選單">
+      <a href="calculator.html">額度計算機</a>
+      <a href="payroll.html">薪資計算機</a>
+      <a href="video.html">影音專區</a>
+      <a href="care-info.html">長照資訊</a>
+      <a href="news.html">最新公告</a>
+      <a href="contact.html">聯繫方式</a>
+      <a href="about.html">關於我們</a>
+    </nav>
+    
+    <div class="actions" style="align-items: center; gap: 8px;">
+        <button class="btn pill btn-gray" id="btnPrint" type="button">列印</button>
+        <button class="btn pill btn-green" id="btnResetAll" type="button">全部清空</button>
+        
+        <div style="width: 1px; height: 20px; background: #ccc; margin: 0 4px;"></div>
+        
+        <button class="btn pill" style="background:#4285F4; color:white;" id="btnLogin" type="button">Google 登入</button>
+        <div id="member-area" style="display:none; align-items: center; gap:5px;">
+            <span id="userDisplay" style="font-size: 13px; font-weight: bold; color: #333; margin-right: 4px;"></span>
+            <a href="admin.html" id="btnAdminLink" class="btn pill" style="background:#673AB7; color:white; font-size:12px; padding:4px 10px; text-decoration:none; display:none;">管理後台</a>
+            <button class="btn pill" style="background:#777; color:white; font-size:12px; padding:4px 10px;" id="btnEditProfile" type="button">修改資料</button>
+            <button class="btn pill" style="background:#EA4335; color:white;" id="btnLogout" type="button">登出</button>
+        </div>
+    </div>
+  </header>
+  <div class="divider"></div>
+
+  <main class="container">
+    <section class="card" style="margin-bottom:16px;">
+      <h1 class="card-title" style="font-size:22px;">本月薪資總覽</h1>
+      <p class="hint">輸入各碼別本月支數 → 計總額 → 依比例拆薪；右側即時比對勞健保扣款，算出「實領」。</p>
+      <div class="kpi" style="margin-top:10px;">
+        <div class="box"><div class="lbl">AA 小計</div><div class="num" id="kpiAA">0</div></div>
+        <div class="box"><div class="lbl">BA 小計</div><div class="num" id="kpiBA">0</div></div>
+        <div class="box"><div class="lbl">GA 小計</div><div class="num" id="kpiGA">0</div></div>
+        <div class="box"><div class="lbl">SC 小計</div><div class="num" id="kpiSC">0</div></div>
+        <div class="box"><div class="lbl">全月總額</div><div class="num" id="kpiTotal">0</div></div>
+        <div class="box"><div class="lbl">拆薪後薪資</div><div class="num" id="kpiSalary">0</div></div>
+        <div class="box"><div class="lbl">勞健保合計</div><div class="num" id="kpiIns">0</div></div>
+        <div class="box"><div class="lbl">實領</div><div class="num" id="kpiNet">0</div></div>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2 class="card-title">① 拆薪比例</h2>
+      <div class="grid-2" style="margin-top:8px;">
+        <div class="row-mid">
+          <label style="min-width:120px;font-weight:700;">拆薪比例（%）</label>
+          <input id="ratioPct" type="number" min="0" max="100" step="0.1" value="60" style="height:34px;width:120px;text-align:right;">
+          <span class="hint">例：6/4 → 填 60</span>
+        </div>
+        <div class="row-mid">
+          <label style="min-width:120px;font-weight:700;">月份</label>
+          <input id="plMonth" type="month" style="height:34px;width:180px;">
+        </div>
+      </div>
+    </section>
+
+    <section class="card ps-card" id="ps-widget">
+      <h2 class="card-title">PDF 支數自動統計（帶入表單）</h2>
+      <p class="ps-muted">上傳每月 PDF，統計 <span class="ps-pill">BA</span> / <span class="ps-pill">AA</span> / <span class="ps-pill">GA</span> / <span class="ps-pill">SC</span>。AA 以「金額 ÷ 單價」換算（四捨五入到最接近 0.5），AA 單價固定。</p>
+
+      <label class="ps-drop" id="ps-drop">
+        <input type="file" id="ps-file" accept="application/pdf" />
+        <strong>點我選擇 PDF 或拖曳到這裡</strong>
+        <div class="ps-small ps-muted">無文字層將自動 OCR（繁中＋英文）。</div>
+      </label>
+
+      <div class="ps-btns">
+        <button class="ps-btn" id="ps-demo" type="button">載入示範資料</button>
+        <button class="ps-btn" id="ps-apply" type="button" disabled>帶入上方表單</button>
+        <button class="ps-btn" id="ps-csv" type="button" disabled>匯出 CSV</button>
+        <button class="ps-btn" id="ps-json" type="button" disabled>匯出 JSON</button>
+      </div>
+
+      <label class="ps-small ps-muted" style="display:inline-flex;align-items:center;gap:6px;margin-top:6px;">
+        <input id="ps-auto-sync" type="checkbox"> 匯入後自動同步到下方支數
+      </label>
+
+      <div id="ps-syncbar" class="ps-syncbar ps-box" style="display:none;align-items:center;justify-content:space-between;gap:8px;">
+        <div class="ps-small">已解析出支數，要同步到下方表格（AA/BA/GA/SC）並立即計算薪資嗎？</div>
+        <div style="display:flex;gap:8px;">
+          <button id="ps-sync-yes" class="ps-btn">同步</button>
+          <button id="ps-sync-no" class="ps-btn" style="background:#fff;">先不要</button>
+        </div>
+      </div>
+
+      <div class="ps-box">
+        <div class="ps-small ps-muted">處理進度</div>
+        <div class="ps-progress"><div id="ps-bar" class="ps-bar"></div></div>
+        <div id="ps-status" class="ps-small ps-muted" style="margin-top:6px">待上傳</div>
+      </div>
+      <pre id="ps-debug" class="ps-box ps-small" style="white-space:pre-wrap">偵錯訊息：</pre>
+
+      <div style="display:grid;gap:12px;margin-top:10px;">
+        <div class="ps-box">
+          <h3 class="ps-h3">BA 統計</h3>
+          <table id="ps-t-BA" class="ps-table">
+            <thead><tr><th>碼別</th><th class="ps-right">出現筆數</th><th class="ps-right">Σ 支數</th></tr></thead>
+            <tbody></tbody>
+          </table>
+        </div>
+        <div class="ps-box">
+          <h3 class="ps-h3">AA 統計</h3>
+          <table id="ps-t-AA" class="ps-table">
+            <thead><tr><th>碼別</th><th class="ps-right">出現筆數</th><th class="ps-right">Σ 支數</th></tr></thead>
+            <tbody></tbody>
+          </table>
+        </div>
+        <div class="ps-box">
+          <h3 class="ps-h3">GA 統計</h3>
+          <table id="ps-t-GA" class="ps-table">
+            <thead><tr><th>碼別</th><th class="ps-right">出現筆數</th><th class="ps-right">Σ 支數</th></tr></thead>
+            <tbody></tbody>
+          </table>
+        </div>
+        <div class="ps-box">
+          <h3 class="ps-h3">SC 統計</h3>
+          <table id="ps-t-SC" class="ps-table">
+            <thead><tr><th>碼別</th><th class="ps-right">出現筆數</th><th class="ps-right">Σ 支數</th></tr></thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2 class="card-title">② AA 本月支數</h2>
+      <table class="tbl" id="tblAA">
+        <colgroup>
+          <col class="col-code" style="width: 35%;">
+          <col class="col-price" style="width: 20%;">
+          <col class="col-month" style="width: 25%;">
+          <col class="col-sum" style="width: 20%;">
+        </colgroup>
+        <thead><tr><th>代碼</th><th class="right">單價</th><th class="month-col">本月支數</th><th class="right">小計</th></tr></thead>
+        <tbody></tbody>
+        <tfoot><tr><th colspan="3" class="right">AA 小計</th><th class="right" id="sumAA">0</th></tr></tfoot>
+      </table>
+      <p class="hint" style="margin-top:8px;">單價固定：AA05 200、AA06 200、AA07 760、AA08 385、AA09 770、AA11 50。</p>
+    </section>
+
+    <section class="card">
+      <h2 class="card-title">③ BA 本月支數</h2>
+      <table class="tbl" id="tblBA">
+        <colgroup>
+          <col class="col-code" style="width: 35%;">
+          <col class="col-price" style="width: 20%;">
+          <col class="col-month" style="width: 25%;">
+          <col class="col-sum" style="width: 20%;">
+        </colgroup>
+        <thead><tr><th>代碼＋名稱</th><th class="right">單價</th><th class="month-col">本月支數</th><th class="right">小計</th></tr></thead>
+        <tbody></tbody>
+        <tfoot><tr><th colspan="3" class="right">BA 小計</th><th class="right" id="sumBA">0</th></tr></tfoot>
+      </table>
+    </section>
+
+    <section class="card">
+      <h2 class="card-title">④ GA 本月支數</h2>
+      <table class="tbl" id="tblGA">
+        <colgroup>
+          <col class="col-code" style="width: 35%;">
+          <col class="col-price" style="width: 20%;">
+          <col class="col-month" style="width: 25%;">
+          <col class="col-sum" style="width: 20%;">
+        </colgroup>
+        <thead><tr><th>代碼＋名稱</th><th class="right">單價</th><th class="month-col">本月支數</th><th class="right">小計</th></tr></thead>
+        <tbody></tbody>
+        <tfoot><tr><th colspan="3" class="right">GA 小計</th><th class="right" id="sumGA">0</th></tr></tfoot>
+      </table>
+    </section>
+
+    <section class="card">
+      <h2 class="card-title">⑤ SC 本月支數</h2>
+      <table class="tbl" id="tblSC">
+        <colgroup>
+          <col class="col-code" style="width: 35%;">
+          <col class="col-price" style="width: 20%;">
+          <col class="col-month" style="width: 25%;">
+          <col class="col-sum" style="width: 20%;">
+        </colgroup>
+        <thead><tr><th>代碼＋名稱</th><th class="right">單價</th><th class="month-col">本月支數</th><th class="right">小計</th></tr></thead>
+        <tbody></tbody>
+        <tfoot><tr><th colspan="3" class="right">SC 小計</th><th class="right" id="sumSC">0</th></tr></tfoot>
+      </table>
+    </section>
+
+    <section class="card">
+      <h2 class="card-title">⑥ 薪資結果 & 勞健保扣款</h2>
+      <div class="grid-2" style="margin-top:8px;">
+        <div class="card" style="padding:14px;">
+          <table class="tbl">
+            <tbody>
+              <tr><td>AA 小計</td><td class="right mono" id="resAA">0</td></tr>
+              <tr><td>BA 小計</td><td class="right mono" id="resBA">0</td></tr>
+              <tr><td>GA 小計</td><td class="right mono" id="resGA">0</td></tr>
+              <tr><td>SC 小計</td><td class="right mono" id="resSC">0</td></tr>
+              <tr><td><b>全月總額</b></td><td class="right mono" id="resTotal"><b>0</b></td></tr>
+              <tr><td>拆薪比例</td><td class="right mono"><span id="resRatio">60</span>%</td></tr>
+              <tr><td><b>拆薪後薪資</b></td><td class="right mono" id="resSalary"><b>0</b></td></tr>
+              <tr><td><b>實領（扣勞健保）</b></td><td class="right mono" id="resNet"><b>0</b></td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="card" style="padding:14px;">
+          <div class="row-mid" style="margin-bottom:10px;">
+            <span class="pill-note">自動依「拆薪後薪資」抓 ≥ 薪資的最大投保級距</span>
+          </div>
+          <table class="tbl insurance-table">
+            <colgroup>
+                <col style="width:28%;">
+                <col style="width:22%;">
+                <col style="width:22%;">
+                <col style="width:14%;">
+                <col style="width:14%;">
+            </colgroup>
+            <thead>
+                <tr>
+                    <th>投保級距</th>
+                    <th>勞保<br><span class="sub-text">(員工)</span></th>
+                    <th>健保<br><span class="sub-text">(員工)</span></th>
+                    <th>合計</th>
+                    <th>設定</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td data-label="投保級距"><select id="insGrade" style="width:100%;"></select></td>
+                    <td class="right" data-label="勞保(員工)"><input id="insLabor" type="number" min="0" step="1" value="0" style="height:34px;width:100%;text-align:right;"></td>
+                    <td class="right" data-label="健保(員工)"><input id="insHealth" type="number" min="0" step="1" value="0" style="height:34px;width:100%;text-align:right;"></td>
+                    <td class="right mono" id="insSum" data-label="合計">0</td>
+                    <td data-label="設定">
+                        <label class="chip auto-chip"><input id="insAuto" type="checkbox" checked> 自動</label>
+                    </td>
+                </tr>
+            </tbody>
+          </table>
+          <div class="row-mid" style="margin-top:12px;">
+            <div class="pill-note">實領（拆薪後薪資－勞健保合計）：<b class="mono" id="netPay">0</b></div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+  
+  <footer id="bottomDock" class="footerbar">
+    <div class="foot">
+      <span class="ok">※ 每年 <b>2 月</b> 和 <b>8 月</b> 調整投保級距，並於次月 <b>1 號</b> 生效。</span>
+    </div>
+  </footer>
+
+  <div id="profile-modal" class="modal-overlay" style="display:none;">
+    <div class="modal-content">
+      <h3>歡迎加入！請完善資料</h3>
+      <p>填寫您的基本資訊，讓我們為您記錄試算結果。</p>
+      <div style="text-align:left; margin-bottom:12px;">
+        <label style="font-weight:700; color:var(--ink); font-size:15px;">姓名 / 稱呼</label>
+        <input type="text" id="pf-name" placeholder="例如：王小明">
+      </div>
+      <div style="text-align:left; margin-bottom:12px;">
+        <label style="font-weight:700; color:var(--ink); font-size:15px;">使用者年齡</label>
+        <input type="number" id="pf-age" placeholder="例如：65">
+      </div>
+      <div class="modal-actions">
+        <button id="btn-save-profile" class="btn pill btn-green" style="width:100%; font-size:16px; padding:10px;">
+          儲存並開始使用
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    (function(){
+      const $ = s => document.querySelector(s);
+      const $$ = s => Array.from(document.querySelectorAll(s));
+      const N = v => (isFinite(+v) ? +v : 0);
+      const F = v => new Intl.NumberFormat('zh-Hant-TW', { maximumFractionDigits: 0 }).format(v);
+
+      const PRICE = {
+        AA: { AA05:200, AA06:200, AA07:760, AA08:385, AA09:770, AA11:50 },
+        BA: [
+          { code:"BA01", name:"基本身體清潔", price:260 }, { code:"BA02", name:"基本日常照顧", price:195 },
+          { code:"BA03", name:"測量生命徵象", price:35 }, { code:"BA04", name:"協助進食或管灌", price:130 },
+          { code:"BA05", name:"餐食照顧", price:310 }, { code:"BA07", name:"協助沐浴及洗頭", price:325 },
+          { code:"BA08", name:"足部照護", price:500 }, { code:"BA10", name:"翻身拍背", price:155 },
+          { code:"BA11", name:"肢體關節活動", price:195 }, { code:"BA12", name:"協助上下樓梯", price:130 },
+          { code:"BA13", name:"陪同外出", price:195 }, { code:"BA14", name:"陪同就醫", price:685 },
+          { code:"BA15-1", name:"家務協助-1", price:195 }, { code:"BA15-2", name:"家務協助-2", price:195 },
+          { code:"BA16", name:"代購", price:130 }, { code:"BA17a", name:"人工氣道管抽吸", price:75 },
+          { code:"BA17b", name:"口腔內抽吸", price:65 }, { code:"BA17c", name:"管路清潔", price:50 },
+          { code:"BA17d", name:"通便/驗血糖", price:50 }, { code:"BA17e", name:"依指示置入藥盒", price:50 },
+          { code:"BA18", name:"安全看視", price:200 }, { code:"BA20", name:"陪伴服務", price:175 },
+          { code:"BA22", name:"巡視服務", price:130 }, { code:"BA23", name:"協助洗頭", price:200 },
+          { code:"BA24", name:"協助排泄", price:220 }
+        ],
+        GA: [{ code:"GA09", name:"喘息 2 小時/支", price:770 }],
+        SC: [{ code:"SC09", name:"短照 2 小時/支", price:770 }]
+      };
+
+      const INS_TABLE = [
+        { grade:11100, labor:277, health:443 }, { grade:12540, labor:313, health:443 },
+        { grade:13500, labor:338, health:443 }, { grade:15840, labor:396, health:443 },
+        { grade:16500, labor:413, health:443 }, { grade:17280, labor:432, health:443 },
+        { grade:19047, labor:476, health:443 }, { grade:20008, labor:505, health:443 },
+        { grade:21009, labor:525, health:443 }, { grade:22000, labor:550, health:443 },
+        { grade:23100, labor:577, health:443 }, { grade:24000, labor:600, health:443 },
+        { grade:25250, labor:632, health:443 }, { grade:26400, labor:660, health:443 },
+        { grade:27600, labor:690, health:443 }, { grade:28590, labor:715, health:443 },
+        { grade:28800, labor:720, health:447 }, { grade:30300, labor:758, health:472 },
+        { grade:31800, labor:795, health:493 }, { grade:33300, labor:833, health:516 },
+        { grade:34800, labor:870, health:540 }, { grade:36300, labor:908, health:563 },
+        { grade:38200, labor:955, health:592 }, { grade:40100, labor:1002, health:622 },
+        { grade:41900, labor:1045, health:651 }, { grade:43900, labor:1098, health:681 },
+        { grade:45800, labor:1145, health:710 }, { grade:50600, labor:1145, health:785 },
+        { grade:53000, labor:1145, health:822 }, { grade:55400, labor:1145, health:859 },
+        { grade:57800, labor:1145, health:896 }, { grade:60800, labor:1145, health:943 },
+        { grade:63800, labor:1145, health:990 }, { grade:66800, labor:1145, health:1036 },
+        { grade:69800, labor:1145, health:1083 }, { grade:72800, labor:1145, health:1129 },
+        { grade:76500, labor:1145, health:1187 }, { grade:80200, labor:1145, health:1244 },
+        { grade:83900, labor:1145, health:1301 }, { grade:87600, labor:1145, health:1359 },
+        { grade:92100, labor:1145, health:1428 }, { grade:96600, labor:1145, health:1498 },
+        { grade:101100, labor:1145, health:1568 }, { grade:105600, labor:1145, health:1638 },
+        { grade:110100, labor:1145, health:1708 }, { grade:115500, labor:1145, health:1791 },
+        { grade:120900, labor:1145, health:1875 }, { grade:126300, labor:1145, health:1959 },
+        { grade:131700, labor:1145, health:2043 }, { grade:137100, labor:1145, health:2126 },
+        { grade:142500, labor:1145, health:2210 }, { grade:147900, labor:1145, health:2294 },
+        { grade:150000, labor:1145, health:2327 }
+      ];
+
+      function buildAA(){
+        const host = document.querySelector('#tblAA tbody');
+        host.innerHTML = '';
+        const saved = loadLS('pl-aa', {});
+        Object.keys(PRICE.AA).forEach(code=>{
+          const price = PRICE.AA[code];
+          const tr = document.createElement('tr');
+          // 標題欄順序修正：代碼 -> 單價 -> 本月支數 -> 小計
+          tr.innerHTML = `<td data-label="代碼">${code}</td><td class="right mono" data-label="單價">${F(price)}</td><td data-label="本月支數"><input type="number" min="0" step="1" value="${N(saved[code]||0)}" data-aa="${code}"></td><td class="right mono" data-label="小計" data-aa-sum="${code}">0</td>`;
+          host.appendChild(tr);
+        });
+      }
+      function buildGroup(tableId, key, savedKey){
+        const host = document.querySelector(`#${tableId} tbody`);
+        host.innerHTML = '';
+        const saved = loadLS(savedKey, {});
+        const k = key.toLowerCase();
+        PRICE[key].forEach(item=>{
+          const tr = document.createElement('tr');
+          // 標題欄順序修正：代碼 -> 單價 -> 本月支數 -> 小計
+          tr.innerHTML = `<td data-label="代碼＋名稱">${item.code}${item.name ? ' ' + item.name : ''}</td><td class="right mono" data-label="單價">${F(item.price)}</td><td data-label="本月支數"><input type="number" min="0" step="1" value="${N(saved[item.code]||0)}" data-${k}="${item.code}"></td><td class="right mono" data-label="小計" data-${k}-sum="${item.code}">0</td>`;
+          host.appendChild(tr);
+        });
+      }
+
+      function calcAA(){
+        let total = 0;
+        Object.keys(PRICE.AA).forEach(code=>{
+          const qty = N(document.querySelector(`input[data-aa="${code}"]`)?.value);
+          const sub = qty * PRICE.AA[code];
+          document.querySelector(`td[data-aa-sum="${code}"]`).textContent = F(sub);
+          total += sub;
+        });
+        document.querySelector('#sumAA').textContent = F(total);
+        document.querySelector('#kpiAA').textContent = F(total);
+        document.querySelector('#resAA').textContent = F(total);
+        return total;
+      }
+      function calcGroup(key, sumId, kpiId, resId){
+        let total = 0;
+        const k = key.toLowerCase();
+        PRICE[key].forEach(item=>{
+          const qty = N(document.querySelector(`input[data-${k}="${item.code}"]`)?.value);
+          const sub = qty * item.price;
+          document.querySelector(`td[data-${k}-sum="${item.code}"]`).textContent = F(sub);
+          total += sub;
+        });
+        document.querySelector(sumId).textContent = F(total);
+        document.querySelector(kpiId).textContent = F(total);
+        document.querySelector(resId).textContent = F(total);
+        return total;
+      }
+      function updateAll(){
+        const sumAA = calcAA();
+        const sumBA = calcGroup('BA', '#sumBA', '#kpiBA', '#resBA');
+        const sumGA = calcGroup('GA', '#sumGA', '#kpiGA', '#resGA');
+        const sumSC = calcGroup('SC', '#sumSC', '#kpiSC', '#resSC');
+        const total = sumAA + sumBA + sumGA + sumSC;
+        $('#kpiTotal').textContent = F(total);
+        $('#resTotal').textContent = F(total);
+        const ratioPct = N($('#ratioPct').value) || 0;
+        const ratio = ratioPct / 100;
+        $('#resRatio').textContent = ratioPct;
+        const salary = Math.round(total * ratio);
+        $('#kpiSalary').textContent = F(salary);
+        $('#resSalary').textContent = F(salary);
+        syncInsuranceBySalary(salary);
+        saveAll();
+      }
+
+      function buildInsOptions(){
+        const sel = $('#insGrade'); sel.innerHTML = '';
+        INS_TABLE.forEach(row=>{
+          const opt = document.createElement('option');
+          opt.value = row.grade;
+          opt.textContent = row.grade.toLocaleString('zh-TW');
+          sel.appendChild(opt);
+        });
+      }
+      function findGradeBySalary(sal){
+        const list = INS_TABLE.map(r=>r.grade).sort((a,b)=>a-b);
+        for (const v of list){
+          if (sal <= v) return v; 
+        }
+        return list[list.length-1]; 
+      }
+      function getRow(grade){ return INS_TABLE.find(r=>r.grade===grade) || INS_TABLE[0]; }
+      function syncInsuranceBySalary(salary){
+        const auto = $('#insAuto').checked;
+        const sel = $('#insGrade');
+        const autoGrade = findGradeBySalary(salary);
+        if (auto && +sel.value!==autoGrade) sel.value = String(autoGrade);
+        const row = getRow(+sel.value || autoGrade);
+        if (auto){
+          $('#insLabor').value = row.labor;
+          $('#insHealth').value = row.health;
+        }
+        const insSum = (+$('#insLabor').value||0) + (+$('#insHealth').value||0);
+        $('#insSum').textContent = F(insSum);
+        $('#kpiIns').textContent = F(insSum);
+        const net = Math.max(0, (salary - insSum));
+        $('#netPay').textContent = F(net);
+        $('#kpiNet').textContent = F(net);
+        $('#resNet').textContent = F(net);
+      }
+
+      function saveAll(){
+        const aa = {}; Object.keys(PRICE.AA).forEach(code=> aa[code]=+(document.querySelector(`input[data-aa="${code}"]`).value||0)); localStorage.setItem('pl-aa', JSON.stringify(aa));
+        ['BA','GA','SC'].forEach(key=>{ const k=key.toLowerCase(); const obj={}; PRICE[key].forEach(item=> obj[item.code]=+(document.querySelector(`input[data-${k}="${item.code}"]`).value||0)); localStorage.setItem(`pl-${k}`, JSON.stringify(obj)); });
+        const params = { month:$('#plMonth').value||'', ratio:+($('#ratioPct').value)||0, insGrade:+($('#insGrade').value)||0, insLabor:+($('#insLabor').value)||0, insHealth:+($('#insHealth').value)||0, insAuto:$('#insAuto').checked?1:0 };
+        localStorage.setItem('pl-params', JSON.stringify(params));
+      }
+      function loadLS(key, fb){ try{ return JSON.parse(localStorage.getItem(key)||'') || fb; }catch(e){ return fb; } }
+      function restore(){
+        const p = loadLS('pl-params', null);
+        if (p){
+          if(p.month)$('#plMonth').value=p.month; if(p.ratio!=null)$('#ratioPct').value=p.ratio; if(p.insGrade)$('#insGrade').value=p.insGrade; if(p.insLabor!=null)$('#insLabor').value=p.insLabor; if(p.insHealth!=null)$('#insHealth').value=p.insHealth; $('#insAuto').checked=!!p.insAuto;
+        }
+      }
+
+      function wire(){
+        ['#tblAA','#tblBA','#tblGA','#tblSC'].forEach(id=>{
+          document.querySelectorAll(`${id} input[type="number"]`).forEach(inp=>{
+            inp.addEventListener('input', updateAll);
+          });
+        });
+        $('#ratioPct').addEventListener('input', updateAll);
+        $('#plMonth').addEventListener('change', saveAll);
+
+        $('#insGrade').addEventListener('change', ()=>{
+          if ($('#insAuto').checked){
+            const row = getRow(+$('#insGrade').value);
+            $('#insLabor').value = row.labor;
+            $('#insHealth').value = row.health;
+          }
+          syncInsuranceBySalary(+($('#resSalary').textContent||'').replace(/,/g,''));
+          saveAll();
+        });
+        $('#insLabor').addEventListener('input', ()=>{
+          $('#insAuto').checked = false;
+          syncInsuranceBySalary(+($('#resSalary').textContent||'').replace(/,/g,''));
+          saveAll();
+        });
+        $('#insHealth').addEventListener('input', ()=>{
+          $('#insAuto').checked = false;
+          syncInsuranceBySalary(+($('#resSalary').textContent||'').replace(/,/g,''));
+          saveAll();
+        });
+        $('#insAuto').addEventListener('change', ()=>{
+          syncInsuranceBySalary(+($('#resSalary').textContent||'').replace(/,/g,''));
+          saveAll();
+        });
+
+        $('#btnPrint').addEventListener('click', ()=>window.print());
+        $('#btnResetAll').addEventListener('click', ()=>{
+          ['pl-aa','pl-ba','pl-ga','pl-sc','pl-params'].forEach(k=>localStorage.removeItem(k));
+          location.reload();
+        });
+      }
+
+      buildAA(); buildGroup('tblBA','BA','pl-ba'); buildGroup('tblGA','GA','pl-ga'); buildGroup('tblSC','SC','pl-sc'); buildInsOptions(); restore(); wire(); updateAll();
+
+      document.addEventListener('contextmenu', e => e.preventDefault());
+      document.addEventListener('keydown', e => {
+        if ((e.ctrlKey || e.metaKey) && ['u','s','p'].includes(e.key.toLowerCase())) e.preventDefault();
+        if (e.key === 'F12') e.preventDefault();
+      });
+      document.addEventListener('selectstart', e => e.preventDefault());
+      document.addEventListener('copy', e => e.preventDefault());
+    })();
+  </script>
+
+  <script>
+    (() => {
+      const $ = s => document.querySelector(s);
+      const debug = $('#ps-debug'), bar = $('#ps-bar'), statusEl = $('#ps-status');
+      const log = s => { if(!debug) return; debug.textContent += (typeof s==='string'?s:JSON.stringify(s,null,2))+'\n'; };
+      const setBar = p => { if(bar) bar.style.width = Math.max(0,Math.min(100,p))+'%'; };
+
+      const CODE_ALIAS = {
+        'BA05-1': 'BA05', 'BA05-2': 'BA05',
+        'BA16-1': 'BA16', 'BA16-2': 'BA16'
+      };
+      const toCanon = c => CODE_ALIAS[c] || c;
+
+      let pdfReady=null;
+      const loadScript = src => new Promise((res,rej)=>{const s=document.createElement('script'); s.src=src; s.onload=res; s.onerror=rej; document.head.appendChild(s);});
+      async function ensurePdfjs(){
+        if (window.pdfjsLib) return;
+        if (pdfReady){ await pdfReady; return; }
+        pdfReady = (async ()=>{
+          for (const v of ["4.2.67","3.11.174","2.16.105"]){
+            try{
+              await loadScript(`https://cdn.jsdelivr.net/npm/pdfjs-dist@${v}/build/pdf.min.js`);
+              pdfVer=v;
+              try{
+                pdfjsLib.GlobalWorkerOptions.workerSrc=`https://cdn.jsdelivr.net/npm/pdfjs-dist@${v}/build/pdf.worker.min.js`;
+                await pdfjsLib.getDocument({data:new Uint8Array([0x25,0x50,0x44,0x46])}).promise.catch(()=>null);
+              }catch{
+                pdfjsLib.GlobalWorkerOptions.workerSrc=""; pdfjsLib.GlobalWorkerOptions.workerPort=null;
+              }
+              return;
+            }catch{}
+          }
+          throw new Error('pdf.js load failed');
+        })();
+        await pdfReady;
+      }
+
+      let ocrReady=null;
+      async function ensureTesseract(){
+        if (window.Tesseract) return;
+        if (ocrReady){ await ocrReady; return; }
+        ocrReady = (async ()=>{
+          await loadScript('https://cdn.jsdelivr.net/npm/tesseract.js@4.0.2/dist/tesseract.min.js');
+          Tesseract.setLogging(false);
+        })();
+        await ocrReady;
+      }
+
+      function getAAUnit(){ return { AA05:200, AA06:200, AA07:760, AA08:385, AA09:770, AA11:50 }; }
+
+      async function extractPdfText(file){
+        await ensurePdfjs();
+        const ab=await file.arrayBuffer();
+        try{
+          const pdf=await pdfjsLib.getDocument({data:ab}).promise;
+          let texts=[],total=0;
+          for(let i=1;i<=pdf.numPages;i++){
+              const page=await pdf.getPage(i);
+              const c=await page.getTextContent({normalizeWhitespace:true,disableCombineTextItems:false});
+              const s=c.items.map(it=>it.str).join(' ');
+              texts.push(s); total+=s.length; setBar(100*i/pdf.numPages);
+          }
+          return {text:texts.join('\n'), pdf, charCount:total};
+        }catch(e){ log('PDF error: '+e.message); throw e; }
+      }
+
+      async function ocrPdfToText(pdf){
+        await ensureTesseract();
+        const worker=await Tesseract.createWorker('chi_tra+eng');
+        let all=[];
+        for(let i=1;i<=pdf.numPages;i++){
+           const p=await pdf.getPage(i), v=p.getViewport({scale:2});
+           const cvs=document.createElement('canvas'), ctx=cvs.getContext('2d');
+           cvs.width=v.width; cvs.height=v.height;
+           await p.render({canvasContext:ctx,viewport:v}).promise;
+           if(statusEl) statusEl.textContent=`OCR 執行中 ${i}/${pdf.numPages}`;
+           const r=await worker.recognize(cvs);
+           all.push(r.data.text); setBar(100*i/pdf.numPages);
+        }
+        await worker.terminate();
+        return all.join('\n');
+      }
+
+      function analyze(text){
+        const units=getAAUnit(), fam={BA:{},AA:{},GA:{},SC:{}};
+        const codeRe=/\b(BA|AA|GA|SC)\d{2}(?:-\d+)?\b/g, toHalf=v=>Math.round(v*2)/2, normalize=c=>c.toUpperCase().replace(/[^A-Z0-9-]/g,'');
+        for (const raw of text.split(/\r?\n/)){
+          const line=raw.trim(); if(!line) continue;
+          const codes=[...line.matchAll(codeRe)]; if(!codes.length) continue;
+          for (const m of codes){
+            const fullRaw=m[0];
+            const canon = toCanon(normalize(fullRaw)); 
+            const head = canon.slice(0,2);
+            if (head==='AA'){
+              const after=line.slice(m.index+fullRaw.length, m.index+fullRaw.length+40);
+              let amt=0;
+              const m1=after.match(/\$\s*([0-9,]+)/);
+              if (m1) amt=parseInt(m1[1].replace(/,/g,''),10);
+              const u=units[canon]||units[canon.slice(0,4)];
+              const zhi=u&&amt?toHalf(amt/u):0;
+              if(!fam.AA[canon]) fam.AA[canon]={occ:0,sum:0};
+              fam.AA[canon].occ++; fam.AA[canon].sum+=zhi;
+            } else {
+              if(!fam[head]) continue;
+              const rec=(fam[head][canon]||{occ:0,sum:0});
+              rec.occ++; rec.sum+=1; 
+              fam[head][canon]=rec;
+            }
+          }
+        }
+        const fmtRows=o=>Object.entries(o).map(([k,v])=>({code:k,occ:v.occ,sum:v.sum})).sort((a,b)=>a.code.localeCompare(b.code));
+        return {BA:fmtRows(fam.BA), AA:fmtRows(fam.AA), GA:fmtRows(fam.GA), SC:fmtRows(fam.SC)};
+      }
+
+      function renderAll(res){
+          const t={BA:$('#ps-t-BA tbody'),AA:$('#ps-t-AA tbody'),GA:$('#ps-t-GA tbody'),SC:$('#ps-t-SC tbody')};
+          for(const k in t){ t[k].innerHTML=res[k].map(r=>`<tr><td><span class="ps-pill">${r.code}</span></td><td class="ps-right">${r.occ}</td><td class="ps-right">${r.sum}</td></tr>`).join(''); }
+      }
+      function exportCSV(res){
+        const fmtCount = c => c;
+        const blk=(t,rows)=>`${t}\n碼別,出現筆數,Σ支數\n`+rows.map(r=>`${r.code},${r.occ},${fmtCount(r.sum)}`).join('\n')+'\n\n';
+        const csv=blk('【BA】',res.BA)+blk('【AA】',res.AA)+blk('【GA】',res.GA)+blk('【SC】',res.SC);
+        const blob=new Blob([csv],{type:'text/csv;charset=utf-8'}), url=URL.createObjectURL(blob);
+        const a=document.createElement('a'); a.href=url; a.download='pdf-stat.csv'; a.click(); URL.revokeObjectURL(url);
+      }
+      function exportJSON(res){
+        const fmtCount = c => c;
+        const pick=rows=>rows.map(r=>({code:r.code,occ:r.occ,sum:fmtCount(r.sum)}));
+        const payload={BA:pick(res.BA),AA:pick(res.AA),GA:pick(res.GA),SC:pick(res.SC),meta:{generatedAt:new Date().toISOString()}};
+        const blob=new Blob([JSON.stringify(payload,null,2)],{type:'application/json'}), url=URL.createObjectURL(blob);
+        const a=document.createElement('a'); a.href=url; a.download='pdf-stat.json'; a.click(); URL.revokeObjectURL(url);
+      }
+
+      function resetPayrollInputs(){
+        document.querySelectorAll('#tblAA input[type="number"][data-aa], #tblBA input[type="number"][data-ba], #tblGA input[type="number"][data-ga], #tblSC input[type="number"][data-sc]')
+          .forEach(inp=>{
+            inp.value = '0';
+            inp.dispatchEvent(new Event('input',{bubbles:true}));
+          });
+      }
+      function setInputByCode(kind, code, val, step){
+        const normalize=c=>c.toUpperCase().replace(/[^A-Z0-9-]/g,'');
+        const norm = normalize(code);
+        const canon = toCanon(norm);
+        const sel = document.querySelector(`input[data-${kind}="${canon}"]`);
+        if (!sel) return false;
+        if (step) sel.setAttribute('step', step);
+        sel.value = String(val);
+        sel.dispatchEvent(new Event('input',{bubbles:true}));
+        return true;
+      }
+      function applyToPayroll(res){
+        const normalize=c=>c.toUpperCase().replace(/[^A-Z0-9-]/g,'');
+        resetPayrollInputs();
+        const miss = [];
+        res.AA.forEach(r=>{
+          const ok = setInputByCode('aa', r.code, r.sum, '0.5');
+          if (!ok) miss.push(`AA：${normalize(r.code)}`);
+        });
+        res.BA.forEach(r=>{
+          const ok = setInputByCode('ba', r.code, Math.round(r.sum));
+          if (!ok) miss.push(`BA：${normalize(r.code)}`);
+        });
+        res.GA.forEach(r=>{
+          const ok = setInputByCode('ga', r.code, Math.round(r.sum));
+          if (!ok) miss.push(`GA：${normalize(r.code)}`);
+        });
+        res.SC.forEach(r=>{
+          const ok = setInputByCode('sc', r.code, Math.round(r.sum));
+          if (!ok) miss.push(`SC：${normalize(r.code)}`);
+        });
+
+        let warn = document.getElementById('ps-miss');
+        const host = document.querySelector('#ps-widget');
+        if (miss.length){
+          if (!warn){
+            warn = document.createElement('div');
+            warn.id = 'ps-miss';
+            warn.style.cssText = 'margin-top:8px;border:1px dashed #f0b429;background:#fff8e6;border-radius:8px;padding:8px 10px';
+            warn.className = 'ps-small';
+            host.appendChild(warn);
+          }
+          warn.innerHTML = `<b>未同步的碼別（薪資表中沒有）：</b><br>${miss.map(m=>'• '+m).join('<br>')}`;
+        }else if (warn){ warn.remove(); }
+        document.getElementById('tblAA')?.scrollIntoView({behavior:'smooth', block:'start'});
+      }
+
+      const autoSyncEl = document.getElementById('ps-auto-sync');
+      const syncBar = document.getElementById('ps-syncbar');
+      const syncYesBtn = document.getElementById('ps-sync-yes');
+      const syncNoBtn = document.getElementById('ps-sync-no');
+      const AUTO_KEY = 'ps-auto-sync';
+      function loadAutoSync(){ try{ return localStorage.getItem(AUTO_KEY)==='1'; }catch(e){ return false; } }
+      function saveAutoSync(v){ try{ localStorage.setItem(AUTO_KEY, v?'1':'0'); }catch(e){} }
+      function showSyncBar(on){ if(syncBar) syncBar.style.display = on ? 'flex' : 'none'; }
+      if (autoSyncEl){ autoSyncEl.checked = loadAutoSync(); autoSyncEl.addEventListener('change', ()=>saveAutoSync(autoSyncEl.checked)); }
+      if (syncYesBtn){ syncYesBtn.addEventListener('click', ()=>{ if (last){ applyToPayroll(last); } showSyncBar(false); }); }
+      if (syncNoBtn){ syncNoBtn.addEventListener('click', ()=> showSyncBar(false)); }
+
+      let last=null;
+      async function handleFile(f){
+        if(!debug) return; debug.textContent='偵錯訊息：\n';
+        setBar(0); if(statusEl) statusEl.textContent='準備解析…';
+        let pdfRes=null, text='';
+        try{ pdfRes=await extractPdfText(f); }catch(e){ log('PDF.js fail, try OCR'); }
+        if(pdfRes && pdfRes.charCount>0){
+          text=pdfRes.text; setBar(100);
+          if(statusEl) statusEl.textContent='PDF 文字擷取完成';
+        } else {
+          try{
+            const pdf= pdfRes?.pdf || await pdfjsLib.getDocument({data:await f.arrayBuffer()}).promise;
+            if(statusEl) statusEl.textContent='啟用 OCR…'; setBar(1);
+            text=await ocrPdfToText(pdf); setBar(100);
+            if(statusEl) statusEl.textContent='OCR 完成';
+          }catch(e){ log('OCR 也失敗'); alert('此 PDF 無法解析，可能是加密或損壞。'); return; }
+        }
+        const res=analyze(text);
+        renderAll(res);
+        last=res;
+        document.getElementById('ps-apply').disabled=false;
+        document.getElementById('ps-csv').disabled=false;
+        document.getElementById('ps-json').disabled=false;
+        if (autoSyncEl && autoSyncEl.checked){ applyToPayroll(last); showSyncBar(false); } else { showSyncBar(true); }
+      }
+
+      const fileInput=$('#ps-file'), drop=$('#ps-drop');
+      if(fileInput){ fileInput.addEventListener('change',e=>{const f=e.target.files?.[0]; if(f) handleFile(f);}); }
+      if(drop){
+        ['dragenter','dragover'].forEach(ev=>drop.addEventListener(ev,e=>{e.preventDefault(); drop.style.background='#eef4ff';}));
+        ['dragleave','drop'].forEach(ev=>drop.addEventListener(ev,e=>{e.preventDefault(); drop.style.background='#f9fbff';}));
+        drop.addEventListener('drop',e=>{e.preventDefault(); const f=e.dataTransfer.files?.[0]; if(f) handleFile(f);});
+      }
+      document.getElementById('ps-csv').addEventListener('click',()=>last&&exportCSV(last));
+      document.getElementById('ps-json').addEventListener('click',()=>last&&exportJSON(last));
+      document.getElementById('ps-apply').addEventListener('click',()=> last && applyToPayroll(last));
+      document.getElementById('ps-demo').addEventListener('click',()=>{
+        const d=`嚴X雯 賴X女 2025/09/01 AA05 補助 $100
+嚴X雯 賴X女 2025/09/02 AA05 補助 $200
+嚴X雯 張X進 2025/09/02 AA06 自費 $200
+嚴X雯 王X明 2025/09/03 AA07 補助 $760
+嚴X雯 OO先生 2025/09/03 AA08 自費 $385
+嚴X雯 賴X女 2025/09/06 AA09 補助 $770
+嚴X雯 江X輝 2025/09/01 AA11 補助 $50
+嚴X雯 范X殷 2025-09-05 BA01 補助 1 $260
+嚴X雯 江X輝 2025-09-01 BA07 補助 1 $325
+嚴X雯 張X進 2025-09-02 BA11 自費 2 $195
+嚴X雯 王X美 2025-09-10 BA15-1 補助 1 $195
+嚴X雯 王X美 2025-09-11 BA05-1 補助 2 $310
+嚴X雯 王X美 2025-09-12 BA15-2 補助 1 $195
+嚴X雯 李OO 2025-09-03 GA09 補助 3
+嚴X雯 王OO 2025-09-04 SC09 自費 1`;
+        const r=analyze(d); renderAll(r); last=r; setBar(100);
+        if(statusEl) statusEl.textContent='示範資料已載入';
+        document.getElementById('ps-apply').disabled=false;
+        document.getElementById('ps-csv').disabled=false;
+        document.getElementById('ps-json').disabled=false;
+        if (autoSyncEl && autoSyncEl.checked){ applyToPayroll(last); showSyncBar(false); } else { showSyncBar(true); }
+      });
+    })();
+  </script>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+    import { getAuth, signInWithPopup, GoogleAuthProvider, signOut, onAuthStateChanged } 
+      from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+    import { getFirestore, doc, getDoc, setDoc, serverTimestamp, addDoc, collection } 
+      from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+    const config={ apiKey: "AIzaSyCZMhdUI0HeIoj5masuRh00pzP3SMbF6Yc", authDomain: "hori-test-1b93c.firebaseapp.com", projectId: "hori-test-1b93c", storageBucket: "hori-test-1b93c.firebasestorage.app", messagingSenderId: "549583061796", appId: "1:549583061796:web:ad58b8bf80c2b6b71c29b1" };
+    const app=initializeApp(config), auth=getAuth(app), db=getFirestore(app), provider=new GoogleAuthProvider();
+
+    const dom={ login:document.getElementById('btnLogin'), logout:document.getElementById('btnLogout'), member:document.getElementById('member-area'), user:document.getElementById('userDisplay'), admin:document.getElementById('btnAdminLink'), edit:document.getElementById('btnEditProfile'), modal:document.getElementById('profile-modal'), save:document.getElementById('btn-save-profile'), cloud:document.getElementById('btnSaveCloud'), name:document.getElementById('pf-name'), age:document.getElementById('pf-age'), title:document.querySelector('#profile-modal h3') };
+
+    if(dom.login) dom.login.addEventListener('click',()=>signInWithPopup(auth,provider).catch(e=>{
+        if(e.code==='auth/popup-blocked')alert("請使用 Chrome/Safari 瀏覽器開啟 (非 LINE/FB 內建)");
+        else alert(e.message)
+    }));
+
+    if(dom.logout) dom.logout.addEventListener('click',()=>signOut(auth).then(()=>location.reload()));
+    
+    onAuthStateChanged(auth, async u=>{
+      if(u){
+        dom.login.style.display='none'; dom.member.style.display='flex'; dom.user.textContent=u.displayName||u.email;
+        try{ 
+            const s=await getDoc(doc(db,"users",u.uid));
+            if(s.exists()){ if(s.data().name) dom.user.textContent=s.data().name; }
+            else{ dom.title.textContent="歡迎加入！請完善資料"; dom.name.value=u.displayName||""; dom.modal.style.display='flex'; }
+        }catch(e){}
+        try{ const a=await getDoc(doc(db,"admins",u.email)); if(a.exists()) dom.admin.style.display='inline-block'; }catch(e){}
+      }else{ dom.login.style.display='block'; dom.member.style.display='none'; }
+    });
+
+    if(dom.edit) dom.edit.addEventListener('click',async()=>{ const s=await getDoc(doc(db,"users",auth.currentUser.uid)); if(s.exists()){ const d=s.data(); dom.title.textContent="修改個人資料"; dom.name.value=d.name; dom.age.value=d.age; dom.modal.style.display='flex'; } });
+    
+    if(dom.save) dom.save.addEventListener('click',async()=>{
+        const n=dom.name.value, a=dom.age.value; if(!n||!a) return alert("請填寫完整");
+        const ref=doc(db,"users",auth.currentUser.uid); const s=await getDoc(ref);
+        let d={name:n,age:a,email:auth.currentUser.email,lastUpdated:serverTimestamp()};
+        if(!s.exists()||!s.data().createdAt) d.createdAt=serverTimestamp();
+        await setDoc(ref,d,{merge:true}); alert("已儲存"); dom.modal.style.display='none'; dom.user.textContent=n;
+    });
+
+    if(dom.modal) dom.modal.addEventListener('click',e=>{if(e.target===dom.modal&&auth.currentUser&&dom.user.textContent!="")dom.modal.style.display='none'});
+  </script>
+</body>
+</html>
