@@ -880,22 +880,22 @@ font-size: 13px;
 
 /* ★ 修正：桌機版才套用欄位 padding，避免手機版卡片式跑版；且只鎖 .tbl，避免影響 PDF 統計表格等其他 table ★ */
 @media (min-width: 861px) {
-body[data-page="payroll"] .tbl th:nth-child(2),
-body[data-page="payroll"] .tbl td:nth-child(2) {
+body[data-page="payroll"] .tbl:not(.insurance-table) th:nth-child(2),
+body[data-page="payroll"] .tbl:not(.insurance-table) td:nth-child(2) {
 padding-right: 60px !important; /* 單價靠右，增加右邊距擠向左 */
 text-align: right;
 }
-body[data-page="payroll"] .tbl th:nth-child(3),
-body[data-page="payroll"] .tbl td:nth-child(3) {
+body[data-page="payroll"] .tbl:not(.insurance-table) th:nth-child(3),
+body[data-page="payroll"] .tbl:not(.insurance-table) td:nth-child(3) {
 text-align: center !important; /* 支數置中 */
 }
-body[data-page="payroll"] .tbl th:nth-child(4),
-body[data-page="payroll"] .tbl td:nth-child(4) {
+body[data-page="payroll"] .tbl:not(.insurance-table) th:nth-child(4),
+body[data-page="payroll"] .tbl:not(.insurance-table) td:nth-child(4) {
 padding-right: 20px !important;
 text-align: right;
 }
-/* Payroll 表格內的 input 設為 90px */
-body[data-page="payroll"] .tbl input[type="number"] {
+/* Payroll 表格內的 input 設為 90px（僅 AA/BA/GA/SC 表格） */
+body[data-page="payroll"] .tbl:not(.insurance-table) input[type="number"] {
 width: 90px !important;
 }
 }
