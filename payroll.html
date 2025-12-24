@@ -65,7 +65,7 @@
 
     /* === 第2欄: 單價 (靠右) === */
     .tbl th:nth-child(2), .tbl td:nth-child(2) {
-        text-align: right; 
+        text-align: right !important; 
         padding-right: 40px !important; 
     }
 
@@ -85,10 +85,26 @@
     .tbl .right{ text-align:right; }
     .tbl .mono{ font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; }
 
-    /* ★ 修正投保級距表格遮擋與重疊問題 ★ */
+    /* ★ 修正投保級距表格與「自動」膠囊樣式 ★ */
     .insurance-table { table-layout: auto !important; width: 100%; }
     .insurance-table input { width: 100% !important; min-width: 60px; }
     .sub-text { font-size: 11px; display: block; color: #777; line-height: 1.2; }
+    
+    /* ★ 修正：將自動改為橫的，勾勾靠左 ★ */
+    .auto-chip {
+        display: flex !important;
+        flex-direction: row !important;
+        align-items: center !important;
+        justify-content: center !important;
+        padding: 4px 10px !important;
+        white-space: nowrap !important;
+        gap: 4px !important;
+    }
+    .auto-chip input {
+        margin: 0 !important;
+        width: auto !important;
+        min-width: 0 !important;
+    }
 
     /* 其他排版 */
     .grid-2{display:grid; grid-template-columns:1fr 1fr; gap:14px;}
@@ -103,7 +119,7 @@
       .tbl tbody tr{display:block; border:1px solid var(--line); border-radius:12px; padding:10px 12px; margin-bottom:12px; background:#fff; box-shadow:0 1px 2px rgba(0,0,0,.05);}
       .tbl tbody tr:nth-child(even){background:#fff;}
       
-      /* ★ 修正：手機版單價等數字強迫靠右 ★ */
+      /* ★ 修正：手機版數值文字強迫靠右 ★ */
       .tbl td{display:flex; gap:12px; justify-content:space-between; align-items:center; padding:6px 0; line-height:1.45; white-space:normal; border-top:none; text-align: right !important;}
       
       .tbl td[data-label]::before{ content:attr(data-label); font-weight:700; color:#5b5534; flex:1; text-align:left; }
@@ -324,6 +340,7 @@
         <tfoot><tr><th colspan="3" class="right">SC 小計</th><th class="right" id="sumSC">0</th></tr></tfoot>
       </table>
     </section>
+
     <section class="card">
       <h2 class="card-title">⑥ 薪資結果 & 勞健保扣款</h2>
       <div class="grid-2" style="margin-top:8px;">
@@ -369,7 +386,7 @@
                     <td class="right" data-label="健保(員工)"><input id="insHealth" type="number" min="0" step="1" value="0" style="height:34px;width:100%;text-align:right;"></td>
                     <td class="right mono" id="insSum" data-label="合計">0</td>
                     <td data-label="設定">
-                        <label class="chip" style="cursor:pointer; padding: 2px 5px;"><input id="insAuto" type="checkbox" checked> 自動</label>
+                        <label class="chip auto-chip"><input id="insAuto" type="checkbox" checked> 自動</label>
                     </td>
                 </tr>
             </tbody>
