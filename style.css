@@ -875,24 +875,54 @@ font-size: 13px;
 [Payroll 專用調整] 這裡的 CSS 確保 Payroll 的單價靠右、支數置中
 這些屬性與上面的通用樣式分開，不會相互干擾
 ============================================================ */
-body[data-page="payroll"] table th:nth-child(2),
-body[data-page="payroll"] table td:nth-child(2) {
+
+/* ✅ 只作用在薪資表（排除投保級距 insurance-table） */
+body[data-page="payroll"] .tbl:not(.insurance-table) th:nth-child(2),
+body[data-page="payroll"] .tbl:not(.insurance-table) td:nth-child(2) {
 padding-right: 60px !important; /* 單價靠右，增加右邊距擠向左 */
 text-align: right;
 }
-body[data-page="payroll"] table th:nth-child(3),
-body[data-page="payroll"] table td:nth-child(3) {
+
+body[data-page="payroll"] .tbl:not(.insurance-table) th:nth-child(3),
+body[data-page="payroll"] .tbl:not(.insurance-table) td:nth-child(3) {
 text-align: center !important; /* 支數置中 */
 }
-body[data-page="payroll"] table th:nth-child(4),
-body[data-page="payroll"] table td:nth-child(4) {
+
+body[data-page="payroll"] .tbl:not(.insurance-table) th:nth-child(4),
+body[data-page="payroll"] .tbl:not(.insurance-table) td:nth-child(4) {
 padding-right: 20px !important;
 text-align: right;
 }
-/* Payroll 表格內的 input 設為 90px */
-body[data-page="payroll"] input[type="number"] {
+
+/* Payroll 表格內的 input 設為 90px（⚠️ 不影響投保級距 insurance-table） */
+body[data-page="payroll"] .tbl:not(.insurance-table) input[type="number"] {
 width: 90px !important;
 }
+
+/* ============================================================
+[Payroll-Insurance 專用修正]
+讓「勞保/健保」標題與下方輸入框水平置中對齊
+============================================================ */
+body[data-page="payroll"] .insurance-table th,
+body[data-page="payroll"] .insurance-table td {
+text-align: center !important; /* 覆蓋 .right、以及其他 table 規則 */
+}
+
+body[data-page="payroll"] .insurance-table td:nth-child(2),
+body[data-page="payroll"] .insurance-table td:nth-child(3) {
+padding-right: 0 !important; /* 防止被其他規則推歪 */
+}
+
+body[data-page="payroll"] .insurance-table td:nth-child(2) input,
+body[data-page="payroll"] .insurance-table td:nth-child(3) input {
+width: 100% !important;  /* 吃滿欄位，視覺就會跟上方標題對齊 */
+min-width: 60px;
+display: block;
+margin: 0 auto;
+text-align: right;       /* 數字仍靠右，閱讀舒服 */
+box-sizing: border-box;
+}
+
 
 /* =========================================
 [NEW] 新功能區 (Hero/Video/Modal)
