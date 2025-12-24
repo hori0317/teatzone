@@ -7,30 +7,17 @@
   <link rel="icon" type="image/x-icon" href="YORU.ico" />
   <link rel="stylesheet" href="style.css" />
   
-  <!-- 影片專用 CSS -->
   <style>
     .video-card { text-align: center; margin-bottom: 20px; max-width: 100%; margin: 0 auto; }
     .video-container {
       position: relative; width: 100%; padding-bottom: 56.25%; /* 16:9 */
-      height: 0; overflow: hidden; border-radius: 12px;
-      background: #000; margin: 0 auto;
+      height: 0; overflow: hidden; border-radius: 12px; background: #000; margin: 0 auto;
     }
-    .video-container iframe {
-      position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1;
-    }
-    .video-mask-top {
-      position: absolute; top: 0; left: 0; width: 100%; height: 60px;
-      background: transparent; z-index: 10; cursor: default;
-    }
-    .video-mask-logo {
-      position: absolute; bottom: 0; right: 0; width: 120px; height: 50px;
-      background: transparent; z-index: 10; cursor: default;
-    }
-    .login-warning-box {
-      padding: 40px 20px; background: #f5f5f5; border: 2px dashed #ccc;
-      border-radius: 12px; color: #666; font-weight: 700;
-    }
-    /* 會員彈窗樣式 */
+    .video-container iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; }
+    .video-mask-top { position: absolute; top: 0; left: 0; width: 100%; height: 80px; background: transparent; z-index: 10; cursor: default; }
+    .video-mask-logo { position: absolute; bottom: 0; right: 0; width: 120px; height: 50px; background: transparent; z-index: 10; cursor: default; }
+    .login-warning-box { padding: 40px 20px; background: #f5f5f5; border: 2px dashed #ccc; border-radius: 12px; color: #666; font-weight: 700; }
+    
     .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(47,47,32,0.6); backdrop-filter: blur(3px); z-index: 2000; display: flex; justify-content: center; align-items: center; padding: 20px; }
     .modal-content { background: #fffdf5; border: 1px solid #e6dca8; border-radius: 12px; padding: 24px; width: 100%; max-width: 420px; box-shadow: 0 10px 25px rgba(0,0,0,0.15); text-align: center; }
     .modal-content h3 { color: #2e7d32; margin-top: 0; }
@@ -39,7 +26,7 @@
   </style>
   <script src="nav.js" defer></script>
 </head>
-<body data-page="video"> 
+<body data-page="video">
 
   <header class="topbar">
     <div class="brand">
@@ -47,18 +34,16 @@
       <span class="site-title" data-sync-title>影音學習區</span>
     </div>
     
-    <!-- 導覽列 -->
-<nav class="nav-links" aria-label="主選單">
-  <a href="calculator.html">額度計算機</a> <!-- ⚠️ 修正這裡 -->
-  <a href="payroll.html">薪資計算機</a>
-  <a href="video.html">影音專區</a>
-  <a href="care-info.html">長照相關資訊</a>
-  <a href="news.html">最新公告</a>
-  <a href="contact.html">聯繫方式</a>
-  <a href="about.html">關於我們</a>
-</nav>
-
-    <!-- 右側按鈕 (只保留會員功能) -->
+    <nav class="nav-links" aria-label="主選單">
+      <a href="calculator.html">額度計算機</a>
+      <a href="payroll.html">薪資計算機</a>
+      <a href="video.html">影音專區</a>
+      <a href="care-info.html">長照相關資訊</a>
+      <a href="news.html">最新公告</a>
+      <a href="contact.html">聯繫方式</a>
+      <a href="about.html">關於我們</a>
+    </nav>
+    
     <div class="actions" style="align-items: center; gap: 8px;">
         <button class="btn pill" style="background:#4285F4; color:white;" id="btnLogin" type="button">Google 登入</button>
         <div id="member-area" style="display:none; align-items: center; gap:5px;">
@@ -98,11 +83,10 @@
     <div class="foot"><span class="ok">© hori 長照工具</span></div>
   </footer>
 
-  <!-- 會員資料填寫彈窗 -->
   <div id="profile-modal" class="modal-overlay" style="display:none;">
     <div class="modal-content">
       <h3>歡迎加入！請完善資料</h3>
-      <p>填寫您的基本資訊，讓我們為您記錄學習進度。</p>
+      <p>填寫您的基本資訊。</p>
       <div style="text-align:left; margin-bottom:12px;">
         <label style="font-weight:700; color:var(--ink); font-size:15px;">姓名 / 稱呼</label>
         <input type="text" id="pf-name" placeholder="例如：王小明">
@@ -117,13 +101,13 @@
     </div>
   </div>
 
-  <!-- Firebase + 影片邏輯 -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-    import { getAuth, signInWithRedirect, GoogleAuthProvider, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-    import { getFirestore, doc, getDoc, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+    import { getAuth, signInWithRedirect, getRedirectResult, signOut, onAuthStateChanged, GoogleAuthProvider } 
+      from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+    import { getFirestore, doc, getDoc, setDoc, serverTimestamp } 
+      from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-    // 設定
     const firebaseConfig = {
       apiKey: "AIzaSyCZMhdUI0HeIoj5masuRh00pzP3SMbF6Yc",
       authDomain: "hori-test-1b93c.firebaseapp.com",
@@ -138,31 +122,31 @@
     const db = getFirestore(app);
     const provider = new GoogleAuthProvider();
 
-    // DOM
+    // DOM Elements
     const btnLogin = document.getElementById('btnLogin');
     const btnLogout = document.getElementById('btnLogout');
     const memberArea = document.getElementById('member-area');
     const userDisplay = document.getElementById('userDisplay');
     const btnAdminLink = document.getElementById('btnAdminLink');
-    const videoWrapper = document.getElementById('video-wrapper');
-    const loginWarning = document.getElementById('login-warning');
-    const watchTimeDisplay = document.getElementById('watchTimeDisplay');
-    const saveStatus = document.getElementById('saveStatus');
     
-    // 彈窗
     const profileModal = document.getElementById('profile-modal');
     const pfNameInput = document.getElementById('pf-name');
     const pfAgeInput = document.getElementById('pf-age');
     const btnSaveProfile = document.getElementById('btn-save-profile');
     const modalTitle = profileModal.querySelector('h3');
     const btnEditProfile = document.getElementById('btnEditProfile');
+    
+    // Video DOM
+    const videoWrapper = document.getElementById('video-wrapper');
+    const loginWarning = document.getElementById('login-warning');
+    const watchTimeDisplay = document.getElementById('watchTimeDisplay');
+    const saveStatus = document.getElementById('saveStatus');
 
-    const YOUTUBE_VIDEO_ID = 'PLG2Uexyi9s'; // ★ 你的影片 ID
-
+    const YOUTUBE_VIDEO_ID = 'M7lc1UVf-VE'; 
     let currentUser = null;
     let player, timerInterval, currentSessionSeconds = 0, totalWatchedSeconds = 0;
 
-    // YouTube API
+    // --- YouTube API ---
     const tag = document.createElement('script');
     tag.src = "https://www.youtube.com/iframe_api";
     const firstScriptTag = document.getElementsByTagName('script')[0];
@@ -171,14 +155,7 @@
     window.onYouTubeIframeAPIReady = function() {
       player = new YT.Player('video-placeholder', {
         videoId: YOUTUBE_VIDEO_ID,
-        playerVars: {
-    'playsinline': 1,    // 手機不強制全螢幕
-    'modestbranding': 1, // 隱藏 Logo
-    'rel': 0,            // 不顯示推薦
-    'controls': 1,       // 顯示播放/暫停/音量列
-    'fs': 0,             // ★ 關鍵：禁用全螢幕按鈕 (Fullscreen)
-    'iv_load_policy': 3  // 隱藏影片註釋
-},
+        playerVars: { 'playsinline': 1, 'modestbranding': 1, 'rel': 0, 'controls': 1, 'fs': 0, 'iv_load_policy': 3 },
         events: { 'onStateChange': onPlayerStateChange }
       });
     };
@@ -216,7 +193,7 @@
         }, { merge: true });
         currentSessionSeconds = 0;
         if(saveStatus) { saveStatus.textContent = "已同步"; setTimeout(() => { saveStatus.textContent = ""; }, 2000); }
-      } catch (e) { console.error(e); }
+      } catch (e) { console.error("存檔失敗", e); }
     }
 
     async function loadWatchHistory(user) {
@@ -227,66 +204,92 @@
       } catch (e) {}
     }
 
-    // Auth Logic
-    btnLogin.addEventListener('click', () => signInWithPopup(auth, provider).catch(alert));
-    btnLogout.addEventListener('click', () => signOut(auth).then(() => { stopTracking(); location.reload(); }));
+    // --- Login ---
+    if(btnLogin) {
+        btnLogin.addEventListener('click', () => {
+          signInWithRedirect(auth, provider);
+        });
+    }
+
+    if(btnLogout) btnLogout.addEventListener('click', () => signOut(auth).then(() => { 
+        stopTracking(); 
+        if(player && player.pauseVideo) player.pauseVideo();
+        alert("已登出"); 
+        location.reload(); 
+    }));
 
     onAuthStateChanged(auth, async (user) => {
       if (user) {
         currentUser = user;
-        btnLogin.style.display = 'none';
-        loginWarning.style.display = 'none';
-        videoWrapper.style.display = 'block';
+        if(btnLogin) btnLogin.style.display = 'none';
+        if(loginWarning) loginWarning.style.display = 'none';
+        if(videoWrapper) videoWrapper.style.display = 'block';
+        if(memberArea) memberArea.style.display = 'flex';
         loadWatchHistory(user);
 
         try {
           const docSnap = await getDoc(doc(db, "users", user.uid));
-          if (docSnap.exists()) showMemberUI(docSnap.data().name);
-          else openProfileModal("歡迎加入！請完善資料", user.displayName || "", "");
-        } catch (e) {}
+          if (docSnap.exists()) {
+             if(userDisplay && docSnap.data().name) userDisplay.textContent = docSnap.data().name;
+          } else {
+             if(modalTitle) modalTitle.textContent = "歡迎加入！請完善資料";
+             if(pfNameInput) pfNameInput.value = user.displayName || "";
+             if(profileModal) profileModal.style.display = 'flex';
+          }
+        } catch(e){}
 
         try {
           const adminSnap = await getDoc(doc(db, "admins", user.email));
           if (adminSnap.exists() && btnAdminLink) btnAdminLink.style.display = 'inline-block';
-        } catch(e) {}
+        } catch(e){}
       } else {
         currentUser = null;
-        btnLogin.style.display = 'block';
-        memberArea.style.display = 'none';
-        loginWarning.style.display = 'block';
-        videoWrapper.style.display = 'none';
+        if(btnLogin) btnLogin.style.display = 'block';
+        if(memberArea) memberArea.style.display = 'none';
+        if(loginWarning) loginWarning.style.display = 'block';
+        if(videoWrapper) videoWrapper.style.display = 'none';
       }
     });
 
-    function showMemberUI(name) {
-      memberArea.style.display = 'flex';
-      userDisplay.textContent = name;
-    }
-
-    function openProfileModal(title, dName, dAge) {
-      if(modalTitle) modalTitle.textContent = title;
-      pfNameInput.value = dName;
-      pfAgeInput.value = dAge;
-      profileModal.style.display = 'flex';
-    }
-
-    btnEditProfile.addEventListener('click', async () => {
-      const s = await getDoc(doc(db, "users", currentUser.uid));
-      if(s.exists()) { const d = s.data(); openProfileModal("修改個人資料", d.name, d.age); }
+    if(btnEditProfile) btnEditProfile.addEventListener('click', async () => {
+        const s = await getDoc(doc(db, "users", currentUser.uid));
+        if(s.exists()){ 
+            const d = s.data(); 
+            if(modalTitle) modalTitle.textContent = "修改個人資料";
+            if(pfNameInput) pfNameInput.value = d.name || "";
+            if(pfAgeInput) pfAgeInput.value = d.age || "";
+            if(profileModal) profileModal.style.display = 'flex';
+        }
     });
 
-    btnSaveProfile.addEventListener('click', async () => {
+    if(btnSaveProfile) btnSaveProfile.addEventListener('click', async () => {
       const name = pfNameInput.value.trim();
       const age = pfAgeInput.value.trim();
       if(!name || !age) return alert("請填寫完整");
-      await setDoc(doc(db, "users", currentUser.uid), { name, age, email: currentUser.email, lastUpdated: serverTimestamp() }, { merge: true });
-      alert("儲存成功");
-      profileModal.style.display = 'none';
-      showMemberUI(name);
+      
+      try {
+        const userRef = doc(db, "users", currentUser.uid);
+        const docSnap = await getDoc(userRef);
+        
+        let dataToSave = {
+          name, age, email: currentUser.email, lastUpdated: serverTimestamp()
+        };
+
+        if (!docSnap.exists() || !docSnap.data().createdAt) {
+            dataToSave.createdAt = serverTimestamp();
+        }
+
+        await setDoc(userRef, dataToSave, { merge: true });
+        alert("儲存成功");
+        profileModal.style.display = 'none';
+        if(userDisplay) userDisplay.textContent = name;
+      } catch (e) { alert("儲存失敗：" + e.message); }
     });
-    
-    profileModal.addEventListener('click', (e) => {
-        if (e.target === profileModal && currentUser && userDisplay.textContent !== "") profileModal.style.display = 'none';
+
+    if(profileModal) profileModal.addEventListener('click', (e) => {
+        if (e.target === profileModal && currentUser && userDisplay.textContent !== "" && userDisplay.textContent !== currentUser.email) {
+            profileModal.style.display = 'none';
+        }
     });
   </script>
 </body>
