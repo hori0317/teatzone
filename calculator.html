@@ -213,7 +213,7 @@
   <!-- Firebase 邏輯 (純計算機版，無影片邏輯) -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-    import { getAuth, signInWithPopup, GoogleAuthProvider, signOut, onAuthStateChanged } 
+    import { getAuth, signInWithRedirect, GoogleAuthProvider, signOut, onAuthStateChanged } 
       from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
     import { getFirestore, collection, addDoc, serverTimestamp, doc, getDoc, setDoc } 
       from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
