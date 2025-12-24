@@ -4,10 +4,11 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>額度計算機｜長照工具</title>
+  <meta name="description" content="長照服務額度計算機，快速查詢CMS等級補助額度、計算自付金額與居服薪資。">
   <link rel="icon" type="image/x-icon" href="YORU.ico" />
   <link rel="stylesheet" href="style.css" />
   <style>
-    .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(47,47,32,0.6); backdrop-filter: blur(3px); z-index: 2000; display: flex; justify-content: center; align-items: center; padding: 20px; }
+    .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(47, 47, 32, 0.6); backdrop-filter: blur(3px); z-index: 2000; display: flex; justify-content: center; align-items: center; padding: 20px; }
     .modal-content { background: #fffdf5; border: 1px solid #e6dca8; border-radius: 12px; padding: 24px; width: 100%; max-width: 420px; box-shadow: 0 10px 25px rgba(0,0,0,0.15); text-align: center; }
     .modal-content h3 { color: #2e7d32; margin-top: 0; }
     .modal-content input { width: 100%; padding: 10px; border: 1px solid #e6dca8; background: #fff; border-radius: 8px; font-size: 16px; margin-top: 4px; box-sizing: border-box; }
@@ -27,17 +28,15 @@
       <a href="index.html" class="logo-link"><img src="org-logo.png" alt="logo" onerror="this.style.opacity=0.2" /></a>
       <span class="site-title" id="siteTitle" data-sync-title>額度計算機</span>
     </div>
-    
     <nav class="nav-links" aria-label="主選單">
       <a href="calculator.html">額度計算機</a>
       <a href="payroll.html">薪資計算機</a>
       <a href="video.html">影音專區</a>
-      <a href="care-info.html">長照相關資訊</a>
+      <a href="care-info.html">長照資訊</a>
       <a href="news.html">最新公告</a>
       <a href="contact.html">聯繫方式</a>
       <a href="about.html">關於我們</a>
     </nav>
-    
     <div class="actions" style="align-items: center; gap: 8px;">
         <button class="btn pill btn-orange" id="btnUnitToggle" type="button" data-unit="B">B單位</button>
         <button class="btn pill btn-green" id="btnReset" type="button">重置</button>
@@ -67,6 +66,7 @@
             <label class="chip"><input type="radio" name="idty" value="低收入戶"> 低收</label>
           </div>
         </div>
+
         <div class="form-row">
           <label>CMS 等級：</label>
           <div class="cms">
@@ -79,8 +79,10 @@
             <label><input type="radio" name="cms" value="8"><span>8</span></label>
           </div>
         </div>
+
         <div class="form-row"><label>留用額度：</label><input id="keepQuota" type="number" min="0" /></div>
         <div class="form-row"><label>給付額度：</label><input id="grantQuota" type="text" readonly /></div>
+
         <div class="form-row">
           <label>是否有外籍看護：</label>
           <div class="chips">
@@ -89,9 +91,15 @@
           </div>
         </div>
         <div id="warnSCfg" class="note warn">未勾選外籍看護，SC 目前不可用。</div>
+        
         <div class="qrbox">
           <div class="qr-left"><img src="qrcode.png" alt="QR" onerror="this.style.opacity=0.2" /></div>
-          <div class="qr-right"><p class="bold">我們是XX居家長照機構</p><p>諮詢電話：02-XXXX-XXXX</p></div>
+          <div class="qr-right">
+            <p class="bold">我們是XX居家長照機構</p>
+            <p>負責區域為 XXXXXX<br>歡迎洽詢：</p>
+            <p>諮詢電話：02-XXXX-XXXX</p>
+            <p class="orange">廣告待補</p>
+          </div>
         </div>
       </div>
 
@@ -135,18 +143,30 @@
     </div>
   </footer>
 
+  <!-- 會員資料彈窗 -->
   <div id="profile-modal" class="modal-overlay" style="display:none;">
     <div class="modal-content">
       <h3>歡迎加入！請完善資料</h3>
-      <p>填寫您的基本資訊。</p>
-      <div style="text-align:left; margin-bottom:12px;"><label style="font-weight:700;">姓名 / 稱呼</label><input type="text" id="pf-name"></div>
-      <div style="text-align:left; margin-bottom:12px;"><label style="font-weight:700;">使用者年齡</label><input type="number" id="pf-age"></div>
-      <div class="modal-actions"><button id="btn-save-profile" class="btn pill btn-green" style="width:100%;">儲存並開始使用</button></div>
+      <p>填寫您的基本資訊，讓我們為您記錄試算結果。</p>
+      <div style="text-align:left; margin-bottom:12px;">
+        <label style="font-weight:700; color:var(--ink); font-size:15px;">姓名 / 稱呼</label>
+        <input type="text" id="pf-name" placeholder="例如：王小明">
+      </div>
+      <div style="text-align:left; margin-bottom:12px;">
+        <label style="font-weight:700; color:var(--ink); font-size:15px;">使用者年齡</label>
+        <input type="number" id="pf-age" placeholder="例如：65">
+      </div>
+      <div class="modal-actions">
+        <button id="btn-save-profile" class="btn pill btn-green" style="width:100%; font-size:16px; padding:10px;">
+          儲存並開始使用
+        </button>
+      </div>
     </div>
   </div>
-  
+
   <div id="addonPlaceholders" aria-hidden="true"><span id="addonHint"></span><button id="btnSaveAddons"></button><div id="addonRows"></div><div id="caregiverSalary"></div></div>
 
+  <!-- Firebase Script (Popup) -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
     import { getAuth, signInWithPopup, GoogleAuthProvider, signOut, onAuthStateChanged } 
@@ -154,134 +174,52 @@
     import { getFirestore, collection, addDoc, serverTimestamp, doc, getDoc, setDoc } 
       from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-    const firebaseConfig = {
-      apiKey: "AIzaSyCZMhdUI0HeIoj5masuRh00pzP3SMbF6Yc",
-      authDomain: "hori-test-1b93c.firebaseapp.com",
-      projectId: "hori-test-1b93c",
-      storageBucket: "hori-test-1b93c.firebasestorage.app",
-      messagingSenderId: "549583061796",
-      appId: "1:549583061796:web:ad58b8bf80c2b6b71c29b1"
-    };
+    const config={ apiKey: "AIzaSyCZMhdUI0HeIoj5masuRh00pzP3SMbF6Yc", authDomain: "hori-test-1b93c.firebaseapp.com", projectId: "hori-test-1b93c", storageBucket: "hori-test-1b93c.firebasestorage.app", messagingSenderId: "549583061796", appId: "1:549583061796:web:ad58b8bf80c2b6b71c29b1" };
+    const app=initializeApp(config), auth=getAuth(app), db=getFirestore(app), provider=new GoogleAuthProvider();
 
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
-    const db = getFirestore(app);
-    const provider = new GoogleAuthProvider();
+    const dom={ login:document.getElementById('btnLogin'), logout:document.getElementById('btnLogout'), member:document.getElementById('member-area'), user:document.getElementById('userDisplay'), admin:document.getElementById('btnAdminLink'), edit:document.getElementById('btnEditProfile'), modal:document.getElementById('profile-modal'), save:document.getElementById('btn-save-profile'), cloud:document.getElementById('btnSaveCloud'), name:document.getElementById('pf-name'), age:document.getElementById('pf-age'), title:document.querySelector('#profile-modal h3') };
 
-    const btnLogin = document.getElementById('btnLogin');
-    const btnLogout = document.getElementById('btnLogout');
-    const btnSaveCloud = document.getElementById('btnSaveCloud');
-    const memberArea = document.getElementById('member-area');
-    const userDisplay = document.getElementById('userDisplay');
-    const btnAdminLink = document.getElementById('btnAdminLink');
-    const btnEditProfile = document.getElementById('btnEditProfile');
-    const profileModal = document.getElementById('profile-modal');
-    const pfNameInput = document.getElementById('pf-name');
-    const pfAgeInput = document.getElementById('pf-age');
-    const btnSaveProfile = document.getElementById('btn-save-profile');
-    const modalTitle = profileModal.querySelector('h3');
-    let currentUser = null;
+    if(dom.login) dom.login.addEventListener('click',()=>signInWithPopup(auth,provider).catch(e=>{
+        if(e.code==='auth/popup-blocked')alert("登入視窗被封鎖，請用Chrome/Safari開啟");
+        else alert(e.message)
+    }));
 
-    if(btnLogin) {
-        btnLogin.addEventListener('click', () => {
-          signInWithPopup(auth, provider).catch(error => {
-              console.error(error);
-              if (error.code === 'auth/popup-blocked') {
-                  alert("⚠️ 登入視窗被攔截！\n請使用 Chrome/Safari 等瀏覽器開啟。");
-              } else {
-                  alert("登入失敗：" + error.message);
-              }
-          });
-        });
-    }
-
-    if(btnLogout) btnLogout.addEventListener('click', () => signOut(auth).then(() => { alert("已登出"); location.reload(); }));
-
-    onAuthStateChanged(auth, async (user) => {
-      if (user) {
-        currentUser = user;
-        if(btnLogin) btnLogin.style.display = 'none';
-        if(memberArea) memberArea.style.display = 'flex';
-        if(userDisplay) userDisplay.textContent = user.displayName || user.email;
-
-        try {
-          const docSnap = await getDoc(doc(db, "users", user.uid));
-          if (docSnap.exists()) {
-             if(userDisplay && docSnap.data().name) userDisplay.textContent = docSnap.data().name;
-          } else {
-             if(modalTitle) modalTitle.textContent = "歡迎加入！請完善資料";
-             if(pfNameInput) pfNameInput.value = user.displayName || "";
-             if(profileModal) profileModal.style.display = 'flex';
-          }
-        } catch(e) {}
-        
-        try {
-          const adminSnap = await getDoc(doc(db, "admins", user.email));
-          if (adminSnap.exists() && btnAdminLink) btnAdminLink.style.display = 'inline-block';
-        } catch(e) {}
-      } else {
-        currentUser = null;
-        if(btnLogin) btnLogin.style.display = 'block';
-        if(memberArea) memberArea.style.display = 'none';
-      }
-    });
-
-    if(btnEditProfile) btnEditProfile.addEventListener('click', async () => {
-        const s = await getDoc(doc(db, "users", currentUser.uid));
-        if(s.exists()){ 
-            const d = s.data(); 
-            if(modalTitle) modalTitle.textContent = "修改個人資料";
-            if(pfNameInput) pfNameInput.value = d.name || "";
-            if(pfAgeInput) pfAgeInput.value = d.age || "";
-            if(profileModal) profileModal.style.display = 'flex';
-        }
-    });
-
-    if(btnSaveProfile) btnSaveProfile.addEventListener('click', async () => {
-      const name = pfNameInput.value.trim();
-      const age = pfAgeInput.value.trim();
-      if(!name || !age) return alert("請填寫完整");
-      
-      const userRef = doc(db, "users", currentUser.uid);
-      try {
-          const docSnap = await getDoc(userRef);
-          // 修正註冊時間邏輯
-          let data = { name, age, email: currentUser.email, lastUpdated: serverTimestamp() };
-          if (!docSnap.exists() || !docSnap.data().createdAt) {
-             data.createdAt = serverTimestamp(); 
-          }
-          await setDoc(userRef, data, { merge: true });
-          alert("儲存成功");
-          profileModal.style.display = 'none';
-          if(userDisplay) userDisplay.textContent = name;
-      } catch (e) { alert("儲存失敗：" + e.message); }
-    });
-
-    if(btnSaveCloud) btnSaveCloud.addEventListener('click', async () => {
-      if (!currentUser) return alert("請先登入");
-      try {
-          const cms = document.querySelector('input[name="cms"]:checked');
-          const total = document.getElementById('sumGrand');
-          const self = document.getElementById('sumSelfpay');
-          const gov = document.getElementById('sumGovSubsidy');
-
-          await addDoc(collection(db, "care_records"), {
-              uid: currentUser.uid, memberName: userDisplay.textContent, email: currentUser.email,
-              cmsLevel: cms ? cms.value : "0", 
-              grandTotal: total ? total.textContent : "0",
-              selfPay: self ? self.textContent : "0",
-              govSubsidy: gov ? gov.textContent : "0",
-              createdAt: serverTimestamp(), note: "額度計算機儲存"
-          });
-          alert("✅ 備份成功！");
-      } catch (e) { alert("❌ 儲存失敗"); }
-    });
+    if(dom.logout) dom.logout.addEventListener('click',()=>signOut(auth).then(()=>location.reload()));
     
-    if(profileModal) profileModal.addEventListener('click', (e) => {
-        if (e.target === profileModal && currentUser && userDisplay.textContent !== "" && userDisplay.textContent !== currentUser.email) {
-            profileModal.style.display = 'none';
-        }
+    onAuthStateChanged(auth, async u=>{
+      if(u){
+        dom.login.style.display='none'; dom.member.style.display='flex'; dom.user.textContent=u.displayName||u.email;
+        try{ 
+            const s=await getDoc(doc(db,"users",u.uid));
+            if(s.exists()){ if(s.data().name) dom.user.textContent=s.data().name; }
+            else{ dom.title.textContent="歡迎"; dom.name.value=u.displayName||""; dom.modal.style.display='flex'; }
+        }catch(e){}
+        try{ const a=await getDoc(doc(db,"admins",u.email)); if(a.exists()) dom.admin.style.display='inline-block'; }catch(e){}
+      }else{ dom.login.style.display='block'; dom.member.style.display='none'; }
     });
+
+    if(dom.edit) dom.edit.addEventListener('click',async()=>{ const s=await getDoc(doc(db,"users",auth.currentUser.uid)); if(s.exists()){ const d=s.data(); dom.title.textContent="修改"; dom.name.value=d.name; dom.age.value=d.age; dom.modal.style.display='flex'; } });
+    if(dom.save) dom.save.addEventListener('click',async()=>{
+        const n=dom.name.value, a=dom.age.value; if(!n||!a) return alert("請填寫");
+        const ref=doc(db,"users",auth.currentUser.uid); const s=await getDoc(ref);
+        let d={name:n,age:a,email:auth.currentUser.email,lastUpdated:serverTimestamp()};
+        if(!s.exists()||!s.data().createdAt) d.createdAt=serverTimestamp();
+        await setDoc(ref,d,{merge:true}); alert("已儲存"); dom.modal.style.display='none'; dom.user.textContent=n;
+    });
+
+    if(dom.cloud) dom.cloud.addEventListener('click', async()=>{
+       if(!auth.currentUser) return alert("請先登入");
+       const cms=document.querySelector('input[name="cms"]:checked'), total=document.getElementById('sumGrand');
+       try{
+           await addDoc(collection(db,"care_records"),{
+             uid:auth.currentUser.uid, memberName:dom.user.textContent, email:auth.currentUser.email,
+             cmsLevel:cms?cms.value:"0", grandTotal:total?total.textContent:"0", createdAt:serverTimestamp(), note:"額度計算"
+           });
+           alert("備份成功");
+       }catch(e){ alert("失敗:"+e.message); }
+    });
+
+    if(dom.modal) dom.modal.addEventListener('click',e=>{if(e.target===dom.modal&&auth.currentUser&&dom.user.textContent!="")dom.modal.style.display='none'});
   </script>
 </body>
 </html>
