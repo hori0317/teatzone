@@ -837,8 +837,8 @@ body[data-page="payroll"] table.triple-cols thead th:first-child{
 
 /* 1. 單價欄位 (第2欄) 向左移動 */
 /* 原理：原本靠右對齊，我們加大「右邊內距 (padding-right)」把字擠向左邊 */
-body[data-page="payroll"] .tbl th:nth-child(5),
-body[data-page="payroll"] .tbl td:nth-child(5) {
+body[data-page="payroll"] .tbl th:nth-child(20),
+body[data-page="payroll"] .tbl td:nth-child(20) {
     padding-right: 60px !important; /* 數字越大，單價就會越往左移 */
 }
 
