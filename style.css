@@ -29,7 +29,6 @@
 /* =====================
 全域
 ===================== */
-
 * {
 box-sizing: border-box;
 }
@@ -712,7 +711,6 @@ position: static;
 /* =====================
 禁止選取與拖曳
 ===================== */
-
 * {
 -webkit-user-select: none;
 -moz-user-select: none;
@@ -874,139 +872,26 @@ font-size: 13px;
 }
 
 /* ============================================================
-[Payroll 專用調整] 這裡的 CSS 確保 Payroll 的單價往左、支數置中
+[Payroll 專用調整] 這裡的 CSS 確保 Payroll 的單價靠右、支數置中
 這些屬性與上面的通用樣式分開，不會相互干擾
 ============================================================ */
-
-/* ★ 修正：桌機版才套用欄位 padding，避免手機版卡片式跑版；且只鎖 .tbl，避免影響 PDF 統計表格等其他 table ★ */
-@media (min-width: 861px) {
-body[data-page="payroll"] .tbl:not(.insurance-table) th:nth-child(2),
-body[data-page="payroll"] .tbl:not(.insurance-table) td:nth-child(2) {
+body[data-page="payroll"] table th:nth-child(2),
+body[data-page="payroll"] table td:nth-child(2) {
 padding-right: 60px !important; /* 單價靠右，增加右邊距擠向左 */
 text-align: right;
 }
-body[data-page="payroll"] .tbl:not(.insurance-table) th:nth-child(3),
-body[data-page="payroll"] .tbl:not(.insurance-table) td:nth-child(3) {
+body[data-page="payroll"] table th:nth-child(3),
+body[data-page="payroll"] table td:nth-child(3) {
 text-align: center !important; /* 支數置中 */
 }
-body[data-page="payroll"] .tbl:not(.insurance-table) th:nth-child(4),
-body[data-page="payroll"] .tbl:not(.insurance-table) td:nth-child(4) {
+body[data-page="payroll"] table th:nth-child(4),
+body[data-page="payroll"] table td:nth-child(4) {
 padding-right: 20px !important;
 text-align: right;
 }
-/* Payroll 表格內的 input 設為 90px（僅 AA/BA/GA/SC 表格） */
-body[data-page="payroll"] .tbl:not(.insurance-table) input[type="number"] {
+/* Payroll 表格內的 input 設為 90px */
+body[data-page="payroll"] input[type="number"] {
 width: 90px !important;
-}
-}
-
-/* =========================================================
-[Payroll] insurance-table：修正投保級距被擋住 + 欄位對齊
-（不改你 HTML，只用 CSS 把顯示問題修好）
-========================================================= */
-body[data-page="payroll"] .insurance-table th,
-body[data-page="payroll"] .insurance-table td {
-text-align: center;
-vertical-align: middle;
-}
-
-/* right class 在 insurance-table 內不該把整格推歪：強制置中格子 */
-body[data-page="payroll"] .insurance-table td.right {
-text-align: center !important;
-}
-
-/* 投保級距下拉：避免數字被截斷（補足右側箭頭空間） */
-body[data-page="payroll"] .insurance-table select#insGrade {
-min-width: 140px;
-padding-right: 30px;
-font-variant-numeric: tabular-nums;
-}
-
-/* 勞保/健保輸入框：跟欄位標題對齊（格子置中、數字仍靠右） */
-body[data-page="payroll"] .insurance-table input#insLabor,
-body[data-page="payroll"] .insurance-table input#insHealth {
-max-width: 140px;
-margin: 0 auto;
-display: block;
-text-align: right;
-}
-
-/* 合計顯示置中，避免看起來被擠偏 */
-body[data-page="payroll"] .insurance-table #insSum {
-text-align: center !important;
-}
-
-/* =========================================================
-[Payroll] 手機版：只把上方 row-mid 的欄位做「上字下欄」置中
-但表格卡片（AA/BA/GA/SC）維持「左標籤右數字 / 右輸入」
-========================================================= */
-@media (max-width: 860px) {
-
-/* ① 拆薪比例 / 月份 等 row-mid：改成「上文字、下欄位」並置中 */
-body[data-page="payroll"] .row-mid {
-flex-direction: column;
-align-items: center;
-justify-content: center;
-text-align: center;
-gap: 6px;
-}
-
-body[data-page="payroll"] .row-mid > label {
-min-width: 0 !important;
-text-align: center;
-margin-bottom: 2px;
-}
-
-/* row-mid 內所有輸入／下拉：置中呈現，數字仍靠右方便輸入 */
-body[data-page="payroll"] .row-mid input[type="number"],
-body[data-page="payroll"] .row-mid input[type="text"],
-body[data-page="payroll"] .row-mid input[type="month"],
-body[data-page="payroll"] .row-mid select {
-width: 100%;
-max-width: 240px;
-margin: 0 auto;
-text-align: right;
-}
-
-/* ★ 重點修正：手機版「本月支數」不要置中；要跟其他列一致：左標籤、右輸入框 */
-body[data-page="payroll"] .tbl td[data-label="本月支數"] {
-flex-direction: row !important;
-align-items: center !important;
-justify-content: space-between !important;
-text-align: right !important;
-gap: 12px;
-}
-
-/* 「本月支數」標籤維持靠左 */
-body[data-page="payroll"] .tbl td[data-label="本月支數"]::before {
-content: attr(data-label);
-font-weight: 700;
-color: #5b5534;
-flex: 1;
-text-align: left;
-margin-bottom: 0 !important;
-}
-
-/* 「本月支數」輸入框靠右（你要的：填空欄位靠右側） */
-body[data-page="payroll"] .tbl td[data-label="本月支數"] input[type="number"] {
-margin-left: auto !important;
-margin-right: 0 !important;
-display: block;
-text-align: right;
-}
-
-/* ★ 投保級距表格在手機窄螢幕避免硬擠：改成可滑動，避免數字被擋住 */
-body[data-page="payroll"] .insurance-table {
-display: block;
-overflow-x: auto;
--webkit-overflow-scrolling: touch;
-min-width: 560px;
-}
-
-body[data-page="payroll"] .insurance-table th,
-body[data-page="payroll"] .insurance-table td {
-white-space: nowrap;
-}
 }
 
 /* =========================================
