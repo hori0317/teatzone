@@ -90,6 +90,12 @@
     .insurance-table { table-layout: auto !important; width: 100%; }
     .insurance-table input { width: 100% !important; min-width: 60px; }
     .sub-text { font-size: 11px; display: block; color: #777; line-height: 1.2; }
+
+    /* ★補強：讓「勞保/健保」表頭置中，視覺上與下方 input 更一致 ★ */
+    .insurance-table thead th:nth-child(2),
+    .insurance-table thead th:nth-child(3) {
+      text-align: center !important;
+    }
     
     /* ★ 修正：將自動改為橫的，勾勾靠左，確保在膠囊內 ★ */
     .auto-chip {
@@ -540,7 +546,11 @@
         { grade:92100, labor:1145, health:1428 }, { grade:96600, labor:1145, health:1498 },
         { grade:101100, labor:1145, health:1568 }, { grade:105600, labor:1145, health:1638 },
         { grade:110100, labor:1145, health:1708 }, { grade:115500, labor:1145, health:1791 },
-        { grade:120900, labor:1145,, health:1875 }, { grade:126300, labor:1145, health:1959 },
+
+        /* ✅ 修正：原本這行多了一個逗號 (labor:1145,, health:1875) 會導致整段 JS 失效 */
+        { grade:120900, labor:1145, health:1875 },
+
+        { grade:126300, labor:1145, health:1959 },
         { grade:131700, labor:1145, health:2043 }, { grade:137100, labor:1145, health:2126 },
         { grade:142500, labor:1145, health:2210 }, { grade:147900, labor:1145, health:2294 },
         { grade:150000, labor:1145, health:2327 }
@@ -1031,10 +1041,6 @@
     import { getFirestore, doc, getDoc, setDoc, serverTimestamp } 
       from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-    /* ⚠️ 安全提醒：
-       你之前 GitHub 警報顯示 apiKey 外流，建議在 Firebase Console 旋轉/更換 key。
-       這裡我先用占位符，避免你再次把真正 key 直接 commit 到公開 repo。
-       請把 YOUR_FIREBASE_API_KEY 換成「你新生成且已限制網域/服務」的 key。 */
     const config={
       apiKey: "YOUR_FIREBASE_API_KEY",
       authDomain: "hori-test-1b93c.firebaseapp.com",
