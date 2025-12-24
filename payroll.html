@@ -81,14 +81,15 @@
     }
 
     .tbl tbody tr:nth-child(even){ background:#fffef9; }
-    /* ★ 修正：電腦版填空欄位置中對齊 ★ */
-    .tbl input[type="number"]{ width:80px; height:34px; text-align:center; border:1px solid #ddd; border-radius:4px; margin: 0 auto; display:block;}
+    /* ★ 修正需求 1：所有填空欄位置中對齊 ★ */
+    .tbl input[type="number"]{ width:80px; height:34px; text-align:center !important; border:1px solid #ddd; border-radius:4px; margin: 0 auto; display:block;}
     .tbl .right{ text-align:right; }
     .tbl .mono{ font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; }
 
     /* ★ 修正投保級距表格與「自動」膠囊樣式 ★ */
     .insurance-table { table-layout: auto !important; width: 100%; }
-    .insurance-table input { width: 100% !important; min-width: 60px; text-align: right; }
+    /* ★ 修正需求 1：勞保下方的輸入欄位置中對齊 ★ */
+    .insurance-table input { width: 100% !important; min-width: 60px; text-align: center !important; }
     .sub-text { font-size: 11px; display: block; color: #777; line-height: 1.2; }
     
     /* ★ 修正：將自動改為橫的，勾勾靠左，確保在膠囊內 ★ */
@@ -121,16 +122,16 @@
       .tbl tbody tr{display:block; border:1px solid var(--line); border-radius:12px; padding:10px 12px; margin-bottom:12px; background:#fff; box-shadow:0 1px 2px rgba(0,0,0,.05);}
       .tbl tbody tr:nth-child(even){background:#fff;}
       
-      /* ★ 修正需求：手機版單價與所有數值文字強迫靠右對齊 ★ */
+      /* ★ 修正需求 2：手機版單價與所有數值文字強迫靠右對齊 ★ */
       .tbl td{display:flex; gap:12px; justify-content:space-between; align-items:center; padding:6px 0; line-height:1.45; white-space:normal; border-top:none; text-align: right !important;}
       
       .tbl td[data-label]::before{ content:attr(data-label); font-weight:700; color:#5b5534; flex:1; text-align:left; }
       .tbl td[data-label="代碼＋名稱"]::before, .tbl td[data-label="代碼"]::before{margin-bottom:2px;}
       
-      .tbl input[type="number"], .tbl select{width:100%; max-width:none; height:38px; text-align: right;}
+      .tbl input[type="number"], .tbl select{width:100%; max-width:none; height:38px; text-align: center !important;}
       
-      /* 手機版支數輸入框靠右 */
-      .tbl td[data-label="本月支數"] input { width:80px; margin-left: auto; display: block; text-align: right; }
+      /* 手機版支數輸入框靠右但文字置中 */
+      .tbl td[data-label="本月支數"] input { width:80px; margin-left: auto; display: block; text-align: center !important; }
       
       .tbl tfoot th{flex:1 1 auto; background:none; border:none; padding:0; text-align:right;}
       
@@ -141,7 +142,6 @@
   </style>
 </head>
 <body data-page="payroll">
-  
   <div class="watermark" aria-hidden="true">
     <span class="wm-item" style="top:5%; left:5%;  --dur:9s;">@hori版權所有</span>
     <span class="wm-item" style="top:50%; left:50%; --dur:10s;">@hori版權所有</span>
@@ -384,8 +384,8 @@
             <tbody>
                 <tr>
                     <td data-label="投保級距"><select id="insGrade" style="width:100%;"></select></td>
-                    <td class="right" data-label="勞保(員工)"><input id="insLabor" type="number" min="0" step="1" value="0" style="height:34px;width:100%;text-align:right;"></td>
-                    <td class="right" data-label="健保(員工)"><input id="insHealth" type="number" min="0" step="1" value="0" style="height:34px;width:100%;text-align:right;"></td>
+                    <td class="right" data-label="勞保(員工)"><input id="insLabor" type="number" min="0" step="1" value="0" style="height:34px;width:100%;text-align:center !important;"></td>
+                    <td class="right" data-label="健保(員工)"><input id="insHealth" type="number" min="0" step="1" value="0" style="height:34px;width:100%;text-align:center !important;"></td>
                     <td class="right mono" id="insSum" data-label="合計">0</td>
                     <td data-label="設定">
                         <label class="chip auto-chip"><input id="insAuto" type="checkbox" checked> 自動</label>
@@ -492,7 +492,7 @@
         Object.keys(PRICE.AA).forEach(code=>{
           const price = PRICE.AA[code];
           const tr = document.createElement('tr');
-          // 標題欄順序修正：代碼 -> 單價 -> 本月支數 -> 小計
+          // 順序修正：代碼 -> 單價 -> 本月支數 -> 小計
           tr.innerHTML = `<td data-label="代碼">${code}</td><td class="right mono" data-label="單價">${F(price)}</td><td data-label="本月支數"><input type="number" min="0" step="1" value="${N(saved[code]||0)}" data-aa="${code}"></td><td class="right mono" data-label="小計" data-aa-sum="${code}">0</td>`;
           host.appendChild(tr);
         });
@@ -504,7 +504,7 @@
         const k = key.toLowerCase();
         PRICE[key].forEach(item=>{
           const tr = document.createElement('tr');
-          // 標題欄順序修正：代碼 -> 單價 -> 本月支數 -> 小計
+          // 順序修正：代碼 -> 單價 -> 本月支數 -> 小計
           tr.innerHTML = `<td data-label="代碼＋名稱">${item.code}${item.name ? ' ' + item.name : ''}</td><td class="right mono" data-label="單價">${F(item.price)}</td><td data-label="本月支數"><input type="number" min="0" step="1" value="${N(saved[item.code]||0)}" data-${k}="${item.code}"></td><td class="right mono" data-label="小計" data-${k}-sum="${item.code}">0</td>`;
           host.appendChild(tr);
         });
@@ -917,7 +917,7 @@
       });
     })();
   </script>
-
+  
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
     import { getAuth, signInWithPopup, GoogleAuthProvider, signOut, onAuthStateChanged } 
