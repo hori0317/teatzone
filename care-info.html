@@ -3,137 +3,68 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>長照相關資訊｜補助額度速覽＋服務碼別說明</title>
-  <meta name="description" content="長照服務額度試算機，快速查詢CMS等級補助額度、計算自付金額與居服薪資。由 hori 製作。">
+  <title>長照相關資訊｜長照工具</title>
   <link rel="icon" type="image/x-icon" href="YORU.ico" />
   <link rel="stylesheet" href="style.css" />
-  <link rel="stylesheet" href="topbar-fixed.css" />
-  <script src="nav.js" defer></script>
-  <!-- 加版本參數避免快取抓舊檔 -->
-  <script src="script.js?v=20251104-b2" defer></script>
-
+  
   <style>
-    /* ====== 色票 ====== */
-    :root{
-      --bg:#fff6d5;
-      --card:#fffdf5;
-      --line:#e6dca8;
-      --ink:#2f2f20;
-      --muted:#7a7557;
-      --green:#2e7d32;
-      --orange:#f59e0b;
-      --graybtn:#9ca3af;
+    /* 彈窗 */
+    .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(47,47,32,0.6); backdrop-filter: blur(3px); z-index: 2000; display: flex; justify-content: center; align-items: center; padding: 20px; }
+    .modal-content { background: #fffdf5; border: 1px solid #e6dca8; border-radius: 12px; padding: 24px; width: 100%; max-width: 420px; box-shadow: 0 10px 25px rgba(0,0,0,0.15); text-align: center; }
+    .modal-content h3 { color: #2e7d32; margin-top: 0; }
+    .modal-content input { width: 100%; padding: 10px; border: 1px solid #e6dca8; background: #fff; border-radius: 8px; font-size: 16px; margin-top: 4px; box-sizing: border-box; }
+    .modal-actions { margin-top: 20px; }
 
-      --wm-text:"@hori版權所有";
-      --wm-size:36px;
-      --wm-angle:-25deg;
-      --wm-alpha:.05;
-      --wm-shift:120px;
-    }
-
-    /* ====== 浮水印 ====== */
-    .watermark{ position:fixed; inset:0; pointer-events:none; z-index:9999; overflow:hidden; }
-    .wm-item{
-      position:absolute; font-weight:700; font-size:var(--wm-size);
-      color:rgba(0,0,0,var(--wm-alpha)); transform:rotate(var(--wm-angle));
-      white-space:nowrap; user-select:none; will-change:transform;
-      animation:wm-sway var(--dur,12s) ease-in-out infinite alternate;
-    }
-    @keyframes wm-sway{ 0%{transform:translateX(0) rotate(var(--wm-angle));}
-      100%{transform:translateX(var(--wm-shift)) rotate(var(--wm-angle));} }
-    @media print{ .watermark{ opacity:.08 } }
-
-    /* ====== 本頁元件 ====== */
-    .info-table{
-      width:100%; border-collapse:separate; border-spacing:0;
-      background:var(--card); border:1px solid var(--line);
-      border-radius:12px; overflow:hidden; text-align:center; margin-top:10px;
-    }
+    /* 本頁元件 */
+    .info-table{ width:100%; border-collapse:separate; border-spacing:0; background:var(--card); border:1px solid var(--line); border-radius:12px; overflow:hidden; text-align:center; margin-top:10px; }
     .info-table th{ background:#f6f1d9; color:#5b5534; padding:10px; font-weight:800; border-bottom:1px solid var(--line); }
     .info-table td{ padding:10px; border-top:1px solid var(--line); font-weight:600; }
     .info-table tbody tr:nth-child(even){ background:#fffef9; }
-
     .quick-links{ display:flex; gap:10px; flex-wrap:wrap; margin:14px 0 8px; }
-    .quick-links a{
-      display:inline-block; padding:8px 14px; border-radius:999px;
-      background:#fff; border:1px solid var(--line); font-weight:700; color:#333; text-decoration:none;
-    }
-    .quick-links a:hover{ filter:brightness(1.02); transform:translateY(-1px); }
-
+    .quick-links a{ display:inline-block; padding:8px 14px; border-radius:999px; background:#fff; border:1px solid var(--line); font-weight:700; color:#333; text-decoration:none; }
     .accordion{ border:1px solid var(--line); border-radius:12px; overflow:hidden; background:#fff; }
     .acc-item + .acc-item{ border-top:1px solid var(--line); }
-    .acc-head{
-      width:100%; text-align:left; background:#faf6e4; border:0; padding:12px 16px;
-      display:grid; grid-template-columns:90px 1fr 120px; gap:10px; align-items:center;
-      cursor:pointer; font-weight:800;
-    }
-    .acc-head .code{ font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,"Liberation Mono",monospace; }
-    .acc-head .name{ color:#333; }
-    .acc-head .hint{ color:var(--muted); font-weight:700; text-align:right; }
+    .acc-head{ width:100%; text-align:left; background:#faf6e4; border:0; padding:12px 16px; display:grid; grid-template-columns:90px 1fr 120px; gap:10px; align-items:center; cursor:pointer; font-weight:800; }
     .acc-body{ display:none; padding:14px 16px; background:#fffef9; line-height:1.7; }
     .acc-body.show{ display:block; }
-    .acc-body p{ margin:8px 0; }
-    .acc-body .subttl{ font-weight:800; color:#5b5534; margin-top:10px; }
-    .acc-body ul{ margin:6px 0 10px 1.2em; padding:0; }
-    .acc-body li{ margin:4px 0; }
-    .acc-note{ color:var(--muted); font-size:13px; margin-top:8px; }
-
-    @media (max-width:700px){
-      .acc-head{ grid-template-columns:70px 1fr 90px; padding:10px 12px; }
-    }
   </style>
+
+  <script src="nav.js" defer></script>
+  <script src="script.js" defer></script>
 </head>
 
 <body data-page="care-info">
-  <!-- 浮水印 -->
-  <div class="watermark" aria-hidden="true">
-    <span class="wm-item" style="top:5%; left:5%;  --dur:9s;">@hori版權所有</span>
-    <span class="wm-item" style="top:5%; left:35%; --dur:11s;">@hori版權所有</span>
-    <span class="wm-item" style="top:5%; left:65%; --dur:10s;">@hori版權所有</span>
-    <span class="wm-item" style="top:25%; left:10%; --dur:13s;">@hori版權所有</span>
-    <span class="wm-item" style="top:25%; left:40%; --dur:12s;">@hori版權所有</span>
-    <span class="wm-item" style="top:25%; left:70%; --dur:14s;">@hori版權所有</span>
-    <span class="wm-item" style="top:50%; left:5%;  --dur:10s;">@hori版權所有</span>
-    <span class="wm-item" style="top:50%; left:35%; --dur:11s;">@hori版權所有</span>
-    <span class="wm-item" style="top:50%; left:65%; --dur:9s;">@hori版權所有</span>
-    <span class="wm-item" style="top:75%; left:10%; --dur:13s;">@hori版權所有</span>
-    <span class="wm-item" style="top:75%; left:40%; --dur:12s;">@hori版權所有</span>
-    <span class="wm-item" style="top:75%; left:70%; --dur:10s;">@hori版權所有</span>
-    <span class="wm-item" style="top:90%; left:15%; --dur:11s;">@hori版權所有</span>
-    <span class="wm-item" style="top:90%; left:45%; --dur:10s;">@hori版權所有</span>
-    <span class="wm-item" style="top:90%; left:75%; --dur:12s;">@hori版權所有</span>
-  </div>
-
-  <!-- 統一版型：頂部導覽列（本頁不放功能鍵，用隱形占位維持三欄對齊） -->
   <header class="topbar">
     <div class="brand">
-      <a href="index.html" class="logo-link" aria-label="回首頁">
-        <img src="org-logo.png" alt="logo" onerror="this.style.opacity=0.2" />
-      </a>
+      <a href="index.html" class="logo-link"><img src="org-logo.png" alt="logo" onerror="this.style.opacity=0.2" /></a>
       <span class="site-title" id="siteTitle" data-sync-title>長照相關資訊</span>
     </div>
-
-<nav class="nav-links" aria-label="主選單">
-  <a href="calculator.html">額度計算機</a> <!-- ⚠️ 修正這裡 -->
-  <a href="payroll.html">薪資計算機</a>
-  <a href="video.html">影音專區</a>
-  <a href="care-info.html">長照相關資訊</a>
-  <a href="news.html">最新公告</a>
-  <a href="contact.html">聯繫方式</a>
-  <a href="about.html">關於我們</a>
-</nav>
-
-    <div class="actions actions-ghost" aria-hidden="true"></div>
+    
+    <nav class="nav-links" aria-label="主選單">
+      <a href="calculator.html">額度計算機</a>
+      <a href="payroll.html">薪資計算機</a>
+      <a href="video.html">影音專區</a>
+      <a href="care-info.html">長照相關資訊</a>
+      <a href="news.html">最新公告</a>
+      <a href="contact.html">聯繫方式</a>
+      <a href="about.html">關於我們</a>
+    </nav>
+    
+    <div class="actions" style="align-items: center; gap: 8px;">
+        <button class="btn pill" style="background:#4285F4; color:white;" id="btnLogin" type="button">Google 登入</button>
+        <div id="member-area" style="display:none; align-items: center; gap:5px;">
+            <span id="userDisplay" style="font-size: 13px; font-weight: bold; color: #333; margin-right: 4px;"></span>
+            <a href="admin.html" id="btnAdminLink" class="btn pill" style="background:#673AB7; color:white; font-size:12px; padding:4px 10px; text-decoration:none; display:none;">管理後台</a>
+            <button class="btn pill" style="background:#777; color:white; font-size:12px; padding:4px 10px;" id="btnEditProfile" type="button">修改資料</button>
+            <button class="btn pill" style="background:#EA4335; color:white;" id="btnLogout" type="button">登出</button>
+        </div>
+    </div>
   </header>
-
   <div class="divider"></div>
 
   <main class="container">
-    <!-- 頁首區 -->
     <section class="card" style="margin-bottom:16px;">
       <h1 class="card-title" style="font-size:22px;">長照相關資訊</h1>
-      <p class="hint">彙整法規重點、補助額度、服務碼別說明與下載連結。</p>
-
       <div class="quick-links">
         <a href="#quota-ba">補助額度速覽</a>
         <a href="#svcdesc">服務碼別說明</a>
@@ -146,17 +77,8 @@
     <!-- BA 額度 -->
     <section id="quota-ba" class="card">
       <h2 class="card-title">補助額度速覽（BA 碼）</h2>
-      <p class="hint">依 CMS 等級之每月給付額（政府補助比例：一般戶 84%、中低收 95%、低收 100%）。</p>
       <table class="info-table" id="baQuotaTable">
-        <thead>
-          <tr>
-            <th>CMS 等級</th>
-            <th>一般戶(84%)</th>
-            <th>中低收(95%)</th>
-            <th>低收(100%)</th>
-            <th>基礎額度</th>
-          </tr>
-        </thead>
+        <thead><tr><th>CMS 等級</th><th>一般戶(84%)</th><th>中低收(95%)</th><th>低收(100%)</th><th>基礎額度</th></tr></thead>
         <tbody></tbody>
       </table>
     </section>
@@ -164,14 +86,8 @@
     <!-- GA 額度 -->
     <section class="card">
       <h2 class="card-title">補助額度速覽（GA 碼｜喘息服務）</h2>
-      <p class="hint">依 CMS 等級之每月最高補助額度。</p>
       <table class="info-table" id="gaQuotaTable">
-        <thead>
-          <tr>
-            <th>CMS 等級</th>
-            <th>GA 額度</th>
-          </tr>
-        </thead>
+        <thead><tr><th>CMS 等級</th><th>GA 額度</th></tr></thead>
         <tbody></tbody>
       </table>
     </section>
@@ -179,51 +95,46 @@
     <!-- SC 額度 -->
     <section class="card">
       <h2 class="card-title">補助額度速覽（SC 碼｜短期替代照顧）</h2>
-      <p class="hint">依 CMS 等級之每月最高補助額度。</p>
       <table class="info-table" id="scQuotaTable">
-        <thead>
-          <tr>
-            <th>CMS 等級</th>
-            <th>SC 額度</th>
-          </tr>
-        </thead>
+        <thead><tr><th>CMS 等級</th><th>SC 額度</th></tr></thead>
         <tbody></tbody>
       </table>
     </section>
 
-    <!-- 服務碼別說明（BA） -->
+    <!-- 服務碼別 -->
     <section id="svcdesc" class="card">
       <h2 class="card-title">服務碼別說明（BA 碼）</h2>
-      <p class="hint">以下為 BA01～BA24 之服務說明（依你提供的文件內容整理）。點標題可展開／收起。</p>
-
       <div class="accordion" id="svcAcc"></div>
-      <div class="acc-note">※ 以上文字由 <code>SERVICE_DESC_BA</code> 物件動態渲染。</div>
     </section>
 
     <!-- 其它區塊 -->
-    <section id="laws" class="card">
-      <h2 class="card-title">法規與作業要點</h2>
-      <p class="hint">（放各部會連結、作業要點重點條列…）</p>
-    </section>
-
-    <section id="forms" class="card">
-      <h2 class="card-title">表單與下載</h2>
-      <p class="hint">（放申請表、同意書、評估表等檔案下載連結）</p>
-    </section>
-
-    <section id="faq" class="card">
-      <h2 class="card-title">常見問題</h2>
-      <p class="hint">（整理家屬與居服常問 Q&A）</p>
-    </section>
+    <section id="laws" class="card"><h2 class="card-title">法規與作業要點</h2></section>
+    <section id="forms" class="card"><h2 class="card-title">表單與下載</h2></section>
+    <section id="faq" class="card"><h2 class="card-title">常見問題</h2></section>
   </main>
 
   <footer id="bottomDock" class="footerbar">
-    <div class="foot">
-      <span class="ok">本頁為補助速覽與服務碼別說明，實際申報依中央最新規範與地方審核為準。</span>
-    </div>
+    <div class="foot"><span class="ok">© 長照工具平台</span></div>
   </footer>
 
-  <!-- 服務碼別說明資料 -->
+  <div id="profile-modal" class="modal-overlay" style="display:none;">
+    <div class="modal-content">
+      <h3>歡迎加入！請完善資料</h3>
+      <p>填寫您的基本資訊。</p>
+      <div style="text-align:left; margin-bottom:12px;">
+        <label style="font-weight:700; color:var(--ink); font-size:15px;">姓名 / 稱呼</label>
+        <input type="text" id="pf-name" placeholder="例如：王小明">
+      </div>
+      <div style="text-align:left; margin-bottom:12px;">
+        <label style="font-weight:700; color:var(--ink); font-size:15px;">使用者年齡</label>
+        <input type="number" id="pf-age" placeholder="例如：65">
+      </div>
+      <div class="modal-actions">
+        <button id="btn-save-profile" class="btn pill btn-green" style="width:100%; font-size:16px; padding:10px;">儲存並開始使用</button>
+      </div>
+    </div>
+  </div>
+
   <script>
     const SERVICE_DESC_BA = {
       BA01:{name:"基本身體清潔",html:`<p class="subttl">內容</p><ul><li>梳頭修面、穿脫衣服、床上擦澡、床上洗頭、排泄物清理（含會陰、尖翼尿片／倒尿袋或相關協助）。</li><li>床上洗頭與排泄物清理，個案如無需求得不執行。</li></ul><p class="subttl">使用原則</p><ul><li>原則一日一組合；必要時得早晚各一組合。</li><li>與 BA07、BA23 不得同一時段申報。</li><li>得依臨時性需求先提供，並於提供後立即通報社區整合型服務中心，且限當次使用。</li></ul>`},
@@ -253,10 +164,7 @@
       BA23:{name:"協助洗頭",html:`<p class="subttl">內容</p><ul><li>依長照對象需求完成洗頭流程：洗髮、沖洗、擦乾、梳理等（含會陰部清潔除外）。</li></ul><p class="subttl">使用規定</p><ul><li>於床上或浴室（或類似之場所）單獨提供之洗頭服務；同一時段<b>不得併同申報 BA01 或 BA07</b>。</li><li>持續提供衛教與照顧指導。</li><li>得依第二十一條臨時性規定先提供服務，並於提供後立即通知社區整合型服務中心；限當次使用。</li></ul>`},
       BA24:{name:"協助排泄",html:`<p class="subttl">內容</p><ul><li>協助移位或引導至廁所，支持與協助一般大小便。</li><li>尿器/便盆之更換與清理、會陰沖洗、臥床更換尿片。</li><li>尿袋更換與處理、排泄物清理與環境整復。</li><li>個案如無需求，得不執行。</li></ul><p class="subttl">使用規定</p><ul><li>如於執行 <b>BA01</b> 或 <b>BA07</b> 過程中同時執行者，不得另行申報 BA24。</li><li>得依第二十一條臨時性規定先提供服務，並於提供後立即通知社區整合型服務中心；限當次使用。</li></ul>`}
     };
-  </script>
-
-  <!-- 自動產生 BA / GA / SC 額度表、服務碼別說明 -->
-  <script>
+    
     document.addEventListener('DOMContentLoaded', () => {
       const fmt = n => Number(n || 0).toLocaleString('zh-TW');
       const levels = [2,3,4,5,6,7,8];
@@ -266,75 +174,121 @@
         const baTbody = document.querySelector('#baQuotaTable tbody'); baTbody.innerHTML='';
         levels.forEach(cms=>{
           const base = cmsQuota[cms] || 0;
-          const tr = document.createElement('tr');
-          tr.innerHTML = `
-            <td>CMS${cms}</td>
-            <td>${fmt(Math.round(base*0.84))}</td>
-            <td>${fmt(Math.round(base*0.95))}</td>
-            <td>${fmt(base)}</td>
-            <td>${fmt(base)}</td>`;
-          baTbody.appendChild(tr);
+          baTbody.innerHTML += `<tr><td>CMS${cms}</td><td>${fmt(Math.round(base*0.84))}</td><td>${fmt(Math.round(base*0.95))}</td><td>${fmt(base)}</td><td>${fmt(base)}</td></tr>`;
         });
-
         const gaTbody = document.querySelector('#gaQuotaTable tbody'); gaTbody.innerHTML='';
-        levels.forEach(cms=>{
-          const val = GA_CAP[cms] || 0;
-          gaTbody.insertAdjacentHTML('beforeend', `<tr><td>CMS${cms}</td><td>${fmt(val)}</td></tr>`);
-        });
-
+        levels.forEach(cms=>{ gaTbody.innerHTML += `<tr><td>CMS${cms}</td><td>${fmt(GA_CAP[cms]||0)}</td></tr>`; });
         const scTbody = document.querySelector('#scQuotaTable tbody'); scTbody.innerHTML='';
-        levels.forEach(cms=>{
-          const val = SC_CAP[cms] || 0;
-          scTbody.insertAdjacentHTML('beforeend', `<tr><td>CMS${cms}</td><td>${fmt(val)}</td></tr>`);
-        });
+        levels.forEach(cms=>{ scTbody.innerHTML += `<tr><td>CMS${cms}</td><td>${fmt(SC_CAP[cms]||0)}</td></tr>`; });
       }
 
       function renderServiceDesc(){
         const host = document.getElementById('svcAcc'); host.innerHTML='';
         Object.keys(SERVICE_DESC_BA).forEach(code=>{
           const item = SERVICE_DESC_BA[code] || {};
-          const el = document.createElement('div');
-          el.className = 'acc-item';
-          el.innerHTML = `
-            <button class="acc-head" aria-expanded="false">
-              <span class="code">${code}</span>
-              <span class="name">${item.name||''}</span>
-              <span class="hint">點我展開</span>
-            </button>
-            <div class="acc-body">${item.html||'<p class="acc-note">（待補文字）</p>'}</div>`;
-          host.appendChild(el);
+          host.innerHTML += `<div class="acc-item"><button class="acc-head"><span class="code">${code}</span><span class="name">${item.name}</span></button><div class="acc-body">${item.html}</div></div>`;
         });
         host.querySelectorAll('.acc-head').forEach(btn=>{
-          btn.addEventListener('click', ()=>{
-            const body = btn.nextElementSibling;
-            const open = body.classList.toggle('show');
-            btn.setAttribute('aria-expanded', open?'true':'false');
-            const hint = btn.querySelector('.hint'); if (hint) hint.textContent = open ? '點我收起' : '點我展開';
-          });
+          btn.addEventListener('click', ()=>{ btn.nextElementSibling.classList.toggle('show'); });
         });
       }
 
       let tries=0;
       const timer = setInterval(()=>{
-        if (ok() || tries>=1000){
-          clearInterval(timer);
-          renderQuota();
-          renderServiceDesc();
-        }
+        if (ok() || tries>=1000){ clearInterval(timer); renderQuota(); renderServiceDesc(); }
         tries+=50;
       },50);
     });
   </script>
 
-  <!-- 防拷（可移除） -->
-  <script>
-    document.addEventListener('contextmenu', e => e.preventDefault());
-    document.addEventListener('keydown', e => {
-      if ((e.ctrlKey || e.metaKey) && ['u','s','p'].includes(e.key.toLowerCase())) e.preventDefault();
-      if (e.key === 'F12') e.preventDefault();
+  <!-- Firebase Script -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+    import { getAuth, signInWithPopup, GoogleAuthProvider, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+    import { getFirestore, doc, getDoc, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyCZMhdUI0HeIoj5masuRh00pzP3SMbF6Yc",
+      authDomain: "hori-test-1b93c.firebaseapp.com",
+      projectId: "hori-test-1b93c",
+      storageBucket: "hori-test-1b93c.firebasestorage.app",
+      messagingSenderId: "549583061796",
+      appId: "1:549583061796:web:ad58b8bf80c2b6b71c29b1"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+    const provider = new GoogleAuthProvider();
+
+    const btnLogin = document.getElementById('btnLogin');
+    const btnLogout = document.getElementById('btnLogout');
+    const memberArea = document.getElementById('member-area');
+    const userDisplay = document.getElementById('userDisplay');
+    const btnAdminLink = document.getElementById('btnAdminLink');
+    const btnEditProfile = document.getElementById('btnEditProfile');
+    const profileModal = document.getElementById('profile-modal');
+    const pfNameInput = document.getElementById('pf-name');
+    const pfAgeInput = document.getElementById('pf-age');
+    const btnSaveProfile = document.getElementById('btn-save-profile');
+    const modalTitle = profileModal.querySelector('h3');
+    let currentUser = null;
+
+    if(btnLogin) btnLogin.addEventListener('click', () => signInWithPopup(auth, provider).catch(e => alert(e.message)));
+    if(btnLogout) btnLogout.addEventListener('click', () => signOut(auth).then(() => { alert("已登出"); location.reload(); }));
+
+    onAuthStateChanged(auth, async (user) => {
+      if (user) {
+        currentUser = user;
+        if(btnLogin) btnLogin.style.display = 'none';
+        if(memberArea) memberArea.style.display = 'flex';
+        if(userDisplay) userDisplay.textContent = user.displayName || user.email;
+
+        try {
+          const docSnap = await getDoc(doc(db, "users", user.uid));
+          if (docSnap.exists()) {
+             if(userDisplay && docSnap.data().name) userDisplay.textContent = docSnap.data().name;
+          } else {
+             openProfileModal("歡迎加入！請完善資料", user.displayName || "", "");
+          }
+        } catch(e){}
+
+        try {
+          const adminSnap = await getDoc(doc(db, "admins", user.email));
+          if (adminSnap.exists() && btnAdminLink) btnAdminLink.style.display = 'inline-block';
+        } catch(e){}
+      } else {
+        currentUser = null;
+        if(btnLogin) btnLogin.style.display = 'block';
+        if(memberArea) memberArea.style.display = 'none';
+      }
     });
-    document.addEventListener('selectstart', e => e.preventDefault());
-    document.addEventListener('copy', e => e.preventDefault());
+
+    function openProfileModal(title, dName, dAge) {
+      if(modalTitle) modalTitle.textContent = title;
+      pfNameInput.value = dName;
+      pfAgeInput.value = dAge;
+      profileModal.style.display = 'flex';
+    }
+
+    if(btnEditProfile) btnEditProfile.addEventListener('click', async () => {
+      const s = await getDoc(doc(db, "users", currentUser.uid));
+      if(s.exists()){ const d = s.data(); openProfileModal("修改個人資料", d.name, d.age); }
+    });
+
+    if(btnSaveProfile) btnSaveProfile.addEventListener('click', async () => {
+      const name = pfNameInput.value.trim();
+      const age = pfAgeInput.value.trim();
+      if(!name || !age) return alert("請填寫完整");
+      await setDoc(doc(db, "users", currentUser.uid), { name, age, email: currentUser.email, lastUpdated: serverTimestamp() }, { merge: true });
+      alert("儲存成功");
+      profileModal.style.display = 'none';
+      if(userDisplay) userDisplay.textContent = name;
+    });
+
+    if(profileModal) profileModal.addEventListener('click', (e) => {
+      if (e.target === profileModal && currentUser && userDisplay.textContent !== "") profileModal.style.display = 'none';
+    });
   </script>
 </body>
 </html>
