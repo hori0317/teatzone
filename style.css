@@ -1073,17 +1073,24 @@ border-radius: 12px;
 color: #666;
 font-weight: 700;
 }
-/* ✅ 修正：手機卡片化時，單價欄位不要吃桌機的 padding-right:60px */
+/* ============================================================
+   ✅ Payroll：手機卡片化時，取消第 2 欄(單價)的桌機 padding-right:60px
+   目的：讓「單價」數字貼齊右側框邊（像小計一樣）
+============================================================ */
 @media (max-width: 860px) {
-  body[data-page="payroll"] .tbl:not(.insurance-table) td:nth-child(2) {
+  /* 用同一個 selector 把原本的 padding-right:60px 蓋掉（最穩） */
+  body[data-page="payroll"] table th:nth-child(2),
+  body[data-page="payroll"] table td:nth-child(2){
     padding-right: 0 !important;
-    padding-left: 0 !important;
   }
 
-  /* 保險一層：單價值本體強制靠右 */
-  body[data-page="payroll"] .tbl:not(.insurance-table) td[data-label="單價"] .cell-val {
+  /* 保險：單價欄位數字一定要靠最右 */
+  body[data-page="payroll"] .tbl:not(.insurance-table) td[data-label="單價"]{
+    padding-right: 0 !important;
+  }
+  body[data-page="payroll"] .tbl:not(.insurance-table) td[data-label="單價"] .cell-val{
     margin-left: auto !important;
     text-align: right !important;
-    display: block;   /* 讓它更「貼邊」穩定 */
+    display: block !important;
   }
 }
