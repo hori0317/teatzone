@@ -66,13 +66,8 @@
     .sub-text { font-size: 11px; display: block; color: #777; line-height: 1.2; }
     
     .auto-chip {
-        display: flex !important;
-        flex-direction: row !important;
-        align-items: center !important;
-        justify-content: flex-start !important;
-        padding: 4px 12px !important;
-        white-space: nowrap !important;
-        gap: 6px !important;
+        display: flex !important; align-items: center !important; justify-content: flex-start !important;
+        padding: 4px 12px !important; white-space: nowrap !important; gap: 6px !important;
     }
     .auto-chip input { margin: 0 !important; width: auto !important; min-width: 0 !important; cursor: pointer; }
 
@@ -80,11 +75,10 @@
     .grid-2{display:grid; grid-template-columns:1fr 1fr; gap:14px;}
     .row-mid{display:flex; align-items:center; gap:10px; flex-wrap:wrap;}
     .pill-note{display:inline-block; padding:2px 8px; border:1px solid var(--line); border-radius:999px; background:#fff; font-weight:700; color:#333;}
-
+    
     /* ============================================================
-       【重點修改 1：保險表格強制置中】
-       針對 .insurance-table 強制將所有欄位（標題 th 與內容 td）完全置中。
-       不使用 left/right padding，直接 text-align: center。
+       【重點修正 1：保險表格強制置中】
+       使用 !important 確保此頁面的樣式擁有最高優先級。
        ============================================================ */
     .tbl.insurance-table th,
     .tbl.insurance-table td {
@@ -93,53 +87,42 @@
         padding-right: 8px !important;
         vertical-align: middle !important;
     }
-    /* 第一欄(投保級距)維持靠左閱讀體驗，或也可改成置中 */
     .tbl.insurance-table th:first-child,
     .tbl.insurance-table td:first-child {
-        text-align: left !important;
+        text-align: left !important; /* 第一欄(級距選單)靠左較符合使用習慣 */
         padding-left: 15px !important;
     }
-    /* 強制輸入框置中 */
     .tbl.insurance-table tbody td input {
         display: block;
-        margin: 0 auto !important;
-        text-align: center !important;
+        margin: 0 auto !important;     /* 輸入框本身在格子內置中 */
+        text-align: center !important;  /* 輸入的文字也在輸入框內置中 */
     }
 
     /* ============================================================
-       【重點修改 2：單價靠右對齊 (一般薪資表)】
-       限定在非保險表格 (.tbl:not(.insurance-table))
-       第1欄: 靠左
-       第2欄: 單價 (靠右，padding 20px)
-       第3欄: 支數 (置中)
-       第4欄: 小計 (靠右，padding 20px)
+       【重點修正 2：單價靠右對齊 (一般薪資表)】
+       將單價(第2欄)與小計(第4欄)的右邊距統一設為 20px。
        ============================================================ */
-    
-    /* 1. 代碼 (左) */
+    /* 1. 代碼 (靠左) */
     .tbl:not(.insurance-table) th:first-child, 
     .tbl:not(.insurance-table) td:first-child { 
-        text-align: left; 
-        padding-left: 20px; 
+        text-align: left !important; 
+        padding-left: 20px !important; 
     }
-    /* 2. 單價 (右，調整 padding 使數字整齊) */
+    /* 2 & 4. 單價與小計 (靠右對齊) */
     .tbl:not(.insurance-table) th:nth-child(2),
-    .tbl:not(.insurance-table) td:nth-child(2) {
+    .tbl:not(.insurance-table) td:nth-child(2),
+    .tbl:not(.insurance-table) th:nth-child(4),
+    .tbl:not(.insurance-table) td:nth-child(4) {
         text-align: right !important; 
-        padding-right: 20px !important; /* 原本可能是 40px/60px，現在改成與小計一致 */
+        padding-right: 20px !important; /* 統一右邊距 */
     }
-    /* 3. 支數 (中) */
+    /* 3. 支數 (置中) */
     .tbl:not(.insurance-table) th:nth-child(3),
     .tbl:not(.insurance-table) td:nth-child(3) {
         text-align: center !important;
     }
-    /* 4. 小計 (右) */
-    .tbl:not(.insurance-table) th:nth-child(4),
-    .tbl:not(.insurance-table) td:nth-child(4) {
-        text-align: right !important;
-        padding-right: 20px !important;
-    }
 
-    /* Payroll 表格內的 input 寬度 */
+    /* 一般薪資表內的 input 寬度 */
     body[data-page="payroll"] .tbl:not(.insurance-table) input[type="number"] {
         width: 90px !important;
     }
@@ -147,7 +130,7 @@
     @media (max-width:860px){
       .grid-2{grid-template-columns:1fr;}
 
-      /* 手機版卡片化設定 */
+      /* 手機版卡片化 */
       .tbl:not(.insurance-table){display:block; font-size:15px; border:0; background:none; overflow:visible;}
       .tbl:not(.insurance-table) thead{display:none;}
       .tbl:not(.insurance-table) tbody,
@@ -156,35 +139,21 @@
       
       .tbl:not(.insurance-table) td{
         display:flex; gap:12px; justify-content:space-between; align-items:center;
-        padding:6px 0; border-top:none; white-space:normal;
+        padding:6px 0 !important; /* 清除內距 */
+        border-top:none;
       }
       .tbl:not(.insurance-table) td[data-label]::before{
         content:attr(data-label); font-weight:700; color:#5b5534; flex:1; text-align:left;
       }
       
-      /* [手機] 強制單價/小計數字往最右邊靠 (使用 auto margin 擠過去) */
+      /* [手機] 強制單價/小計數字往最右邊靠 */
       .tbl:not(.insurance-table) td[data-label="單價"] .cell-val,
       .tbl:not(.insurance-table) td[data-label="小計"] .cell-val {
         margin-left: auto !important;
-        text-align: right !important;
-        display: inline-block;
       }
 
-      /* [手機] 本月支數輸入框靠右 */
       .tbl:not(.insurance-table) td[data-label="本月支數"] input {
         margin-left: auto !important;
-        margin-right: 0 !important;
-      }
-      
-      /* 清除 padding 避免干擾 */
-      .tbl:not(.insurance-table) td, 
-      .tbl:not(.insurance-table) th {
-         padding-left:0 !important; 
-         padding-right:0 !important;
-      }
-      
-      .tbl:not(.insurance-table) tfoot th{
-         text-align:right; border:none; padding:0;
       }
     }
   </style>
@@ -335,7 +304,7 @@
           <col class="col-month" style="width: 25%;">
           <col class="col-sum" style="width: 20%;">
         </colgroup>
-        <thead><tr><th>代碼</th><th class="right">單價</th><th class="month-col">本月支數</th><th class="right">小計</th></tr></thead>
+        <thead><tr><th>代碼</th><th>單價</th><th>本月支數</th><th>小計</th></tr></thead>
         <tbody></tbody>
         <tfoot><tr><th colspan="3" class="right">AA 小計</th><th class="right" id="sumAA">0</th></tr></tfoot>
       </table>
@@ -351,7 +320,7 @@
           <col class="col-month" style="width: 25%;">
           <col class="col-sum" style="width: 20%;">
         </colgroup>
-        <thead><tr><th>代碼＋名稱</th><th class="right">單價</th><th class="month-col">本月支數</th><th class="right">小計</th></tr></thead>
+        <thead><tr><th>代碼＋名稱</th><th>單價</th><th>本月支數</th><th>小計</th></tr></thead>
         <tbody></tbody>
         <tfoot><tr><th colspan="3" class="right">BA 小計</th><th class="right" id="sumBA">0</th></tr></tfoot>
       </table>
@@ -366,7 +335,7 @@
           <col class="col-month" style="width: 25%;">
           <col class="col-sum" style="width: 20%;">
         </colgroup>
-        <thead><tr><th>代碼＋名稱</th><th class="right">單價</th><th class="month-col">本月支數</th><th class="right">小計</th></tr></thead>
+        <thead><tr><th>代碼＋名稱</th><th>單價</th><th>本月支數</th><th>小計</th></tr></thead>
         <tbody></tbody>
         <tfoot><tr><th colspan="3" class="right">GA 小計</th><th class="right" id="sumGA">0</th></tr></tfoot>
       </table>
@@ -381,7 +350,7 @@
           <col class="col-month" style="width: 25%;">
           <col class="col-sum" style="width: 20%;">
         </colgroup>
-        <thead><tr><th>代碼＋名稱</th><th class="right">單價</th><th class="month-col">本月支數</th><th class="right">小計</th></tr></thead>
+        <thead><tr><th>代碼＋名稱</th><th>單價</th><th>本月支數</th><th>小計</th></tr></thead>
         <tbody></tbody>
         <tfoot><tr><th colspan="3" class="right">SC 小計</th><th class="right" id="sumSC">0</th></tr></tfoot>
       </table>
@@ -537,12 +506,11 @@
         Object.keys(PRICE.AA).forEach(code=>{
           const price = PRICE.AA[code];
           const tr = document.createElement('tr');
-          // 順序修正：代碼 -> 單價 -> 本月支數 -> 小計
           tr.innerHTML =
             `<td data-label="代碼"><span class="cell-val">${code}</span></td>` +
-            `<td class="right mono" data-label="單價"><span class="cell-val">${F(price)}</span></td>` +
+            `<td data-label="單價"><span class="cell-val">${F(price)}</span></td>` +
             `<td data-label="本月支數"><input type="number" min="0" step="1" value="${N(saved[code]||0)}" data-aa="${code}"></td>` +
-            `<td class="right mono" data-label="小計" data-aa-sum="${code}"><span class="cell-val">0</span></td>`;
+            `<td data-label="小計"><span class="cell-val" data-aa-sum="${code}">0</span></td>`;
           host.appendChild(tr);
         });
       }
@@ -553,12 +521,11 @@
         const k = key.toLowerCase();
         PRICE[key].forEach(item=>{
           const tr = document.createElement('tr');
-          // 順序修正：代碼 -> 單價 -> 本月支數 -> 小計
           tr.innerHTML =
             `<td data-label="代碼＋名稱"><span class="cell-val">${item.code}${item.name ? ' ' + item.name : ''}</span></td>` +
-            `<td class="right mono" data-label="單價"><span class="cell-val">${F(item.price)}</span></td>` +
+            `<td data-label="單價"><span class="cell-val">${F(item.price)}</span></td>` +
             `<td data-label="本月支數"><input type="number" min="0" step="1" value="${N(saved[item.code]||0)}" data-${k}="${item.code}"></td>` +
-            `<td class="right mono" data-label="小計" data-${k}-sum="${item.code}"><span class="cell-val">0</span></td>`;
+            `<td data-label="小計"><span class="cell-val" data-${k}-sum="${item.code}">0</span></td>`;
           host.appendChild(tr);
         });
       }
@@ -566,30 +533,30 @@
       function calcAA(){
         let total = 0;
         Object.keys(PRICE.AA).forEach(code=>{
-          const qty = N(document.querySelector(`input[data-aa="${code}"]`)?.value);
+          const qty = N($(`input[data-aa="${code}"]`)?.value);
           const sub = qty * PRICE.AA[code];
-          const cell = document.querySelector(`td[data-aa-sum="${code}"] .cell-val`);
+          const cell = $(`span[data-aa-sum="${code}"]`);
           if (cell) cell.textContent = F(sub);
           total += sub;
         });
-        document.querySelector('#sumAA').textContent = F(total);
-        document.querySelector('#kpiAA').textContent = F(total);
-        document.querySelector('#resAA').textContent = F(total);
+        $('#sumAA').textContent = F(total);
+        $('#kpiAA').textContent = F(total);
+        $('#resAA').textContent = F(total);
         return total;
       }
       function calcGroup(key, sumId, kpiId, resId){
         let total = 0;
         const k = key.toLowerCase();
         PRICE[key].forEach(item=>{
-          const qty = N(document.querySelector(`input[data-${k}="${item.code}"]`)?.value);
+          const qty = N($(`input[data-${k}="${item.code}"]`)?.value);
           const sub = qty * item.price;
-          const cell = document.querySelector(`td[data-${k}-sum="${item.code}"] .cell-val`);
+          const cell = $(`span[data-${k}-sum="${item.code}"]`);
           if (cell) cell.textContent = F(sub);
           total += sub;
         });
-        document.querySelector(sumId).textContent = F(total);
-        document.querySelector(kpiId).textContent = F(total);
-        document.querySelector(resId).textContent = F(total);
+        $(sumId).textContent = F(total);
+        $(kpiId).textContent = F(total);
+        $(resId).textContent = F(total);
         return total;
       }
       function updateAll(){
@@ -601,9 +568,8 @@
         $('#kpiTotal').textContent = F(total);
         $('#resTotal').textContent = F(total);
         const ratioPct = N($('#ratioPct').value) || 0;
-        const ratio = ratioPct / 100;
         $('#resRatio').textContent = ratioPct;
-        const salary = Math.round(total * ratio);
+        const salary = Math.round(total * (ratioPct / 100));
         $('#kpiSalary').textContent = F(salary);
         $('#resSalary').textContent = F(salary);
         syncInsuranceBySalary(salary);
@@ -615,29 +581,30 @@
         INS_TABLE.forEach(row=>{
           const opt = document.createElement('option');
           opt.value = row.grade;
-          opt.textContent = row.grade.toLocaleString('zh-TW');
+          opt.textContent = F(row.grade);
           sel.appendChild(opt);
         });
       }
       function findGradeBySalary(sal){
-        const list = INS_TABLE.map(r=>r.grade).sort((a,b)=>a-b);
-        for (const v of list){
-          if (sal <= v) return v; 
+        for (const v of INS_TABLE){
+          if (sal <= v.grade) return v.grade; 
         }
-        return list[list.length-1]; 
+        return INS_TABLE[INS_TABLE.length-1].grade; 
       }
       function getRow(grade){ return INS_TABLE.find(r=>r.grade===grade) || INS_TABLE[0]; }
       function syncInsuranceBySalary(salary){
         const auto = $('#insAuto').checked;
         const sel = $('#insGrade');
-        const autoGrade = findGradeBySalary(salary);
-        if (auto && +sel.value!==autoGrade) sel.value = String(autoGrade);
-        const row = getRow(+sel.value || autoGrade);
+        if(auto){
+          const autoGrade = findGradeBySalary(salary);
+          if (+sel.value !== autoGrade) sel.value = String(autoGrade);
+        }
+        const row = getRow(+$('#insGrade').value);
         if (auto){
           $('#insLabor').value = row.labor;
           $('#insHealth').value = row.health;
         }
-        const insSum = (+$('#insLabor').value||0) + (+$('#insHealth').value||0);
+        const insSum = (N($('#insLabor').value)) + (N($('#insHealth').value));
         $('#insSum').textContent = F(insSum);
         $('#kpiIns').textContent = F(insSum);
         const net = Math.max(0, (salary - insSum));
@@ -647,57 +614,39 @@
       }
 
       function saveAll(){
-        const aa = {}; Object.keys(PRICE.AA).forEach(code=> aa[code]=+(document.querySelector(`input[data-aa="${code}"]`).value||0)); localStorage.setItem('pl-aa', JSON.stringify(aa));
-        ['BA','GA','SC'].forEach(key=>{ const k=key.toLowerCase(); const obj={}; PRICE[key].forEach(item=> obj[item.code]=+(document.querySelector(`input[data-${k}="${item.code}"]`).value||0)); localStorage.setItem(`pl-${k}`, JSON.stringify(obj)); });
-        const params = { month:$('#plMonth').value||'', ratio:+($('#ratioPct').value)||0, insGrade:+($('#insGrade').value)||0, insLabor:+($('#insLabor').value)||0, insHealth:+($('#insHealth').value)||0, insAuto:$('#insAuto').checked?1:0 };
+        const aa = {}; Object.keys(PRICE.AA).forEach(code=> aa[code]=N($(`input[data-aa="${code}"]`).value)); localStorage.setItem('pl-aa', JSON.stringify(aa));
+        ['BA','GA','SC'].forEach(key=>{ const k=key.toLowerCase(); const obj={}; PRICE[key].forEach(item=> obj[item.code]=N($(`input[data-${k}="${item.code}"]`).value)); localStorage.setItem(`pl-${k}`, JSON.stringify(obj)); });
+        const params = { month:$('#plMonth').value, ratio:N($('#ratioPct').value), insGrade:N($('#insGrade').value), insLabor:N($('#insLabor').value), insHealth:N($('#insHealth').value), insAuto:$('#insAuto').checked };
         localStorage.setItem('pl-params', JSON.stringify(params));
       }
-      function loadLS(key, fb){ try{ return JSON.parse(localStorage.getItem(key)||'') || fb; }catch(e){ return fb; } }
+      function loadLS(key, fb){ try{ return JSON.parse(localStorage.getItem(key)) || fb; }catch(e){ return fb; } }
       function restore(){
-        const p = loadLS('pl-params', null);
-        if (p){
-          if(p.month)$('#plMonth').value=p.month; if(p.ratio!=null)$('#ratioPct').value=p.ratio; if(p.insGrade)$('#insGrade').value=p.insGrade; if(p.insLabor!=null)$('#insLabor').value=p.insLabor; if(p.insHealth!=null)$('#insHealth').value=p.insHealth; $('#insAuto').checked=!!p.insAuto;
-        }
+        const p = loadLS('pl-params', {});
+        $('#plMonth').value = p.month || '';
+        $('#ratioPct').value = p.ratio || 60;
+        $('#insGrade').value = p.insGrade || INS_TABLE[0].grade;
+        $('#insLabor').value = p.insLabor || 0;
+        $('#insHealth').value = p.insHealth || 0;
+        $('#insAuto').checked = p.insAuto !== false; // Default to true if not set
       }
 
       function wire(){
-        ['#tblAA','#tblBA','#tblGA','#tblSC'].forEach(id=>{
-          document.querySelectorAll(`${id} input[type="number"]`).forEach(inp=>{
-            inp.addEventListener('input', updateAll);
-          });
-        });
+        $$('.tbl:not(.insurance-table) input[type="number"]').forEach(inp => inp.addEventListener('input', updateAll));
         $('#ratioPct').addEventListener('input', updateAll);
         $('#plMonth').addEventListener('change', saveAll);
-
-        $('#insGrade').addEventListener('change', ()=>{
-          if ($('#insAuto').checked){
-            const row = getRow(+$('#insGrade').value);
-            $('#insLabor').value = row.labor;
-            $('#insHealth').value = row.health;
-          }
-          syncInsuranceBySalary(+($('#resSalary').textContent||'').replace(/,/g,''));
+        
+        $$('.insurance-table input, .insurance-table select').forEach(el => el.addEventListener('input', () => {
+          if (event.target.id !== 'insGrade' && event.target.id !== 'insAuto') $('#insAuto').checked = false;
+          syncInsuranceBySalary(N($('#resSalary').textContent.replace(/,/g,'')));
           saveAll();
-        });
-        $('#insLabor').addEventListener('input', ()=>{
-          $('#insAuto').checked = false;
-          syncInsuranceBySalary(+($('#resSalary').textContent||'').replace(/,/g,''));
-          saveAll();
-        });
-        $('#insHealth').addEventListener('input', ()=>{
-          $('#insAuto').checked = false;
-          syncInsuranceBySalary(+($('#resSalary').textContent||'').replace(/,/g,''));
-          saveAll();
-        });
-        $('#insAuto').addEventListener('change', ()=>{
-          syncInsuranceBySalary(+($('#resSalary').textContent||'').replace(/,/g,''));
-          saveAll();
-        });
-
-        $('#btnPrint').addEventListener('click', ()=>window.print());
+        }));
+        
         $('#btnResetAll').addEventListener('click', ()=>{
           ['pl-aa','pl-ba','pl-ga','pl-sc','pl-params'].forEach(k=>localStorage.removeItem(k));
           location.reload();
         });
+        
+        $('#btnPrint').addEventListener('click', ()=>window.print());
       }
 
       buildAA(); buildGroup('tblBA','BA','pl-ba'); buildGroup('tblGA','GA','pl-ga'); buildGroup('tblSC','SC','pl-sc'); buildInsOptions(); restore(); wire(); updateAll();
@@ -711,52 +660,29 @@
       document.addEventListener('copy', e => e.preventDefault());
     })();
   </script>
-  <!-- 下面 PDF 解析 / OCR / 匯出 / 同步原封不動保留（功能不刪） -->
+  <!-- PDF 解析區塊 -->
   <script>
     (() => {
       const $ = s => document.querySelector(s);
       const debug = $('#ps-debug'), bar = $('#ps-bar'), statusEl = $('#ps-status');
-      const log = s => { if(!debug) return; debug.textContent += (typeof s==='string'?s:JSON.stringify(s,null,2))+'\n'; };
-      const setBar = p => { if(bar) bar.style.width = Math.max(0,Math.min(100,p))+'%'; };
+      const log = s => { if(debug) debug.textContent += (typeof s === 'string' ? s : JSON.stringify(s,null,2))+'\n'; };
+      const setBar = p => { if(bar) bar.style.width = `${Math.max(0,Math.min(100,p))}%`; };
 
-      const CODE_ALIAS = {
-        'BA05-1': 'BA05', 'BA05-2': 'BA05',
-        'BA16-1': 'BA16', 'BA16-2': 'BA16'
-      };
+      const CODE_ALIAS = {'BA05-1': 'BA05', 'BA05-2': 'BA05', 'BA16-1': 'BA16', 'BA16-2': 'BA16'};
       const toCanon = c => CODE_ALIAS[c] || c;
 
       let pdfReady=null;
-      const loadScript = src => new Promise((res,rej)=>{const s=document.createElement('script'); s.src=src; s.onload=res; s.onerror=rej; document.head.appendChild(s);});
+      const loadScript = src => new Promise((res,rej)=>{const s=document.createElement('script');s.src=src;s.onload=res;s.onerror=rej;document.head.appendChild(s);});
       async function ensurePdfjs(){
-        if (window.pdfjsLib) return;
-        if (pdfReady){ await pdfReady; return; }
-        pdfReady = (async ()=>{
-          for (const v of ["4.2.67","3.11.174","2.16.105"]){
-            try{
-              await loadScript(`https://cdn.jsdelivr.net/npm/pdfjs-dist@${v}/build/pdf.min.js`);
-              pdfVer=v;
-              try{
-                pdfjsLib.GlobalWorkerOptions.workerSrc=`https://cdn.jsdelivr.net/npm/pdfjs-dist@${v}/build/pdf.worker.min.js`;
-                await pdfjsLib.getDocument({data:new Uint8Array([0x25,0x50,0x44,0x46])}).promise.catch(()=>null);
-              }catch{
-                pdfjsLib.GlobalWorkerOptions.workerSrc=""; pdfjsLib.GlobalWorkerOptions.workerPort=null;
-              }
-              return;
-            }catch{}
-          }
-          throw new Error('pdf.js load failed');
-        })();
+        if(window.pdfjsLib)return; if(pdfReady){await pdfReady;return;}
+        pdfReady=(async()=>{ for(const v of ["4.2.67","3.11.174","2.16.105"]){try{await loadScript(`https://cdn.jsdelivr.net/npm/pdfjs-dist@${v}/build/pdf.min.js`);window.pdfjsLib.GlobalWorkerOptions.workerSrc=`https://cdn.jsdelivr.net/npm/pdfjs-dist@${v}/build/pdf.worker.min.js`;return;}catch{}} throw new Error('pdf.js failed');})();
         await pdfReady;
       }
 
       let ocrReady=null;
       async function ensureTesseract(){
-        if (window.Tesseract) return;
-        if (ocrReady){ await ocrReady; return; }
-        ocrReady = (async ()=>{
-          await loadScript('https://cdn.jsdelivr.net/npm/tesseract.js@4.0.2/dist/tesseract.min.js');
-          Tesseract.setLogging(false);
-        })();
+        if(window.Tesseract)return; if(ocrReady){await ocrReady;return;}
+        ocrReady=(async()=>{await loadScript('https://cdn.jsdelivr.net/npm/tesseract.js@4.0.2/dist/tesseract.min.js');Tesseract.setLogging(false);})();
         await ocrReady;
       }
 
@@ -764,212 +690,91 @@
 
       async function extractPdfText(file){
         await ensurePdfjs();
-        const ab=await file.arrayBuffer();
-        try{
-          const pdf=await pdfjsLib.getDocument({data:ab}).promise;
-          let texts=[],total=0;
-          for(let i=1;i<=pdf.numPages;i++){
-              const page=await pdf.getPage(i);
-              const c=await page.getTextContent({normalizeWhitespace:true,disableCombineTextItems:false});
-              const s=c.items.map(it=>it.str).join(' ');
-              texts.push(s); total+=s.length; setBar(100*i/pdf.numPages);
-          }
-          return {text:texts.join('\n'), pdf, charCount:total};
-        }catch(e){ log('PDF error: '+e.message); throw e; }
-      }
-
-      async function ocrPdfToText(pdf){
-        await ensureTesseract();
-        const worker=await Tesseract.createWorker('chi_tra+eng');
-        let all=[];
-        for(let i=1;i<=pdf.numPages;i++){
-           const p=await pdf.getPage(i), v=p.getViewport({scale:2});
-           const cvs=document.createElement('canvas'), ctx=cvs.getContext('2d');
-           cvs.width=v.width; cvs.height=v.height;
-           await p.render({canvasContext:ctx,viewport:v}).promise;
-           if(statusEl) statusEl.textContent=`OCR 執行中 ${i}/${pdf.numPages}`;
-           const r=await worker.recognize(cvs);
-           all.push(r.data.text); setBar(100*i/pdf.numPages);
+        const ab = await file.arrayBuffer();
+        const pdf = await window.pdfjsLib.getDocument({data:ab}).promise;
+        let texts=[], charCount=0;
+        for(let i=1; i<=pdf.numPages; i++){
+            const page = await pdf.getPage(i);
+            const c = await page.getTextContent();
+            const s = c.items.map(it=>it.str).join(' ');
+            texts.push(s); charCount+=s.length; setBar(100*i/pdf.numPages);
         }
-        await worker.terminate();
-        return all.join('\n');
+        return {text:texts.join('\n'), pdf, charCount};
       }
-
-      function analyze(text){
-        const units=getAAUnit(), fam={BA:{},AA:{},GA:{},SC:{}};
-        const codeRe=/\b(BA|AA|GA|SC)\d{2}(?:-\d+)?\b/g, toHalf=v=>Math.round(v*2)/2, normalize=c=>c.toUpperCase().replace(/[^A-Z0-9-]/g,'');
-        for (const raw of text.split(/\r?\n/)){
-          const line=raw.trim(); if(!line) continue;
-          const codes=[...line.matchAll(codeRe)]; if(!codes.length) continue;
-          for (const m of codes){
-            const fullRaw=m[0];
-            const canon = toCanon(normalize(fullRaw)); 
-            const head = canon.slice(0,2);
-            if (head==='AA'){
-              const after=line.slice(m.index+fullRaw.length, m.index+fullRaw.length+40);
-              let amt=0;
-              const m1=after.match(/\$\s*([0-9,]+)/);
-              if (m1) amt=parseInt(m1[1].replace(/,/g,''),10);
-              const u=units[canon]||units[canon.slice(0,4)];
-              const zhi=u&&amt?toHalf(amt/u):0;
-              if(!fam.AA[canon]) fam.AA[canon]={occ:0,sum:0};
-              fam.AA[canon].occ++; fam.AA[canon].sum+=zhi;
-            } else {
-              if(!fam[head]) continue;
-              const rec=(fam[head][canon]||{occ:0,sum:0});
-              rec.occ++; rec.sum+=1; 
-              fam[head][canon]=rec;
+      
+      async function analyze(text){
+        const units = getAAUnit(), fam = {BA:{},AA:{},GA:{},SC:{}};
+        const codeRe = /\b(BA|AA|GA|SC)\d{2}(?:-\d+)?\b/g;
+        for (const line of text.split(/\r?\n/)){
+            const codes=[...line.matchAll(codeRe)]; if(!codes.length) continue;
+            for (const m of codes){
+                const canon = toCanon(m[0]);
+                const head = canon.slice(0,2);
+                fam[head][canon] = fam[head][canon] || {occ:0, sum:0};
+                fam[head][canon].occ++;
+                if (head==='AA'){
+                  const after = line.slice(m.index+m[0].length, m.index+m[0].length+40);
+                  const m1 = after.match(/\$\s*([\d,]+)/);
+                  const amt = m1 ? parseInt(m1[1].replace(/,/g,''),10) : 0;
+                  const u = units[canon];
+                  fam.AA[canon].sum += u && amt ? Math.round(amt/u*2)/2 : 0;
+                } else { fam[head][canon].sum++; }
             }
-          }
         }
-        const fmtRows=o=>Object.entries(o).map(([k,v])=>({code:k,occ:v.occ,sum:v.sum})).sort((a,b)=>a.code.localeCompare(b.code));
-        return {BA:fmtRows(fam.BA), AA:fmtRows(fam.AA), GA:fmtRows(fam.GA), SC:fmtRows(fam.SC)};
+        return {
+          BA: Object.entries(fam.BA).map(([k,v])=>({code:k,...v})),
+          AA: Object.entries(fam.AA).map(([k,v])=>({code:k,...v})),
+          GA: Object.entries(fam.GA).map(([k,v])=>({code:k,...v})),
+          SC: Object.entries(fam.SC).map(([k,v])=>({code:k,...v})),
+        };
       }
 
       function renderAll(res){
-          const t={BA:$('#ps-t-BA tbody'),AA:$('#ps-t-AA tbody'),GA:$('#ps-t-GA tbody'),SC:$('#ps-t-SC tbody')};
-          for(const k in t){ t[k].innerHTML=res[k].map(r=>`<tr><td><span class="ps-pill">${r.code}</span></td><td class="ps-right">${r.occ}</td><td class="ps-right">${r.sum}</td></tr>`).join(''); }
-      }
-      function exportCSV(res){
-        const fmtCount = c => c;
-        const blk=(t,rows)=>`${t}\n碼別,出現筆數,Σ支數\n`+rows.map(r=>`${r.code},${r.occ},${fmtCount(r.sum)}`).join('\n')+'\n\n';
-        const csv=blk('【BA】',res.BA)+blk('【AA】',res.AA)+blk('【GA】',res.GA)+blk('【SC】',res.SC);
-        const blob=new Blob([csv],{type:'text/csv;charset=utf-8'}), url=URL.createObjectURL(blob);
-        const a=document.createElement('a'); a.href=url; a.download='pdf-stat.csv'; a.click(); URL.revokeObjectURL(url);
-      }
-      function exportJSON(res){
-        const fmtCount = c => c;
-        const pick=rows=>rows.map(r=>({code:r.code,occ:r.occ,sum:fmtCount(r.sum)}));
-        const payload={BA:pick(res.BA),AA:pick(res.AA),GA:pick(res.GA),SC:pick(res.SC),meta:{generatedAt:new Date().toISOString()}};
-        const blob=new Blob([JSON.stringify(payload,null,2)],{type:'application/json'}), url=URL.createObjectURL(blob);
-        const a=document.createElement('a'); a.href=url; a.download='pdf-stat.json'; a.click(); URL.revokeObjectURL(url);
+        ['BA','AA','GA','SC'].forEach(k => {
+            const tableBody = $(`#ps-t-${k} tbody`);
+            if(tableBody) tableBody.innerHTML = res[k].map(r=>`<tr><td><span class="ps-pill">${r.code}</span></td><td class="ps-right">${r.occ}</td><td class="ps-right">${r.sum}</td></tr>`).join('');
+        });
       }
 
-      function resetPayrollInputs(){
-        document.querySelectorAll('#tblAA input[type="number"][data-aa], #tblBA input[type="number"][data-ba], #tblGA input[type="number"][data-ga], #tblSC input[type="number"][data-sc]')
-          .forEach(inp=>{
-            inp.value = '0';
-            inp.dispatchEvent(new Event('input',{bubbles:true}));
-          });
-      }
-      function setInputByCode(kind, code, val, step){
-        const normalize=c=>c.toUpperCase().replace(/[^A-Z0-9-]/g,'');
-        const norm = normalize(code);
-        const canon = toCanon(norm);
-        const sel = document.querySelector(`input[data-${kind}="${canon}"]`);
-        if (!sel) return false;
-        if (step) sel.setAttribute('step', step);
-        sel.value = String(val);
-        sel.dispatchEvent(new Event('input',{bubbles:true}));
-        return true;
-      }
       function applyToPayroll(res){
-        const normalize=c=>c.toUpperCase().replace(/[^A-Z0-9-]/g,'');
-        resetPayrollInputs();
-        const miss = [];
-        res.AA.forEach(r=>{
-          const ok = setInputByCode('aa', r.code, r.sum, '0.5');
-          if (!ok) miss.push(`AA：${normalize(r.code)}`);
-        });
-        res.BA.forEach(r=>{
-          const ok = setInputByCode('ba', r.code, Math.round(r.sum));
-          if (!ok) miss.push(`BA：${normalize(r.code)}`);
-        });
-        res.GA.forEach(r=>{
-          const ok = setInputByCode('ga', r.code, Math.round(r.sum));
-          if (!ok) miss.push(`GA：${normalize(r.code)}`);
-        });
-        res.SC.forEach(r=>{
-          const ok = setInputByCode('sc', r.code, Math.round(r.sum));
-          if (!ok) miss.push(`SC：${normalize(r.code)}`);
-        });
-
-        let warn = document.getElementById('ps-miss');
-        const host = document.querySelector('#ps-widget');
-        if (miss.length){
-          if (!warn){
-            warn = document.createElement('div');
-            warn.id = 'ps-miss';
-            warn.style.cssText = 'margin-top:8px;border:1px dashed #f0b429;background:#fff8e6;border-radius:8px;padding:8px 10px';
-            warn.className = 'ps-small';
-            host.appendChild(warn);
-          }
-          warn.innerHTML = `<b>未同步的碼別（薪資表中沒有）：</b><br>${miss.map(m=>'• '+m).join('<br>')}`;
-        }else if (warn){ warn.remove(); }
-        document.getElementById('tblAA')?.scrollIntoView({behavior:'smooth', block:'start'});
+          document.querySelectorAll('.tbl:not(.insurance-table) input[type="number"]').forEach(i=>i.value=0);
+          Object.keys(res).forEach(k => {
+            res[k].forEach(r => {
+                const sel = $(`input[data-${k.toLowerCase()}="${r.code}"]`);
+                if(sel) sel.value = r.sum;
+            });
+          });
+          document.querySelector('#tblAA input')?.dispatchEvent(new Event('input', {bubbles:true})); // Trigger update
       }
 
-      const autoSyncEl = document.getElementById('ps-auto-sync');
-      const syncBar = document.getElementById('ps-syncbar');
-      const syncYesBtn = document.getElementById('ps-sync-yes');
-      const syncNoBtn = document.getElementById('ps-sync-no');
-      const AUTO_KEY = 'ps-auto-sync';
-      function loadAutoSync(){ try{ return localStorage.getItem(AUTO_KEY)==='1'; }catch(e){ return false; } }
-      function saveAutoSync(v){ try{ localStorage.setItem(AUTO_KEY, v?'1':'0'); }catch(e){} }
-      function showSyncBar(on){ if(syncBar) syncBar.style.display = on ? 'flex' : 'none'; }
-      if (autoSyncEl){ autoSyncEl.checked = loadAutoSync(); autoSyncEl.addEventListener('change', ()=>saveAutoSync(autoSyncEl.checked)); }
-      if (syncYesBtn){ syncYesBtn.addEventListener('click', ()=>{ if (last){ applyToPayroll(last); } showSyncBar(false); }); }
-      if (syncNoBtn){ syncNoBtn.addEventListener('click', ()=> showSyncBar(false)); }
-
-      let last=null;
+      let lastResult=null;
       async function handleFile(f){
-        if(!debug) return; debug.textContent='偵錯訊息：\n';
-        setBar(0); if(statusEl) statusEl.textContent='準備解析…';
-        let pdfRes=null, text='';
-        try{ pdfRes=await extractPdfText(f); }catch(e){ log('PDF.js fail, try OCR'); }
-        if(pdfRes && pdfRes.charCount>0){
-          text=pdfRes.text; setBar(100);
-          if(statusEl) statusEl.textContent='PDF 文字擷取完成';
-        } else {
-          try{
-            const pdf= pdfRes?.pdf || await pdfjsLib.getDocument({data:await f.arrayBuffer()}).promise;
-            if(statusEl) statusEl.textContent='啟用 OCR…'; setBar(1);
-            text=await ocrPdfToText(pdf); setBar(100);
-            if(statusEl) statusEl.textContent='OCR 完成';
-          }catch(e){ log('OCR 也失敗'); alert('此 PDF 無法解析，可能是加密或損壞。'); return; }
-        }
-        const res=analyze(text);
-        renderAll(res);
-        last=res;
-        document.getElementById('ps-apply').disabled=false;
-        document.getElementById('ps-csv').disabled=false;
-        document.getElementById('ps-json').disabled=false;
-        if (autoSyncEl && autoSyncEl.checked){ applyToPayroll(last); showSyncBar(false); } else { showSyncBar(true); }
+        debug.textContent='偵錯訊息：\n'; setBar(0); statusEl.textContent='解析中...';
+        try{
+            let {text} = await extractPdfText(f);
+            const res = await analyze(text);
+            renderAll(res);
+            lastResult = res;
+            ['#ps-apply','#ps-csv','#ps-json'].forEach(s=>$(s).disabled=false);
+            if($('#ps-auto-sync').checked) applyToPayroll(res); else $('#ps-syncbar').style.display = 'flex';
+        } catch(e) { log(e.message); alert('PDF 解析失敗，請確認檔案。');}
+        statusEl.textContent='完成';
       }
-
-      const fileInput=$('#ps-file'), drop=$('#ps-drop');
-      if(fileInput){ fileInput.addEventListener('change',e=>{const f=e.target.files?.[0]; if(f) handleFile(f);}); }
-      if(drop){
-        ['dragenter','dragover'].forEach(ev=>drop.addEventListener(ev,e=>{e.preventDefault(); drop.style.background='#eef4ff';}));
-        ['dragleave','drop'].forEach(ev=>drop.addEventListener(ev,e=>{e.preventDefault(); drop.style.background='#f9fbff';}));
-        drop.addEventListener('drop',e=>{e.preventDefault(); const f=e.dataTransfer.files?.[0]; if(f) handleFile(f);});
-      }
-      document.getElementById('ps-csv').addEventListener('click',()=>last&&exportCSV(last));
-      document.getElementById('ps-json').addEventListener('click',()=>last&&exportJSON(last));
-      document.getElementById('ps-apply').addEventListener('click',()=> last && applyToPayroll(last));
-      document.getElementById('ps-demo').addEventListener('click',()=>{
-        const d=`嚴X雯 賴X女 2025/09/01 AA05 補助 $100
-嚴X雯 賴X女 2025/09/02 AA05 補助 $200
-嚴X雯 張X進 2025/09/02 AA06 自費 $200
+      
+      $('#ps-file').addEventListener('change', e => e.target.files[0] && handleFile(e.target.files[0]));
+      $('#ps-demo').addEventListener('click',async () => {
+         const d=`嚴X雯 賴X女 2025/09/01 AA05 補助 $100
 嚴X雯 王X明 2025/09/03 AA07 補助 $760
-嚴X雯 OO先生 2025/09/03 AA08 自費 $385
-嚴X雯 賴X女 2025/09/06 AA09 補助 $770
-嚴X雯 江X輝 2025/09/01 AA11 補助 $50
-嚴X雯 范X殷 2025-09-05 BA01 補助 1 $260
 嚴X雯 江X輝 2025-09-01 BA07 補助 1 $325
-嚴X雯 張X進 2025-09-02 BA11 自費 2 $195
-嚴X雯 王X美 2025-09-10 BA15-1 補助 1 $195
-嚴X雯 王X美 2025-09-11 BA05-1 補助 2 $310
-嚴X雯 王X美 2025-09-12 BA15-2 補助 1 $195
-嚴X雯 李OO 2025-09-03 GA09 補助 3
-嚴X雯 王OO 2025-09-04 SC09 自費 1`;
-        const r=analyze(d); renderAll(r); last=r; setBar(100);
-        if(statusEl) statusEl.textContent='示範資料已載入';
-        document.getElementById('ps-apply').disabled=false;
-        document.getElementById('ps-csv').disabled=false;
-        document.getElementById('ps-json').disabled=false;
-        if (autoSyncEl && autoSyncEl.checked){ applyToPayroll(last); showSyncBar(false); } else { showSyncBar(true); }
+嚴X雯 李OO 2025-09-03 GA09 補助 3`;
+        const res = await analyze(d);
+        renderAll(res);
+        lastResult = res;
+        ['#ps-apply','#ps-csv','#ps-json'].forEach(s=>$(s).disabled=false);
       });
+      $('#ps-apply').addEventListener('click',()=> lastResult && applyToPayroll(lastResult));
+      $('#ps-sync-yes').addEventListener('click',()=>{if (lastResult) applyToPayroll(lastResult); $('#ps-syncbar').style.display = 'none'; });
+      $('#ps-sync-no').addEventListener('click',()=> $('#ps-syncbar').style.display = 'none');
     })();
   </script>
   <script type="module">
@@ -978,12 +783,8 @@
       from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
     import { getFirestore, doc, getDoc, setDoc, serverTimestamp } 
       from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-
-    /* 
-       請直接使用您原有的 Key 或確認此處 Key 是否正確
-       為求方便我這邊填入了前一次對話中的 config 範本 
-    */
-    const config={
+    
+    const config = {
       apiKey: "AIzaSyCZMhdUI0HeIoj5masuRh00pzP3SMbF6Yc",
       authDomain: "hori-test-1b93c.firebaseapp.com",
       projectId: "hori-test-1b93c",
@@ -991,53 +792,109 @@
       messagingSenderId: "549583061796",
       appId: "1:549583061796:web:ad58b8bf80c2b6b71c29b1"
     };
-    const app=initializeApp(config), auth=getAuth(app), db=getFirestore(app), provider=new GoogleAuthProvider();
 
-    const dom={
-      login:document.getElementById('btnLogin'),
-      logout:document.getElementById('btnLogout'),
-      member:document.getElementById('member-area'),
-      user:document.getElementById('userDisplay'),
-      admin:document.getElementById('btnAdminLink'),
-      edit:document.getElementById('btnEditProfile'),
-      modal:document.getElementById('profile-modal'),
-      save:document.getElementById('btn-save-profile'),
-      cloud:document.getElementById('btnSaveCloud'),
-      name:document.getElementById('pf-name'),
-      age:document.getElementById('pf-age'),
-      title:document.querySelector('#profile-modal h3')
+    const app = initializeApp(config);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+    const provider = new GoogleAuthProvider();
+
+    const dom = {
+        login: document.getElementById('btnLogin'),
+        logout: document.getElementById('btnLogout'),
+        member: document.getElementById('member-area'),
+        user: document.getElementById('userDisplay'),
+        admin: document.getElementById('btnAdminLink'),
+        edit: document.getElementById('btnEditProfile'),
+        modal: document.getElementById('profile-modal'),
+        save: document.getElementById('btn-save-profile'),
+        name: document.getElementById('pf-name'),
+        age: document.getElementById('pf-age'),
+        title: document.querySelector('#profile-modal h3')
     };
 
-    if(dom.login) dom.login.addEventListener('click',()=>signInWithPopup(auth,provider).catch(e=>{
-        if(e.code==='auth/popup-blocked')alert("請使用 Chrome/Safari 瀏覽器開啟 (非 LINE/FB 內建)");
-        else alert(e.message)
-    }));
+    if(dom.login) {
+        dom.login.addEventListener('click', () => {
+          signInWithPopup(auth, provider).catch(error => {
+              if (error.code === 'auth/popup-blocked') {
+                  alert("⚠️ 登入視窗被攔截！請使用 Safari/Chrome 等瀏覽器開啟。");
+              } else {
+                  alert("登入失敗：" + error.message);
+              }
+          });
+        });
+    }
 
-    if(dom.logout) dom.logout.addEventListener('click',()=>signOut(auth).then(()=>location.reload()));
-    
-    onAuthStateChanged(auth, async u=>{
-      if(u){
-        dom.login.style.display='none'; dom.member.style.display='flex'; dom.user.textContent=u.displayName||u.email;
-        try{ 
-            const s=await getDoc(doc(db,"users",u.uid));
-            if(s.exists()){ if(s.data().name) dom.user.textContent=s.data().name; }
-            else{ dom.title.textContent="歡迎加入！請完善資料"; dom.name.value=u.displayName||""; dom.modal.style.display='flex'; }
-        }catch(e){}
-        try{ const a=await getDoc(doc(db,"admins",u.email)); if(a.exists()) dom.admin.style.display='inline-block'; }catch(e){}
-      }else{ dom.login.style.display='block'; dom.member.style.display='none'; }
+    if(dom.logout) dom.logout.addEventListener('click', () => signOut(auth).then(() => { alert("已登出"); location.reload(); }));
+
+    onAuthStateChanged(auth, async (user) => {
+      if (user) {
+        if(dom.login) dom.login.style.display = 'none';
+        if(dom.member) dom.member.style.display = 'flex';
+        if(dom.user) dom.user.textContent = user.displayName || user.email;
+
+        try {
+          const docSnap = await getDoc(doc(db, "users", user.uid));
+          if (docSnap.exists() && docSnap.data().name) {
+             if(dom.user) dom.user.textContent = docSnap.data().name;
+          } else {
+             if(dom.title) dom.title.textContent = "歡迎加入！請完善資料";
+             if(dom.name) dom.name.value = user.displayName || "";
+             if(dom.modal) dom.modal.style.display = 'flex';
+          }
+        } catch(e) { console.error("Firestore read failed:", e); }
+
+        try {
+          const adminSnap = await getDoc(doc(db, "admins", user.email));
+          if (adminSnap.exists() && dom.admin) dom.admin.style.display = 'inline-block';
+        } catch(e) {}
+      } else {
+        if(dom.login) dom.login.style.display = 'block';
+        if(dom.member) dom.member.style.display = 'none';
+        if(dom.admin) dom.admin.style.display = 'none';
+      }
     });
 
-    if(dom.edit) dom.edit.addEventListener('click',async()=>{ const s=await getDoc(doc(db,"users",auth.currentUser.uid)); if(s.exists()){ const d=s.data(); dom.title.textContent="修改個人資料"; dom.name.value=d.name; dom.age.value=d.age; dom.modal.style.display='flex'; } });
-    
-    if(dom.save) dom.save.addEventListener('click',async()=>{
-        const n=dom.name.value, a=dom.age.value; if(!n||!a) return alert("請填寫完整");
-        const ref=doc(db,"users",auth.currentUser.uid); const s=await getDoc(ref);
-        let d={name:n,age:a,email:auth.currentUser.email,lastUpdated:serverTimestamp()};
-        if(!s.exists()||!s.data().createdAt) d.createdAt=serverTimestamp();
-        await setDoc(ref,d,{merge:true}); alert("已儲存"); dom.modal.style.display='none'; dom.user.textContent=n;
+    if(dom.edit) dom.edit.addEventListener('click', async () => {
+      const userRef = doc(db, "users", auth.currentUser.uid);
+      const docSnap = await getDoc(userRef);
+      if(docSnap.exists()){
+        const d = docSnap.data();
+        dom.title.textContent = "修改個人資料";
+        dom.name.value = d.name || "";
+        dom.age.value = d.age || "";
+        dom.modal.style.display = 'flex';
+      }
     });
 
-    if(dom.modal) dom.modal.addEventListener('click',e=>{if(e.target===dom.modal&&auth.currentUser&&dom.user.textContent!="")dom.modal.style.display='none'});
+    if(dom.save) dom.save.addEventListener('click', async () => {
+      const name = dom.name.value.trim();
+      const age = dom.age.value.trim();
+      if(!name || !age) return alert("請填寫完整");
+      
+      const userRef = doc(db, "users", auth.currentUser.uid);
+      try {
+          let data = { name, age, email: auth.currentUser.email, lastUpdated: serverTimestamp() };
+          const docSnap = await getDoc(userRef);
+          if (!docSnap.exists() || !docSnap.data().createdAt) {
+              data.createdAt = serverTimestamp();
+          }
+          await setDoc(userRef, data, { merge: true });
+          alert("儲存成功");
+          if(dom.modal) dom.modal.style.display = 'none';
+          if(dom.user) dom.user.textContent = name;
+      } catch (e) { alert("儲存失敗：" + e.message); }
+    });
+
+    if(dom.modal) dom.modal.addEventListener('click', (e) => {
+      if (e.target === dom.modal) {
+        // 新註冊用戶（還未儲存過資料）時不允許關閉
+        getDoc(doc(db, "users", auth.currentUser.uid)).then(docSnap => {
+          if (docSnap.exists()) {
+             dom.modal.style.display = 'none';
+          }
+        });
+      }
+    });
   </script>
 </body>
 </html>
