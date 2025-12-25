@@ -62,11 +62,8 @@
         white-space: nowrap; 
     }
 
-    /* === 第2欄: 單價 (靠右 - 一般表格預設) === */
-    .tbl th:nth-child(2), .tbl td:nth-child(2) {
-        text-align: right; 
-        padding-right: 40px; 
-    }
+    /* === 第2欄: 單價 (預設) === */
+    /* 稍後透過 .tbl:not(.insurance-table) 特別針對單價進行強制右對齊與 padding 控制 */
 
     /* === 第3欄: 本月支數 (置中) === */
     .tbl th:nth-child(3), .tbl td:nth-child(3) {
@@ -89,15 +86,15 @@
     .insurance-table input { width: 100% !important; min-width: 60px; }
     .sub-text { font-size: 11px; display: block; color: #777; line-height: 1.2; }
     
-    /* ★ 修正：將自動改為橫的，勾勾靠左，確保在膠囊內 ★ */
+    /* 自動按鈕樣式 */
     .auto-chip {
         display: flex !important;
         flex-direction: row !important;
         align-items: center !important;
-        justify-content: flex-start !important; /* 勾勾靠左 */
+        justify-content: flex-start !important;
         padding: 4px 12px !important;
         white-space: nowrap !important;
-        gap: 6px !important; /* 縮小勾選框與文字間距 */
+        gap: 6px !important;
     }
     .auto-chip input {
         margin: 0 !important;
@@ -112,32 +109,58 @@
     .pill-note{display:inline-block; padding:2px 8px; border:1px solid var(--line); border-radius:999px; background:#fff; font-weight:700; color:#333;}
 
     /* ============================================================
-       ✅ 【需求2】勞保(員工)及下方輸入欄在投保級距及健保(員工)的正中間
-       這一段使用 !important 強制覆蓋上面的 .tbl 設定
+       ✅ 【修正1】勞保及健保在「正中間」且輸入欄對齊
+       設定：所有保險表格內的 td/th 一律置中，除了第一欄保持靠左易讀
        ============================================================ */
     .tbl.insurance-table th,
     .tbl.insurance-table td {
-        text-align: center !important; /* 強制所有欄位置中 */
-        padding-right: 12px !important; /* 重置單價欄的右邊距 */
-        padding-left: 12px !important;
-    }
-    .tbl.insurance-table tbody td input {
-        display: block;
-        margin: 0 auto !important; /* 輸入框置中 */
-        text-align: center !important; /* 輸入文字置中 */
-    }
-    /* 確保保險表格第一欄(級距)也是置中或靠左視需求，這裡設為預設對齊方便閱讀 */
-    .tbl.insurance-table th:first-child,
-    .tbl.insurance-table td:first-child {
-        text-align: left !important; /* 級距選單維持靠左比較好點選，或可改center */
-        padding-left: 18px !important;
+        vertical-align: middle;
+        text-align: center !important; /* 強制標題與內容置中 */
+        padding-left: 8px !important; 
+        padding-right: 8px !important;
     }
 
+    /* 確保輸入框本體在格子內置中，且輸入的文字也置中 */
+    .tbl.insurance-table tbody td input {
+        display: block;
+        margin: 0 auto !important; 
+        text-align: center !important;
+    }
+
+    /* 第一欄(投保級距)維持靠左，比較好閱讀 */
+    .tbl.insurance-table th:first-child,
+    .tbl.insurance-table td:first-child {
+        text-align: left !important;
+        padding-left: 15px !important;
+    }
+
+
+    /* ============================================================
+       ✅ 【修正2】單價右方的數字要像小計一樣靠右對齊 (桌機 + 手機)
+       邏輯：單價與小計使用相同的 padding-right: 20px
+       ============================================================ */
+
+    /* [桌機版] 設定 Payroll 四大表的第2欄(單價)與第4欄(小計)對齊 */
+    body[data-page="payroll"] .tbl:not(.insurance-table) th:nth-child(2),
+    body[data-page="payroll"] .tbl:not(.insurance-table) td:nth-child(2) {
+      text-align: right !important;
+      padding-right: 20px !important; /* 與小計欄位統一 */
+    }
+    body[data-page="payroll"] .tbl:not(.insurance-table) th:nth-child(4),
+    body[data-page="payroll"] .tbl:not(.insurance-table) td:nth-child(4) {
+      text-align: right !important;
+      padding-right: 20px !important;
+    }
+    /* 支數置中 */
+    body[data-page="payroll"] .tbl:not(.insurance-table) th:nth-child(3),
+    body[data-page="payroll"] .tbl:not(.insurance-table) td:nth-child(3) {
+      text-align: center !important;
+    }
 
     @media (max-width:860px){
       .grid-2{grid-template-columns:1fr;}
 
-      /* ✅ 手機版卡片化：只套用在「薪資四大表」(tbl 且不是 insurance-table) */
+      /* 手機版卡片化 */
       .tbl:not(.insurance-table){display:block; font-size:15px; border:0; background:none; overflow:visible;}
       .tbl:not(.insurance-table) thead{display:none;}
       .tbl:not(.insurance-table) tbody,
@@ -145,7 +168,6 @@
       .tbl:not(.insurance-table) tbody tr{display:block; border:1px solid var(--line); border-radius:12px; padding:10px 12px; margin-bottom:12px; background:#fff; box-shadow:0 1px 2px rgba(0,0,0,.05);}
       .tbl:not(.insurance-table) tbody tr:nth-child(even){background:#fff;}
       
-      /* ★ 手機版：每個 td 變成「左標籤 + 右內容」 */
       .tbl:not(.insurance-table) td{
         display:flex;
         gap:12px;
@@ -165,32 +187,23 @@
         text-align:left;
       }
 
-      /* ✅ 【需求1】頁面縮小時單價的金額靠右對齊 */
-      /* 透過 margin-left: auto 將數值擠到最右邊 */
+      /* ✅ [手機版] 強制單價和小計的數值往右靠到底 */
       .tbl:not(.insurance-table) td[data-label="單價"] .cell-val,
       .tbl:not(.insurance-table) td[data-label="小計"] .cell-val {
-        margin-left: auto !important;
+        margin-left: auto !important; /* 自動推到最右 */
         text-align: right !important;
         display: inline-block;
       }
-
-      /* ✅ 本月支數：標題靠左、輸入框靠右（不要置中） */
+      
+      /* 本月支數輸入框位置調整 */
       .tbl:not(.insurance-table) td[data-label="本月支數"]{
         justify-content:space-between;
       }
       .tbl:not(.insurance-table) td[data-label="本月支數"] input{
-        width:90px;
-        margin-left:auto;
-        margin-right:0;
+        width:90px !important;
+        margin-left:auto !important;
+        margin-right:0 !important;
         display:block;
-        text-align:right;
-      }
-
-      .tbl:not(.insurance-table) input[type="number"], 
-      .tbl:not(.insurance-table) select{
-        width:100%;
-        max-width:none;
-        height:38px;
         text-align:right;
       }
 
@@ -201,34 +214,12 @@
         padding:0;
         text-align:right;
       }
-
-      /* ✅ 手機版：避免桌機的 padding-right 干擾 */
-      .tbl:not(.insurance-table) th:nth-child(2),
-      .tbl:not(.insurance-table) td:nth-child(2){ padding-right:0 !important; }
-      .tbl:not(.insurance-table) th:first-child,
-      .tbl:not(.insurance-table) td:first-child{ padding-left:0 !important; }
-    }
-
-    /* ============================================================
-    [Payroll 專用調整 - 桌機版] 確保 Payroll 的單價靠右、支數置中
-    ============================================================ */
-    body[data-page="payroll"] .tbl:not(.insurance-table) th:nth-child(2),
-    body[data-page="payroll"] .tbl:not(.insurance-table) td:nth-child(2){
-      padding-right: 60px !important; /* 單價靠右，增加右邊距擠向左 */
-      text-align: right;
-    }
-    body[data-page="payroll"] .tbl:not(.insurance-table) th:nth-child(3),
-    body[data-page="payroll"] .tbl:not(.insurance-table) td:nth-child(3){
-      text-align: center !important; /* 支數置中 */
-    }
-    body[data-page="payroll"] .tbl:not(.insurance-table) th:nth-child(4),
-    body[data-page="payroll"] .tbl:not(.insurance-table) td:nth-child(4){
-      padding-right: 20px !important;
-      text-align: right;
-    }
-    /* Payroll 表格內的 input 設為 90px（⚠️ 不影響投保級距 insurance-table） */
-    body[data-page="payroll"] .tbl:not(.insurance-table) input[type="number"]{
-      width: 90px !important;
+      /* 手機版清除不必要的桌機 padding */
+      .tbl:not(.insurance-table) th,
+      .tbl:not(.insurance-table) td { 
+        padding-left:0 !important; 
+        padding-right:0 !important; 
+      }
     }
   </style>
 </head>
@@ -259,7 +250,7 @@
       <button class="btn pill btn-green" id="btnResetAll" type="button">全部清空</button>
       <div style="width: 1px; height: 20px; background: #ccc; margin: 0 4px;"></div>
       
-      <!-- 登入相關按鈕 -->
+      <!-- 登入相關 -->
       <button class="btn pill" style="background:#4285F4; color:white;" id="btnLogin" type="button">Google 登入</button>
       <div id="member-area" style="display:none; align-items: center; gap:5px;">
           <span id="userDisplay" style="font-size: 13px; font-weight: bold; color: #333; margin-right: 4px;"></span>
@@ -474,7 +465,7 @@
             <tbody>
                 <tr>
                     <td data-label="投保級距"><select id="insGrade" style="width:100%;"></select></td>
-                    <!-- 勞健保這裡已改為完全置中 (透過 .tbl.insurance-table 覆寫) -->
+                    <!-- 勞健保這兩欄已經在 CSS 中設為完全置中 (含輸入框) -->
                     <td data-label="勞保(員工)"><input id="insLabor" type="number" min="0" step="1" value="0"></td>
                     <td data-label="健保(員工)"><input id="insHealth" type="number" min="0" step="1" value="0"></td>
                     <td class="right mono" id="insSum" data-label="合計">0</td>
