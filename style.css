@@ -673,55 +673,94 @@ font-size: 13px;
 }
 }
 /* ============================================================
-[Payroll 專用調整] 這裡的 CSS 確保 Payroll 的單價靠右、支數置中
-這些屬性與上面的通用樣式分開，不會相互干擾
+[Payroll 專用調整]
+✅ 這裡的 CSS 是修正關鍵：
+1. 針對一般表格（AA/BA...）設定第2欄與第4欄數字靠右。
+2. 使用 :not(.insurance-table) 排除投保級距表格，防止其勞保欄被影響。
 ============================================================ */
-body[data-page="payroll"] table th:nth-child(2),
-body[data-page="payroll"] table td:nth-child(2) {
-padding-right: 60px !important; /* 單價靠右，增加右邊距擠向左 */
-text-align: right;
-}
-body[data-page="payroll"] table th:nth-child(3),
-body[data-page="payroll"] table td:nth-child(3) {
-text-align: center !important; /* 支數置中 */
-}
-body[data-page="payroll"] table th:nth-child(4),
-body[data-page="payroll"] table td:nth-child(4) {
+/* 薪資四大表：單價與小計欄位靠右 (桌機 + 通用) */
+body[data-page="payroll"] .tbl:not(.insurance-table) th:nth-child(2),
+body[data-page="payroll"] .tbl:not(.insurance-table) td:nth-child(2) {
 padding-right: 20px !important;
 text-align: right;
 }
-/* Payroll 表格內的 input 設為 90px（⚠️ 不影響投保級距 insurance-table） */
+body[data-page="payroll"] .tbl:not(.insurance-table) th:nth-child(4),
+body[data-page="payroll"] .tbl:not(.insurance-table) td:nth-child(4) {
+padding-right: 20px !important;
+text-align: right;
+}
+/* 支數置中 */
+body[data-page="payroll"] .tbl:not(.insurance-table) th:nth-child(3),
+body[data-page="payroll"] .tbl:not(.insurance-table) td:nth-child(3) {
+text-align: center !important;
+}
+/* Payroll 一般表格內的 input 設定 (桌機) */
 body[data-page="payroll"] .tbl:not(.insurance-table) input[type="number"] {
 width: 90px !important;
 }
+
+/* ============================================================
+[Payroll 投保級距表格] 強制修正為置中
+============================================================ */
+body[data-page="payroll"] .tbl.insurance-table th,
+body[data-page="payroll"] .tbl.insurance-table td {
+text-align: center !important; /* 確保勞保與輸入框絕對置中 */
+padding-right: 8px !important; /* 清除桌機單價欄位的右邊距影響 */
+vertical-align: middle !important;
+}
+/* 輸入框在儲存格內置中 */
+body[data-page="payroll"] .tbl.insurance-table tbody td input {
+margin: 0 auto !important;
+display: block;
+text-align: center;
+}
+/* 第一欄級距選單維持靠左 (美觀) */
+body[data-page="payroll"] .tbl.insurance-table th:first-child,
+body[data-page="payroll"] .tbl.insurance-table td:first-child {
+text-align: left !important;
+padding-left: 15px !important;
+}
+
 /* =========================
-[Payroll 手機版] 本月支數輸入框位置修正
-目的：避免被通用 input { width:100% } 覆蓋，造成輸入框被推爆
+[Payroll 手機版]
 ========================= */
 @media (max-width: 860px) {
-/* 只修 Payroll、只修「薪資四大表」，不影響投保級距表 */
+/* ✅ 1. 本月支數輸入框位置：靠右對齊 (透過 flex auto margin) */
 body[data-page="payroll"] .tbl:not(.insurance-table) td[data-label="本月支數"] {
 justify-content: space-between;
 align-items: center;
 }
 body[data-page="payroll"] .tbl:not(.insurance-table) td[data-label="本月支數"] input[type="number"] {
 width: 90px !important;
-max-width: 90px !important;
-flex: 0 0 90px;
-margin-left: auto !important;
+margin-left: auto !important; /* 關鍵：擠到最右 */
 margin-right: 0 !important;
-box-sizing: border-box;
+display: block;
 text-align: right;
 min-width: 90px;
 }
+
+/* ✅ 2. 單價/小計數值：靠右對齊 */
+body[data-page="payroll"] .tbl:not(.insurance-table) td[data-label="單價"] .cell-val,
+body[data-page="payroll"] .tbl:not(.insurance-table) td[data-label="小計"] .cell-val {
+display: inline-block;
+margin-left: auto !important; /* 關鍵：擠到最右 */
+text-align: right;
+width: auto;
 }
+
+/* 清除干擾 */
+body[data-page="payroll"] .tbl:not(.insurance-table) td,
+body[data-page="payroll"] .tbl:not(.insurance-table) th {
+padding-right: 0 !important;
+}
+}
+
 /* =========================================
 [NEW] 新功能區 (Hero/Video/Modal)
 ========================================= */
 /* Hero (Wix 風格首頁) */
 .hero-section {
 position: relative;
-/* 請記得準備 bg-hero.jpg 檔案 */
 background-image: url('bg-hero.jpg');
 background-size: cover;
 background-position: center;
