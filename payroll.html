@@ -49,44 +49,22 @@
     .kpi .box .lbl{color:#7a7557; font-weight:700;}
     .kpi .box .num{font-size:24px; font-weight:900; color:#2e7d32;}
 
-    /* ★★★ 表格與欄位寬度強制修正 ★★★ */
+    /* ★★★ 表格通用基礎設定 ★★★ */
     .tbl{ width:100%; border-collapse:separate; border-spacing:0; background:#fff; border:1px solid var(--line); border-radius:12px; overflow:hidden; table-layout: fixed; }
     
     .tbl th{ background:#f6f1d9; color:#5b5534; padding:12px; font-weight:800; border-bottom:1px solid var(--line); font-size: 15px;}
     .tbl td{ padding:12px; border-top:1px solid var(--line); font-size: 15px; vertical-align: middle; }
     
-    /* === 第1欄: 代碼 (靠左) === */
-    .tbl th:first-child, .tbl td:first-child { 
-        text-align: left; 
-        padding-left: 20px; 
-        white-space: nowrap; 
-    }
-
-    /* === 第2欄: 單價 (預設) === */
-    /* 稍後透過 .tbl:not(.insurance-table) 特別針對單價進行強制右對齊與 padding 控制 */
-
-    /* === 第3欄: 本月支數 (置中) === */
-    .tbl th:nth-child(3), .tbl td:nth-child(3) {
-        text-align: center;
-    }
-    
-    /* === 第4欄: 小計 (靠右) === */
-    .tbl th:nth-child(4), .tbl td:nth-child(4) {
-        text-align: right;
-        padding-right: 20px;
-    }
-
     .tbl tbody tr:nth-child(even){ background:#fffef9; }
     .tbl input[type="number"]{ width:80px; height:34px; text-align:right; border:1px solid #ddd; border-radius:4px; margin: 0 auto; display:block;}
     .tbl .right{ text-align:right; }
     .tbl .mono{ font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; }
 
-    /* ★ 修正投保級距表格與「自動」膠囊樣式 ★ */
+    /* ★ 投保級距表格專屬 ★ */
     .insurance-table { table-layout: auto !important; width: 100%; }
     .insurance-table input { width: 100% !important; min-width: 60px; }
     .sub-text { font-size: 11px; display: block; color: #777; line-height: 1.2; }
     
-    /* 自動按鈕樣式 */
     .auto-chip {
         display: flex !important;
         flex-direction: row !important;
@@ -96,12 +74,7 @@
         white-space: nowrap !important;
         gap: 6px !important;
     }
-    .auto-chip input {
-        margin: 0 !important;
-        width: auto !important;
-        min-width: 0 !important;
-        cursor: pointer;
-    }
+    .auto-chip input { margin: 0 !important; width: auto !important; min-width: 0 !important; cursor: pointer; }
 
     /* 其他排版 */
     .grid-2{display:grid; grid-template-columns:1fr 1fr; gap:14px;}
@@ -109,116 +82,109 @@
     .pill-note{display:inline-block; padding:2px 8px; border:1px solid var(--line); border-radius:999px; background:#fff; font-weight:700; color:#333;}
 
     /* ============================================================
-       ✅ 【修正1】勞保及健保在「正中間」且輸入欄對齊
-       設定：所有保險表格內的 td/th 一律置中，除了第一欄保持靠左易讀
+       【重點修改 1：保險表格強制置中】
+       針對 .insurance-table 強制將所有欄位（標題 th 與內容 td）完全置中。
+       不使用 left/right padding，直接 text-align: center。
        ============================================================ */
     .tbl.insurance-table th,
     .tbl.insurance-table td {
-        vertical-align: middle;
-        text-align: center !important; /* 強制標題與內容置中 */
-        padding-left: 8px !important; 
+        text-align: center !important; 
+        padding-left: 8px !important;
         padding-right: 8px !important;
+        vertical-align: middle !important;
     }
-
-    /* 確保輸入框本體在格子內置中，且輸入的文字也置中 */
-    .tbl.insurance-table tbody td input {
-        display: block;
-        margin: 0 auto !important; 
-        text-align: center !important;
-    }
-
-    /* 第一欄(投保級距)維持靠左，比較好閱讀 */
+    /* 第一欄(投保級距)維持靠左閱讀體驗，或也可改成置中 */
     .tbl.insurance-table th:first-child,
     .tbl.insurance-table td:first-child {
         text-align: left !important;
         padding-left: 15px !important;
     }
-
+    /* 強制輸入框置中 */
+    .tbl.insurance-table tbody td input {
+        display: block;
+        margin: 0 auto !important;
+        text-align: center !important;
+    }
 
     /* ============================================================
-       ✅ 【修正2】單價右方的數字要像小計一樣靠右對齊 (桌機 + 手機)
-       邏輯：單價與小計使用相同的 padding-right: 20px
+       【重點修改 2：單價靠右對齊 (一般薪資表)】
+       限定在非保險表格 (.tbl:not(.insurance-table))
+       第1欄: 靠左
+       第2欄: 單價 (靠右，padding 20px)
+       第3欄: 支數 (置中)
+       第4欄: 小計 (靠右，padding 20px)
        ============================================================ */
+    
+    /* 1. 代碼 (左) */
+    .tbl:not(.insurance-table) th:first-child, 
+    .tbl:not(.insurance-table) td:first-child { 
+        text-align: left; 
+        padding-left: 20px; 
+    }
+    /* 2. 單價 (右，調整 padding 使數字整齊) */
+    .tbl:not(.insurance-table) th:nth-child(2),
+    .tbl:not(.insurance-table) td:nth-child(2) {
+        text-align: right !important; 
+        padding-right: 20px !important; /* 原本可能是 40px/60px，現在改成與小計一致 */
+    }
+    /* 3. 支數 (中) */
+    .tbl:not(.insurance-table) th:nth-child(3),
+    .tbl:not(.insurance-table) td:nth-child(3) {
+        text-align: center !important;
+    }
+    /* 4. 小計 (右) */
+    .tbl:not(.insurance-table) th:nth-child(4),
+    .tbl:not(.insurance-table) td:nth-child(4) {
+        text-align: right !important;
+        padding-right: 20px !important;
+    }
 
-    /* [桌機版] 設定 Payroll 四大表的第2欄(單價)與第4欄(小計)對齊 */
-    body[data-page="payroll"] .tbl:not(.insurance-table) th:nth-child(2),
-    body[data-page="payroll"] .tbl:not(.insurance-table) td:nth-child(2) {
-      text-align: right !important;
-      padding-right: 20px !important; /* 與小計欄位統一 */
-    }
-    body[data-page="payroll"] .tbl:not(.insurance-table) th:nth-child(4),
-    body[data-page="payroll"] .tbl:not(.insurance-table) td:nth-child(4) {
-      text-align: right !important;
-      padding-right: 20px !important;
-    }
-    /* 支數置中 */
-    body[data-page="payroll"] .tbl:not(.insurance-table) th:nth-child(3),
-    body[data-page="payroll"] .tbl:not(.insurance-table) td:nth-child(3) {
-      text-align: center !important;
+    /* Payroll 表格內的 input 寬度 */
+    body[data-page="payroll"] .tbl:not(.insurance-table) input[type="number"] {
+        width: 90px !important;
     }
 
     @media (max-width:860px){
       .grid-2{grid-template-columns:1fr;}
 
-      /* 手機版卡片化 */
+      /* 手機版卡片化設定 */
       .tbl:not(.insurance-table){display:block; font-size:15px; border:0; background:none; overflow:visible;}
       .tbl:not(.insurance-table) thead{display:none;}
       .tbl:not(.insurance-table) tbody,
       .tbl:not(.insurance-table) tfoot{display:block; width:100%;}
       .tbl:not(.insurance-table) tbody tr{display:block; border:1px solid var(--line); border-radius:12px; padding:10px 12px; margin-bottom:12px; background:#fff; box-shadow:0 1px 2px rgba(0,0,0,.05);}
-      .tbl:not(.insurance-table) tbody tr:nth-child(even){background:#fff;}
       
       .tbl:not(.insurance-table) td{
-        display:flex;
-        gap:12px;
-        justify-content:space-between;
-        align-items:center;
-        padding:6px 0;
-        line-height:1.45;
-        white-space:normal;
-        border-top:none;
+        display:flex; gap:12px; justify-content:space-between; align-items:center;
+        padding:6px 0; border-top:none; white-space:normal;
       }
-
       .tbl:not(.insurance-table) td[data-label]::before{
-        content:attr(data-label);
-        font-weight:700;
-        color:#5b5534;
-        flex:1;
-        text-align:left;
+        content:attr(data-label); font-weight:700; color:#5b5534; flex:1; text-align:left;
       }
-
-      /* ✅ [手機版] 強制單價和小計的數值往右靠到底 */
+      
+      /* [手機] 強制單價/小計數字往最右邊靠 (使用 auto margin 擠過去) */
       .tbl:not(.insurance-table) td[data-label="單價"] .cell-val,
       .tbl:not(.insurance-table) td[data-label="小計"] .cell-val {
-        margin-left: auto !important; /* 自動推到最右 */
+        margin-left: auto !important;
         text-align: right !important;
         display: inline-block;
       }
-      
-      /* 本月支數輸入框位置調整 */
-      .tbl:not(.insurance-table) td[data-label="本月支數"]{
-        justify-content:space-between;
-      }
-      .tbl:not(.insurance-table) td[data-label="本月支數"] input{
-        width:90px !important;
-        margin-left:auto !important;
-        margin-right:0 !important;
-        display:block;
-        text-align:right;
-      }
 
-      .tbl:not(.insurance-table) tfoot th{
-        flex:1 1 auto;
-        background:none;
-        border:none;
-        padding:0;
-        text-align:right;
+      /* [手機] 本月支數輸入框靠右 */
+      .tbl:not(.insurance-table) td[data-label="本月支數"] input {
+        margin-left: auto !important;
+        margin-right: 0 !important;
       }
-      /* 手機版清除不必要的桌機 padding */
-      .tbl:not(.insurance-table) th,
-      .tbl:not(.insurance-table) td { 
-        padding-left:0 !important; 
-        padding-right:0 !important; 
+      
+      /* 清除 padding 避免干擾 */
+      .tbl:not(.insurance-table) td, 
+      .tbl:not(.insurance-table) th {
+         padding-left:0 !important; 
+         padding-right:0 !important;
+      }
+      
+      .tbl:not(.insurance-table) tfoot th{
+         text-align:right; border:none; padding:0;
       }
     }
   </style>
@@ -249,8 +215,6 @@
       <button class="btn pill btn-gray" id="btnPrint" type="button">列印</button>
       <button class="btn pill btn-green" id="btnResetAll" type="button">全部清空</button>
       <div style="width: 1px; height: 20px; background: #ccc; margin: 0 4px;"></div>
-      
-      <!-- 登入相關 -->
       <button class="btn pill" style="background:#4285F4; color:white;" id="btnLogin" type="button">Google 登入</button>
       <div id="member-area" style="display:none; align-items: center; gap:5px;">
           <span id="userDisplay" style="font-size: 13px; font-weight: bold; color: #333; margin-right: 4px;"></span>
@@ -465,7 +429,6 @@
             <tbody>
                 <tr>
                     <td data-label="投保級距"><select id="insGrade" style="width:100%;"></select></td>
-                    <!-- 勞健保這兩欄已經在 CSS 中設為完全置中 (含輸入框) -->
                     <td data-label="勞保(員工)"><input id="insLabor" type="number" min="0" step="1" value="0"></td>
                     <td data-label="健保(員工)"><input id="insHealth" type="number" min="0" step="1" value="0"></td>
                     <td class="right mono" id="insSum" data-label="合計">0</td>
@@ -1009,8 +972,6 @@
       });
     })();
   </script>
-  
-  <!-- 【修正】使用有效的會員系統代碼 -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
     import { getAuth, signInWithPopup, GoogleAuthProvider, signOut, onAuthStateChanged } 
@@ -1018,8 +979,11 @@
     import { getFirestore, doc, getDoc, setDoc, serverTimestamp } 
       from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-    // 這裡使用您 Sample 內的 config，才能確保登入有效
-    const config = {
+    /* 
+       請直接使用您原有的 Key 或確認此處 Key 是否正確
+       為求方便我這邊填入了前一次對話中的 config 範本 
+    */
+    const config={
       apiKey: "AIzaSyCZMhdUI0HeIoj5masuRh00pzP3SMbF6Yc",
       authDomain: "hori-test-1b93c.firebaseapp.com",
       projectId: "hori-test-1b93c",
@@ -1027,99 +991,53 @@
       messagingSenderId: "549583061796",
       appId: "1:549583061796:web:ad58b8bf80c2b6b71c29b1"
     };
+    const app=initializeApp(config), auth=getAuth(app), db=getFirestore(app), provider=new GoogleAuthProvider();
 
-    const app = initializeApp(config);
-    const auth = getAuth(app);
-    const db = getFirestore(app);
-    const provider = new GoogleAuthProvider();
-
-    const dom = {
-        login: document.getElementById('btnLogin'),
-        logout: document.getElementById('btnLogout'),
-        member: document.getElementById('member-area'),
-        user: document.getElementById('userDisplay'),
-        admin: document.getElementById('btnAdminLink'),
-        edit: document.getElementById('btnEditProfile'),
-        modal: document.getElementById('profile-modal'),
-        save: document.getElementById('btn-save-profile'),
-        name: document.getElementById('pf-name'),
-        age: document.getElementById('pf-age'),
-        title: document.querySelector('#profile-modal h3')
+    const dom={
+      login:document.getElementById('btnLogin'),
+      logout:document.getElementById('btnLogout'),
+      member:document.getElementById('member-area'),
+      user:document.getElementById('userDisplay'),
+      admin:document.getElementById('btnAdminLink'),
+      edit:document.getElementById('btnEditProfile'),
+      modal:document.getElementById('profile-modal'),
+      save:document.getElementById('btn-save-profile'),
+      cloud:document.getElementById('btnSaveCloud'),
+      name:document.getElementById('pf-name'),
+      age:document.getElementById('pf-age'),
+      title:document.querySelector('#profile-modal h3')
     };
 
-    if(dom.login) {
-        dom.login.addEventListener('click', () => {
-          signInWithPopup(auth, provider).catch(error => {
-              if (error.code === 'auth/popup-blocked') {
-                  alert("⚠️ 登入視窗被攔截！請使用 Safari/Chrome 等瀏覽器開啟。");
-              } else {
-                  alert("登入失敗：" + error.message);
-              }
-          });
-        });
-    }
+    if(dom.login) dom.login.addEventListener('click',()=>signInWithPopup(auth,provider).catch(e=>{
+        if(e.code==='auth/popup-blocked')alert("請使用 Chrome/Safari 瀏覽器開啟 (非 LINE/FB 內建)");
+        else alert(e.message)
+    }));
 
-    if(dom.logout) dom.logout.addEventListener('click', () => signOut(auth).then(() => { alert("已登出"); location.reload(); }));
-
-    onAuthStateChanged(auth, async (user) => {
-      if (user) {
-        if(dom.login) dom.login.style.display = 'none';
-        if(dom.member) dom.member.style.display = 'flex';
-        if(dom.user) dom.user.textContent = user.displayName || user.email;
-
-        try {
-          const docSnap = await getDoc(doc(db, "users", user.uid));
-          if (docSnap.exists()) {
-             if(dom.user && docSnap.data().name) dom.user.textContent = docSnap.data().name;
-          } else {
-             if(dom.title) dom.title.textContent = "歡迎加入！請完善資料";
-             if(dom.name) dom.name.value = user.displayName || "";
-             if(dom.modal) dom.modal.style.display = 'flex';
-          }
-        } catch(e) {}
-
-        try {
-          const adminSnap = await getDoc(doc(db, "admins", user.email));
-          if (adminSnap.exists() && dom.admin) dom.admin.style.display = 'inline-block';
-        } catch(e) {}
-      } else {
-        if(dom.login) dom.login.style.display = 'block';
-        if(dom.member) dom.member.style.display = 'none';
-        if(dom.admin) dom.admin.style.display = 'none';
-      }
+    if(dom.logout) dom.logout.addEventListener('click',()=>signOut(auth).then(()=>location.reload()));
+    
+    onAuthStateChanged(auth, async u=>{
+      if(u){
+        dom.login.style.display='none'; dom.member.style.display='flex'; dom.user.textContent=u.displayName||u.email;
+        try{ 
+            const s=await getDoc(doc(db,"users",u.uid));
+            if(s.exists()){ if(s.data().name) dom.user.textContent=s.data().name; }
+            else{ dom.title.textContent="歡迎加入！請完善資料"; dom.name.value=u.displayName||""; dom.modal.style.display='flex'; }
+        }catch(e){}
+        try{ const a=await getDoc(doc(db,"admins",u.email)); if(a.exists()) dom.admin.style.display='inline-block'; }catch(e){}
+      }else{ dom.login.style.display='block'; dom.member.style.display='none'; }
     });
 
-    if(dom.edit) dom.edit.addEventListener('click', async () => {
-      const s = await getDoc(doc(db, "users", auth.currentUser.uid));
-      if(s.exists()){ const d = s.data(); dom.title.textContent = "修改個人資料"; dom.name.value = d.name || ""; dom.age.value = d.age || ""; dom.modal.style.display = 'flex'; }
+    if(dom.edit) dom.edit.addEventListener('click',async()=>{ const s=await getDoc(doc(db,"users",auth.currentUser.uid)); if(s.exists()){ const d=s.data(); dom.title.textContent="修改個人資料"; dom.name.value=d.name; dom.age.value=d.age; dom.modal.style.display='flex'; } });
+    
+    if(dom.save) dom.save.addEventListener('click',async()=>{
+        const n=dom.name.value, a=dom.age.value; if(!n||!a) return alert("請填寫完整");
+        const ref=doc(db,"users",auth.currentUser.uid); const s=await getDoc(ref);
+        let d={name:n,age:a,email:auth.currentUser.email,lastUpdated:serverTimestamp()};
+        if(!s.exists()||!s.data().createdAt) d.createdAt=serverTimestamp();
+        await setDoc(ref,d,{merge:true}); alert("已儲存"); dom.modal.style.display='none'; dom.user.textContent=n;
     });
 
-    if(dom.save) dom.save.addEventListener('click', async () => {
-      const name = dom.name.value.trim();
-      const age = dom.age.value.trim();
-      if(!name || !age) return alert("請填寫完整");
-      
-      const userRef = doc(db, "users", auth.currentUser.uid);
-      try {
-          const docSnap = await getDoc(userRef);
-          let data = { name, age, email: auth.currentUser.email, lastUpdated: serverTimestamp() };
-          if (!docSnap.exists() || !docSnap.data().createdAt) {
-              data.createdAt = serverTimestamp();
-          }
-          await setDoc(userRef, data, { merge: true });
-          alert("儲存成功");
-          dom.modal.style.display = 'none';
-          dom.user.textContent = name;
-      } catch (e) { alert("儲存失敗：" + e.message); }
-    });
-
-    if(dom.modal) dom.modal.addEventListener('click', (e) => {
-      // 確保在有登入且名字不為空的狀況下，才可以點擊遮罩關閉，
-      // 並且避免點到內容區(e.target===dom.modal)
-      if (e.target === dom.modal && auth.currentUser && dom.user.textContent !== "") {
-          dom.modal.style.display = 'none';
-      }
-    });
+    if(dom.modal) dom.modal.addEventListener('click',e=>{if(e.target===dom.modal&&auth.currentUser&&dom.user.textContent!="")dom.modal.style.display='none'});
   </script>
 </body>
 </html>
