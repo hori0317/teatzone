@@ -6,34 +6,19 @@
     <title>管理後台 | 長照工具平台</title>
     <link rel="stylesheet" href="style.css"> 
     <style>
-        /* 定義顏色變數 */
+        /* 針對後台頁面的顏色變數對接 (與 style.css 統一) */
         :root {
-            --bg-color: #fffaf0;
-            --card-bg: #ffffff;
-            --text-main: #333333;
-            --text-sub: #555555;
-            --border-color: #e6dca8;
-            --header-border: #e6dca8;
-            --table-th-bg: #f6f1d9;
-            --table-th-text: #5b5534;
-            --table-hover: #f9f9f9;
-            --input-bg: #ffffff;
-            --input-border: #cccccc;
-        }
-
-        /* 深色模式變數 */
-        [data-theme="dark"] {
-            --bg-color: #1a1a1a;
-            --card-bg: #2d2d2d;
-            --text-main: #e0e0e0;
-            --text-sub: #bbbbbb;
-            --border-color: #444444;
-            --header-border: #2e7d32;
-            --table-th-bg: #3d3d3d;
-            --table-th-text: #a5d6a7;
-            --table-hover: #363636;
-            --input-bg: #3d3d3d;
-            --input-border: #555555;
+            --bg-color: var(--bg, #fffaf0);
+            --card-bg: var(--card, #ffffff);
+            --text-main: var(--ink, #333333);
+            --text-sub: var(--muted, #555555);
+            --border-color: var(--line, #e6dca8);
+            --header-border: var(--line, #e6dca8);
+            --table-th-bg: var(--table-head, #f6f1d9);
+            --table-th-text: var(--ink, #5b5534);
+            --table-hover: var(--table-stripe, #f9f9f9);
+            --input-bg: var(--input-bg, #ffffff);
+            --input-border: var(--line, #cccccc);
         }
 
         body { 
@@ -42,8 +27,9 @@
             margin: 0 auto; 
             background-color: var(--bg-color); 
             color: var(--text-main);
-            font-family: "Microsoft JhengHei", sans-serif; 
+            font-family: "Microsoft JhengHei", -apple-system, sans-serif; 
             transition: background-color 0.3s, color 0.3s;
+            line-height: 1.5;
         }
 
         .admin-header { 
@@ -65,10 +51,9 @@
             transition: background-color 0.3s, border-color 0.3s;
         }
 
-        h2 { margin-top: 0; color: #2e7d32; font-size: 1.5rem; border-bottom: 1px dashed #eee; padding-bottom: 10px; margin-bottom: 15px; }
-        [data-theme="dark"] h2 { color: #81c784; border-bottom-color: #444; }
+        h2 { margin-top: 0; color: var(--green, #2e7d32); font-size: 1.5rem; border-bottom: 1px dashed var(--border-color); padding-bottom: 10px; margin-bottom: 15px; }
 
-        table { width: 100%; border-collapse: collapse; margin-top: 0; }
+        table { width: 100%; border-collapse: collapse; margin-top: 0; background-color: var(--card-bg); }
         th, td { padding: 12px 10px; text-align: left; border-bottom: 1px solid var(--border-color); font-size: 15px; }
         th { background-color: var(--table-th-bg); color: var(--table-th-text); font-weight: bold; white-space: nowrap; }
         tr:hover { background-color: var(--table-hover); }
@@ -89,27 +74,31 @@
         .badge-self { background: #e6fffa; color: #00a080; padding: 2px 8px; border-radius: 10px; font-size: 12px; border: 1px solid #b2f5ea; margin-left: 5px;}
         [data-theme="dark"] .badge-self { background: #1e3a3a; color: #4fd1c5; border-color: #285e5e; }
 
-        .watch-time-cell { font-family: "Courier New", monospace; color: #2e7d32; font-weight: bold; font-size: 14px; }
-        [data-theme="dark"] .watch-time-cell { color: #81c784; }
-        .raw-seconds { font-size: 11px; color: #999; margin-left: 5px; font-weight: normal; }
+        .watch-time-cell { font-family: "Courier New", monospace; color: var(--green, #2e7d32); font-weight: bold; font-size: 14px; }
+        .raw-seconds { font-size: 11px; color: var(--text-sub); margin-left: 5px; font-weight: normal; }
 
-        /* 深色模式切換按鈕樣式 */
+        /* 深色模式切換按鈕樣式 (配合前台) */
         .theme-toggle {
             cursor: pointer;
-            padding: 8px 12px;
+            padding: 8px 14px;
             border-radius: 20px;
             border: 1px solid var(--border-color);
             background: var(--card-bg);
             color: var(--text-main);
             font-size: 14px;
-            margin-right: 10px;
+            margin-right: 15px;
             display: inline-flex;
             align-items: center;
-            gap: 5px;
+            gap: 6px;
+            font-weight: 600;
+            transition: all 0.2s;
         }
+        .theme-toggle:hover { background-color: var(--table-th-bg); }
+
+        .hint { color: var(--text-sub); font-size: 13px; margin-bottom: 10px; }
     </style>
     <script>
-        // 初始化深色模式 (放在 Head 避免閃爍)
+        // 立即執行：初始化深色模式 (放在 Head 避免頁面載入時閃爍)
         (function() {
             const savedTheme = localStorage.getItem('theme') || 'light';
             document.documentElement.setAttribute('data-theme', savedTheme);
@@ -121,19 +110,22 @@
 <div class="admin-header">
     <h1>🛠️ 管理員後台</h1>
     <div style="display: flex; align-items: center;">
+        <!-- 深色模式切換 -->
         <button class="theme-toggle" id="themeToggle">
             <span id="themeIcon">🌙</span> <span id="themeText">深色模式</span>
         </button>
-        <span id="currentAdminInfo" style="margin-right: 10px; font-weight: bold; color: var(--text-sub);">檢查權限中...</span>
+        <span id="currentAdminInfo" style="margin-right: 15px; font-weight: bold; color: var(--text-main);">檢查權限中...</span>
         <a href="index.html" class="btn pill btn-gray">回首頁</a>
     </div>
 </div>
 
 <div id="loading" style="text-align: center; margin-top: 50px;">
-    <p style="font-size: 18px; color: #666;">正在驗證管理員身分...</p>
+    <p style="font-size: 18px; color: var(--text-sub);">正在驗證管理員身分...</p>
 </div>
 
 <div id="dashboard" style="display: none;">
+    
+    <!-- 會員列表 -->
     <div class="section-card">
         <h2>👥 會員資料列表</h2>
         <div class="btn-group">
@@ -151,20 +143,25 @@
                         <th>總觀看學習時長</th>
                     </tr>
                 </thead>
-                <tbody></tbody>
+                <tbody>
+                    <!-- 資料將由 JS 動態填入 -->
+                </tbody>
             </table>
         </div>
     </div>
 
+    <!-- 管理員權限管理 -->
     <div class="section-card" id="superAdminSection">
         <h2>🔑 管理員權限設定</h2>
-        <p class="hint">輸入對方的 Google Email 來賦予管理權限。</p>
+        <p class="hint">輸入對方的 Google Email 來賦予管理權限。受邀者登入後即可進入此頁面。</p>
         <div class="admin-controls">
             <input type="email" id="newAdminEmail" class="admin-input" placeholder="例如：colleague@gmail.com">
             <button id="btnAddAdmin" class="btn pill btn-orange">新增管理員</button>
         </div>
-        <h3 style="font-size: 16px; margin-top: 25px; color: var(--table-th-text);">目前管理員名單：</h3>
-        <ul id="adminList" style="list-style: none; padding: 0;"></ul>
+        <h3 style="font-size: 16px; margin-top: 25px; color: var(--text-main);">目前管理員名單：</h3>
+        <ul id="adminList" style="list-style: none; padding: 0;">
+            <!-- 名單由 JS 填入 -->
+        </ul>
     </div>
 </div>
 
@@ -173,6 +170,7 @@
     import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
     import { getFirestore, collection, getDocs, doc, setDoc, deleteDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
+    // Firebase 配置 (保持不變)
     const firebaseConfig = {
         apiKey: "AIzaSyCZMhdUI0HeIoj5masuRh00pzP3SMbF6Yc",
         authDomain: "hori-test-1b93c.firebaseapp.com",
@@ -186,30 +184,35 @@
     const auth = getAuth(app);
     const db = getFirestore(app);
 
-    let allUsersData = []; 
-    let currentUserEmail = "";
+    let allUsersData = [], currentUserEmail = "";
 
-    // 深色模式切換邏輯
+    // --- 深色模式邏輯 ---
     const themeBtn = document.getElementById('themeToggle');
     const themeIcon = document.getElementById('themeIcon');
     const themeText = document.getElementById('themeText');
 
     function updateThemeUI(theme) {
-        themeIcon.textContent = theme === 'dark' ? '☀️' : '🌙';
-        themeText.textContent = theme === 'dark' ? '淺色模式' : '深色模式';
+        if (theme === 'dark') {
+            themeIcon.textContent = '☀️';
+            themeText.textContent = '淺色模式';
+        } else {
+            themeIcon.textContent = '🌙';
+            themeText.textContent = '深色模式';
+        }
     }
 
-    // 初始 UI 設定
+    // 初始化按鈕 UI
     updateThemeUI(document.documentElement.getAttribute('data-theme'));
 
     themeBtn.addEventListener('click', () => {
-        let currentTheme = document.documentElement.getAttribute('data-theme');
-        let newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+        const currentTheme = document.documentElement.getAttribute('data-theme');
+        const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
         document.documentElement.setAttribute('data-theme', newTheme);
         localStorage.setItem('theme', newTheme);
         updateThemeUI(newTheme);
     });
 
+    // --- 時間格式化邏輯 ---
     function formatTime(totalSeconds) {
         if (!totalSeconds || isNaN(totalSeconds) || totalSeconds <= 0) return "0 秒";
         const hrs = Math.floor(totalSeconds / 3600);
@@ -222,13 +225,16 @@
         return result;
     }
 
+    // --- 身分驗證邏輯 ---
     onAuthStateChanged(auth, async (user) => {
         if (user) {
             currentUserEmail = user.email;
             try {
+                // 檢查是否具有管理員權限
                 const adminSnap = await getDoc(doc(db, "admins", user.email));
                 if (adminSnap.exists()) {
                     let displayName = user.displayName || user.email;
+                    // 嘗試從 users 集合抓取真實姓名
                     try {
                         const u = await getDoc(doc(db, "users", user.uid));
                         if (u.exists() && u.data().name) displayName = u.data().name;
@@ -237,28 +243,34 @@
                     document.getElementById('currentAdminInfo').textContent = `嗨，${displayName}`;
                     document.getElementById('loading').style.display = 'none';
                     document.getElementById('dashboard').style.display = 'block';
-                    loadUsers(); loadAdmins();
+                    
+                    // 載入資料
+                    loadUsers(); 
+                    loadAdmins();
                 } else {
-                    document.body.innerHTML = "<h2 style='text-align:center; margin-top:100px;'>⛔ 權限不足<br><br><a href='index.html' class='btn pill btn-gray'>回首頁</a></h2>";
+                    document.body.innerHTML = "<h2 style='text-align:center; margin-top:100px;'>⛔ 權限不足<br><p style='font-size:16px;'>你不在管理員名單中。</p><br><a href='index.html'>回首頁</a></h2>";
                 }
-            } catch (e) { alert("驗證錯誤"); }
+            } catch (e) { alert("驗證過程出錯"); }
         } else {
-            document.body.innerHTML = "<h2 style='text-align:center; margin-top:100px;'>請先登入<br><br><a href='index.html' class='btn pill btn-gray'>回首頁</a></h2>";
+            document.body.innerHTML = "<h2 style='text-align:center; margin-top:100px;'>請先登入<br><br><a href='index.html'>回首頁</a></h2>";
         }
     });
 
+    // --- 載入會員資料 (含排序與舊會員相容邏輯) ---
     async function loadUsers() {
         const tbody = document.querySelector('#usersTable tbody');
         const btn = document.getElementById('btnRefreshUsers');
         btn.disabled = true;
         btn.textContent = "讀取中...";
-        tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; padding:30px;">載入中...</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; padding:30px;">正在讀取資料...</td></tr>';
         
         try {
+            // 直接抓取所有會員，不使用 query orderBy 避免排除缺少欄位的舊資料
             const querySnapshot = await getDocs(collection(db, "users"));
             let rawDataList = [];
             querySnapshot.forEach((docSnap) => { rawDataList.push(docSnap.data()); });
 
+            // 在前端進行排序：由新到舊 (缺少 createdAt 則排在最後)
             rawDataList.sort((a, b) => {
                 const timeA = a.createdAt ? (a.createdAt.toMillis ? a.createdAt.toMillis() : new Date(a.createdAt).getTime()) : 0;
                 const timeB = b.createdAt ? (b.createdAt.toMillis ? b.createdAt.toMillis() : new Date(b.createdAt).getTime()) : 0;
@@ -267,26 +279,53 @@
 
             tbody.innerHTML = '';
             allUsersData = []; 
-            if (rawDataList.length === 0) tbody.innerHTML = '<tr><td colspan="5">無資料</td></tr>';
+
+            if (rawDataList.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;">目前無會員資料</td></tr>';
+                return;
+            }
 
             rawDataList.forEach((data) => {
+                // 處理日期字串
                 let dateStr = '早期註冊';
                 if (data.createdAt) {
-                    dateStr = typeof data.createdAt.toDate === 'function' ? data.createdAt.toDate().toLocaleDateString('zh-TW') : new Date(data.createdAt).toLocaleDateString('zh-TW');
+                    dateStr = typeof data.createdAt.toDate === 'function' 
+                        ? data.createdAt.toDate().toLocaleDateString('zh-TW') 
+                        : new Date(data.createdAt).toLocaleDateString('zh-TW');
                 }
-                const name = data.name || '(未填寫)', email = data.email || '無 Email', age = data.age || '-';
-                const totalSec = data.totalWatchTime || 0, formattedTime = formatTime(totalSec);
+
+                const name = data.name || '(未填寫)';
+                const email = data.email || '無 Email';
+                const age = data.age || '-';
+                
+                // 學習時長邏輯 (對接 video.html 累加的 totalWatchTime)
+                const totalSec = data.totalWatchTime || 0;
+                const formattedTime = formatTime(totalSec);
+
+                // 存入全域變數供 CSV 導出
                 allUsersData.push({ name, age, email, date: dateStr, watchTime: formattedTime, rawSeconds: totalSec });
 
                 tbody.innerHTML += `<tr>
-                    <td>${name}</td><td>${age}</td><td>${email}</td><td>${dateStr}</td>
-                    <td class="watch-time-cell">${formattedTime}<span class="raw-seconds">(${totalSec}s)</span></td>
+                    <td>${name}</td>
+                    <td>${age}</td>
+                    <td>${email}</td>
+                    <td>${dateStr}</td>
+                    <td class="watch-time-cell">
+                        ${formattedTime}
+                        <span class="raw-seconds">(${totalSec}s)</span>
+                    </td>
                 </tr>`;
             });
-        } catch (e) { tbody.innerHTML = `<tr><td colspan="5" style="color:red">讀取失敗</td></tr>`; } 
-        finally { btn.disabled = false; btn.textContent = "🔄 重新整理列表"; }
+        } catch (e) { 
+            console.error(e);
+            tbody.innerHTML = `<tr><td colspan="5" style="color:red; text-align:center;">讀取失敗</td></tr>`; 
+        } finally { 
+            btn.disabled = false; 
+            btn.textContent = "🔄 重新整理列表"; 
+        }
     }
 
+    // --- 載入管理員名單 ---
     async function loadAdmins() {
         const list = document.getElementById('adminList');
         list.innerHTML = '<li>載入中...</li>';
@@ -294,39 +333,65 @@
             const querySnapshot = await getDocs(collection(db, "admins"));
             list.innerHTML = '';
             querySnapshot.forEach((docSnap) => {
-                const email = docSnap.id, isSelf = (email === currentUserEmail);
+                const email = docSnap.id;
+                const isSelf = (email === currentUserEmail);
+                
                 const li = document.createElement('li');
                 li.style.cssText = "padding:10px 0; border-bottom:1px dashed var(--border-color); display:flex; justify-content:space-between; align-items:center;";
-                const btnHtml = isSelf ? `<span class="badge-self">自己</span>` : `<button class="btn pill btn-gray" style="font-size:12px; padding:2px 8px;" onclick="removeAdmin('${email}')">移除</button>`;
+                
+                const btnHtml = isSelf 
+                    ? `<span class="badge-self">自己</span>` 
+                    : `<button class="btn pill btn-gray" style="font-size:12px; padding:2px 8px;" onclick="removeAdmin('${email}')">移除</button>`;
+                
                 li.innerHTML = `<b>${email}</b><div>${btnHtml}</div>`;
                 list.appendChild(li);
             });
         } catch (e){ list.innerHTML = '<li>載入失敗</li>'; }
     }
 
+    // --- 新增管理員邏輯 ---
     document.getElementById('btnAddAdmin').addEventListener('click', async () => {
         const email = document.getElementById('newAdminEmail').value.trim().toLowerCase();
         if(!email) return alert("請輸入 Email");
         try { 
             await setDoc(doc(db, "admins", email), { role: "admin", addedAt: new Date() }); 
-            alert("成功新增"); document.getElementById('newAdminEmail').value = ''; loadAdmins(); 
+            alert("成功新增管理員"); 
+            document.getElementById('newAdminEmail').value = ''; 
+            loadAdmins(); 
         } catch (e) { alert("失敗：權限不足"); }
     });
 
+    // --- 移除管理員 (掛載至 window 供內嵌 HTML 調用) ---
     window.removeAdmin = async (email) => {
         if (email === currentUserEmail) return alert("不能移除自己");
-        if(!confirm(`確定移除 ${email}？`)) return;
-        try { await deleteDoc(doc(db, "admins", email)); alert("已移除"); loadAdmins(); } catch(e) { alert("權限不足"); }
+        if(!confirm(`確定移除 ${email} 的管理權限？`)) return;
+        try { 
+            await deleteDoc(doc(db, "admins", email)); 
+            alert("已移除權限"); 
+            loadAdmins(); 
+        } catch(e) { alert("失敗：權限不足"); }
     };
 
+    // --- CSV 匯出邏輯 ---
     document.getElementById('btnExportExcel').addEventListener('click', () => {
-        if (allUsersData.length === 0) return alert("無資料");
+        if (allUsersData.length === 0) return alert("無資料可供匯出");
+        
         let csvContent = "\uFEFF姓名,年齡,Email,註冊時間,總觀看時長,原始秒數\n";
-        allUsersData.forEach(u => { csvContent += `"${u.name}","${u.age}","${u.email}","${u.date}","${u.watchTime}","${u.rawSeconds}"\n`; });
+        allUsersData.forEach(u => { 
+            csvContent += `"${u.name}","${u.age}","${u.email}","${u.date}","${u.watchTime}","${u.rawSeconds}"\n`; 
+        });
+        
+        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+        const url = URL.createObjectURL(blob);
         const link = document.createElement("a");
-        link.href = URL.createObjectURL(new Blob([csvContent], { type: 'text/csv;charset=utf-8;' }));
-        link.download = `會員進度_${new Date().toISOString().split('T')[0]}.csv`;
+        const fileName = `會員學習進度_${new Date().toISOString().split('T')[0]}.csv`;
+        
+        link.setAttribute("href", url);
+        link.setAttribute("download", fileName);
+        link.style.visibility = 'hidden';
+        document.body.appendChild(link);
         link.click();
+        document.body.removeChild(link);
     });
 
     document.getElementById('btnRefreshUsers').addEventListener('click', loadUsers);
