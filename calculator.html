@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>長照相關資訊｜長照工具</title>
-  <meta name="description" content="長照服務額度試算機，快速查詢CMS等級補助額度、計算自付金額與居服薪資。">
+  <title>額度計算機｜長照工具</title>
+  <meta name="description" content="長照服務額度計算機，快速查詢CMS等級補助額度、計算自付金額與居服薪資。由 hori 製作。">
   <link rel="icon" type="image/x-icon" href="YORU.ico" />
   <link rel="stylesheet" href="style.css" />
   
@@ -15,9 +15,24 @@
         document.documentElement.setAttribute('data-theme', savedTheme);
     })();
   </script>
+  
+  <script src="nav.js" defer></script>
+  <script src="script.js" defer></script>
 
   <style>
-    /* 彈窗樣式 - 引用變數支援深色模式 */
+    /* 原版排版：保留 grid-2 與寬度微調 */
+    .grid-2{
+      display: grid;
+      grid-template-columns: 2.2fr 1.3fr;
+      gap: 16px; 
+      align-items: start;
+    }
+    @media (max-width: 1024px){ .grid-2{ grid-template-columns: 1.8fr 1.2fr; } }
+    @media (max-width: 860px){ .grid-2{ grid-template-columns: 1fr; } }
+    
+    #addonPlaceholders{ display:none; }
+
+    /* 會員彈窗樣式 - 引用變數支援深色模式 */
     .modal-overlay { 
         position: fixed; 
         top: 0; left: 0; 
@@ -55,78 +70,41 @@
     }
     .modal-actions { margin-top: 20px; }
 
-    /* 本頁特定表格與摺疊選單樣式 (已改為引用變數) */
-    .info-table{ 
-        width:100%; 
-        border-collapse:separate; 
-        border-spacing:0; 
-        background:var(--card); 
-        border:1px solid var(--line); 
-        border-radius:12px; 
-        overflow:hidden; 
-        text-align:center; 
-        margin-top:10px; 
-        color: var(--ink);
+    /* ============================================================
+       標題欄擠壓優化 (確保與 news.html 結構一致但不會擠到標籤)
+       ============================================================ */
+    @media (min-width: 1181px) {
+        /* 當螢幕較窄但還沒變成手機版時，縮小按鈕文字或間距 */
+        .actions { gap: 4px !important; }
+        .actions .btn.pill { padding: 6px 10px; font-size: 13px; }
+        .theme-btn { padding: 6px 8px; font-size: 13px; }
     }
-    .info-table th{ background:var(--table-head); color:var(--ink); padding:10px; font-weight:800; border-bottom:1px solid var(--line); }
-    .info-table td{ padding:10px; border-top:1px solid var(--line); font-weight:600; }
-    .info-table tbody tr:nth-child(even){ background:var(--table-stripe); }
 
-    .quick-links{ display:flex; gap:10px; flex-wrap:wrap; margin:14px 0 8px; }
-    .quick-links a{ 
-        display:inline-block; 
-        padding:8px 14px; 
-        border-radius:999px; 
-        background:var(--card); 
-        border:1px solid var(--line); 
-        font-weight:700; 
-        color:var(--ink); 
-        text-decoration:none; 
+    @media (max-width: 1350px) and (min-width: 1181px) {
+        /* 在這個區間內，隱藏「重置」與「列印」的文字，只留圖示或變小，防止擠壓中間 */
+        #btnReset, #btnPrint { width: 40px; overflow: hidden; white-space: nowrap; padding: 0; display: flex; justify-content: center; align-items: center; }
+        #btnReset::before { content: "🔄"; }
+        #btnPrint::before { content: "🖨️"; }
+        #btnReset span, #btnPrint span { display: none; } /* 如果 HTML 有包 span 的話 */
+        #btnReset, #btnPrint { font-size: 18px; }
+        #btnReset { color: transparent; }
+        #btnPrint { color: transparent; }
     }
-    .quick-links a:hover{ background: var(--line); transform:translateY(-1px); }
-
-    .accordion{ border:1px solid var(--line); border-radius:12px; overflow:hidden; background:var(--card); }
-    .acc-item + .acc-item{ border-top:1px solid var(--line); }
-    
-    .acc-head{ 
-        width:100%; 
-        text-align:left; 
-        background:var(--table-head); 
-        border:0; 
-        padding:12px 16px; 
-        display:grid; 
-        grid-template-columns:90px 1fr 120px; 
-        gap:10px; 
-        align-items:center; 
-        cursor:pointer; 
-        font-weight:800; 
-        color: var(--ink);
-    }
-    .acc-head .code{ font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; }
-    .acc-head .name{ color:var(--ink); }
-    .acc-head .hint{ color:var(--muted); font-weight:700; text-align:right; }
-    
-    .acc-body{ display:none; padding:14px 16px; background:var(--table-stripe); line-height:1.7; color: var(--ink); }
-    .acc-body.show{ display:block; }
-    .acc-body p{ margin:8px 0; }
-    .acc-body .subttl{ font-weight:800; color:var(--green); margin-top:10px; }
-    .acc-body ul{ margin:6px 0 10px 1.2em; padding:0; }
-    .acc-body li{ margin:4px 0; }
-    .acc-note{ color:var(--muted); font-size:13px; margin-top:8px; }
-    
-    @media (max-width:700px){ .acc-head{ grid-template-columns:70px 1fr 90px; padding:10px 12px; } }
   </style>
-
-  <script src="nav.js" defer></script>
-  <script src="script.js" defer></script>
 </head>
-
-<body data-page="care-info">
+<body data-page="calculator"> 
   
+  <div class="watermark" aria-hidden="true">
+    <span class="wm-item" style="top:5%; left:5%;  --dur:9s;">@hori版權所有</span>
+    <span class="wm-item" style="top:5%; left:65%; --dur:10s;">@hori版權所有</span>
+    <span class="wm-item" style="top:50%; left:5%;  --dur:10s;">@hori版權所有</span>
+    <span class="wm-item" style="top:75%; left:70%; --dur:10s;">@hori版權所有</span>
+  </div>
+
   <header class="topbar">
     <div class="brand">
       <a href="index.html" class="logo-link"><img src="org-logo.png" alt="logo" onerror="this.style.opacity=0.2" /></a>
-      <span class="site-title" id="siteTitle" data-sync-title>長照相關資訊</span>
+      <span class="site-title" id="siteTitle" data-sync-title>額度計算機</span>
     </div>
     
     <nav class="nav-links" aria-label="主選單">
@@ -139,341 +117,213 @@
       <a href="about.html">關於我們</a>
     </nav>
     
-    <div class="actions" style="align-items: center; gap: 8px;">
-        <!-- 深色模式切換按鈕 -->
-        <button id="darkToggle" class="theme-btn">
-            <span class="icon">🌙</span> <span class="txt">深色</span>
-        </button>
+    <!-- 右側按鈕區：結構與 news.html 保持完全一致 -->
+    <div class="actions">
+      <!-- 深色模式切換按鈕 (回到右側) -->
+      <button id="darkToggle" class="theme-btn">
+          <span class="icon">🌙</span> <span class="txt">深色</span>
+      </button>
 
-        <button class="btn pill" style="background:#4285F4; color:white;" id="btnLogin" type="button">Google 登入</button>
-        <div id="member-area" style="display:none; align-items: center; gap:5px;">
-            <span id="userDisplay" style="font-size: 13px; font-weight: bold; color: var(--ink); margin-right: 4px;"></span>
-            <a href="admin.html" id="btnAdminLink" class="btn pill" style="background:#673AB7; color:white; font-size:12px; padding:4px 10px; text-decoration:none; display:none;">管理後台</a>
-            <button class="btn pill" style="background:#777; color:white; font-size:12px; padding:4px 10px;" id="btnEditProfile" type="button">修改資料</button>
-            <button class="btn pill" style="background:#EA4335; color:white;" id="btnLogout" type="button">登出</button>
-        </div>
+      <button class="btn pill btn-orange" id="btnUnitToggle" type="button" data-unit="B">B單位</button>
+      <button class="btn pill btn-green" id="btnReset" type="button">重置</button>
+      <button class="btn pill btn-gray" id="btnPrint" type="button" onclick="window.print()">列印</button>
+      
+      <div style="width: 1px; height: 20px; background: var(--line); margin: 0 2px;"></div>
+      
+      <button class="btn pill" style="background:#4285F4; color:white;" id="btnLogin" type="button">Google 登入</button>
+      
+      <div id="member-area" style="display:none; align-items: center; gap:5px;">
+          <span id="userDisplay" style="font-size: 13px; font-weight: bold; color: var(--ink); margin-right: 4px;"></span>
+          <a href="admin.html" id="btnAdminLink" class="btn pill" style="display:none;background:#673AB7;color:white;font-size:12px;padding:4px 10px;text-decoration:none">後台</a>
+          <button class="btn pill" style="background:#777; color:white; font-size:12px; padding:4px 10px;" id="btnEditProfile" type="button">修改</button>
+          <button class="btn pill" style="background:#34A853; color:white;" id="btnSaveCloud" type="button">儲存</button>
+          <button class="btn pill" style="background:#EA4335; color:white;" id="btnLogout" type="button">登出</button>
+      </div>
     </div>
   </header>
   <div class="divider"></div>
 
   <main class="container">
-    <section class="card" style="margin-bottom:16px;">
-      <h1 class="card-title" style="font-size:22px;">長照相關資訊</h1>
-      <p class="hint">彙整法規重點、補助額度、服務碼別說明與下載連結。</p>
-      <div class="quick-links">
-        <a href="#quota-ba">補助額度速覽</a>
-        <a href="#svcdesc">服務碼別說明</a>
-        <a href="#laws">法規與作業要點</a>
-        <a href="#forms">表單與下載</a>
-        <a href="#faq">常見問題</a>
+    <section class="grid-2">
+      <div class="card">
+        <h2 class="card-title">基本資料</h2>
+        <div class="form-row">
+          <label>身分類別：</label>
+          <div class="chips">
+            <label class="chip"><input type="radio" name="idty" value="一般戶" checked> 一般戶</label>
+            <label class="chip"><input type="radio" name="idty" value="中低收入戶"> 中低收</label>
+            <label class="chip"><input type="radio" name="idty" value="低收入戶"> 低收</label>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <label>CMS 等級：</label>
+          <div class="cms">
+            <label><input type="radio" name="cms" value="2" checked><span>2</span></label>
+            <label><input type="radio" name="cms" value="3"><span>3</span></label>
+            <label><input type="radio" name="cms" value="4"><span>4</span></label>
+            <label><input type="radio" name="cms" value="5"><span>5</span></label>
+            <label><input type="radio" name="cms" value="6"><span>6</span></label>
+            <label><input type="radio" name="cms" value="7"><span>7</span></label>
+            <label><input type="radio" name="cms" value="8"><span>8</span></label>
+          </div>
+        </div>
+
+        <div class="form-row">
+            <label>留用額度：</label>
+            <input id="keepQuota" type="number" min="0" style="background:var(--input-bg); color:var(--ink); border:1px solid var(--line); border-radius:6px; padding:4px 8px;"/>
+        </div>
+        <div class="form-row">
+            <label>給付額度：</label>
+            <input id="grantQuota" type="text" readonly style="background:var(--table-stripe); color:var(--ink); border:1px solid var(--line); border-radius:6px; padding:4px 8px;"/>
+        </div>
+
+        <div class="form-row">
+          <label>是否有外籍看護：</label>
+          <div class="chips">
+            <label class="chip"><input type="radio" name="foreign" value="1"> 有</label>
+            <label class="chip"><input type="radio" name="foreign" value="0" checked> 無</label>
+          </div>
+        </div>
+        <div id="warnSCfg" class="note warn">未勾選外籍看護，SC 目前不可用。</div>
+
+        <div class="qrbox">
+          <div class="qr-left"><img src="qrcode.png" alt="QR" onerror="this.style.opacity=0.2" /></div>
+          <div class="qr-right">
+            <p class="bold">我們是 XX 居家長照機構</p>
+            <p>諮詢電話：02-XXXX-XXXX</p>
+            <p class="orange">廣告待補</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2 class="card-title">個案額度及自付額</h2>
+        <div class="kv">
+          <div class="kv-row"><span>額度總計：</span><b id="sumGrantBA">0</b></div>
+          <div class="kv-row"><span>剩餘額度：</span><b id="sumRemainBA">0</b></div>
+          <div id="overMain" class="note warn hidden">已超過 BA 額度</div>
+          <hr style="border: 0; border-top: 1px dashed var(--line); margin: 10px 0;">
+          <div class="kv-row"><span>GA 額度：</span><b id="sumGrantGA">0</b></div>
+          <div class="kv-row"><span>剩餘額度：</span><b id="sumRemainGA">0</b></div>
+          <div id="overGA" class="note warn hidden">已超過 GA 額度</div>
+          <hr style="border: 0; border-top: 1px dashed var(--line); margin: 10px 0;">
+          <div class="kv-row"><span>SC 額度：</span><b id="sumGrantSC">0</b></div>
+          <div class="kv-row"><span>剩餘額度：</span><b id="sumRemainSC">0</b></div>
+          <div id="overSC" class="note warn hidden">已超過 SC 額度</div>
+          <hr style="border: 0; border-top: 1px dashed var(--line); margin: 10px 0;">
+          <div class="kv-row"><span>部分負擔：</span><b id="sumCopay">0</b></div>
+          <div class="kv-row"><span>自付總計：</span><b id="sumSelfpay">0</b></div>
+          <div class="kv-row optional"><span>政府補助：</span><b id="sumGovSubsidy">0</b></div>
+          <div class="kv-row optional"><span>總金額：</span><b id="sumGrand">0</b></div>
+        </div>
       </div>
     </section>
 
-    <!-- BA 額度 -->
-    <section id="quota-ba" class="card">
-      <h2 class="card-title">補助額度速覽（BA 碼）</h2>
-      <p class="hint">依 CMS 等級之每月給付額（政府補助比例：一般戶 84%、中低收 95%、低收 100%）。</p>
-      <table class="info-table" id="baQuotaTable">
-        <thead><tr><th>CMS 等級</th><th>一般戶(84%)</th><th>中低收(95%)</th><th>低收(100%)</th><th>基礎額度</th></tr></thead>
-        <tbody></tbody>
-      </table>
-    </section>
-
-    <!-- GA 額度 -->
-    <section class="card">
-      <h2 class="card-title">補助額度速覽（GA 碼｜喘息服務）</h2>
-      <p class="hint">依 CMS 等級之每月最高補助額度。</p>
-      <table class="info-table" id="gaQuotaTable">
-        <thead><tr><th>CMS 等級</th><th>GA 額度</th></tr></thead>
-        <tbody></tbody>
-      </table>
-    </section>
-
-    <!-- SC 額度 -->
-    <section class="card">
-      <h2 class="card-title">補助額度速覽（SC 碼｜短期替代照顧）</h2>
-      <p class="hint">依 CMS 等級之每月最高補助額度。</p>
-      <table class="info-table" id="scQuotaTable">
-        <thead><tr><th>CMS 等級</th><th>SC 額度</th></tr></thead>
-        <tbody></tbody>
-      </table>
-    </section>
-
-    <!-- 服務碼別說明（BA） -->
-    <section id="svcdesc" class="card">
-      <h2 class="card-title">服務碼別說明（BA 碼）</h2>
-      <p class="hint">以下為 BA01～BA24 之服務說明（依最新文件內容整理）。點標題可展開／收起。</p>
-      <div class="accordion" id="svcAcc"></div>
-      <div class="acc-note">※ 以上文字由 <code>SERVICE_DESC_BA</code> 物件動態渲染。</div>
-    </section>
-
-    <!-- 其它區塊 -->
-    <section id="laws" class="card">
-      <h2 class="card-title">法規與作業要點</h2>
-      <p class="hint">相關部會連結與作業要點重點條列整理中。</p>
-    </section>
-
-    <section id="forms" class="card">
-      <h2 class="card-title">表單與下載</h2>
-      <p class="hint">申請表、同意書、評估表等檔案下載連結更新中。</p>
-    </section>
-
-    <section id="faq" class="card">
-      <h2 class="card-title">常見問題</h2>
-      <p class="hint">整理家屬與居服常問 Q&A 內容規劃中。</p>
+    <section class="card service-card">
+      <h2 class="card-title">服務項目</h2>
+      <div id="tables"></div>
     </section>
   </main>
 
   <footer id="bottomDock" class="footerbar">
     <div class="foot">
-      <span class="ok">本頁為補助速覽與服務碼別說明，實際申報依中央最新規範與地方審核為準。</span>
+      <span>BA 剩餘：<b id="sumRemainBA_foot">0</b></span>
+      <span class="ok">補助：<b id="sumGovSubsidy_foot">0</b></span>
+      <span class="warn">自付：<b id="sumSelfpay_foot">0</b></span>
+      <span>總額：<b id="sumGrand_foot">0</b></span>
     </div>
   </footer>
 
-  <!-- 會員資料彈窗 -->
   <div id="profile-modal" class="modal-overlay" style="display:none;">
     <div class="modal-content">
       <h3>歡迎加入！請完善資料</h3>
-      <p>填寫您的基本資訊。</p>
       <div style="text-align:left; margin-bottom:12px;">
-        <label style="font-weight:700; color:var(--ink); font-size:15px;">姓名 / 稱呼</label>
-        <input type="text" id="pf-name" placeholder="例如：王小明">
+        <label style="font-weight:700; font-size:15px;">姓名 / 稱呼</label>
+        <input id="pf-name">
       </div>
       <div style="text-align:left; margin-bottom:12px;">
-        <label style="font-weight:700; color:var(--ink); font-size:15px;">使用者年齡</label>
-        <input type="number" id="pf-age" placeholder="例如：65">
+        <label style="font-weight:700; font-size:15px;">使用者年齡</label>
+        <input id="pf-age" type="number">
       </div>
       <div class="modal-actions">
-        <button id="btn-save-profile" class="btn pill btn-green" style="width:100%; font-size:16px; padding:10px;">
-          儲存並開始使用
-        </button>
+        <button id="btn-save-profile" class="btn pill btn-green" style="width:100%">儲存並開始使用</button>
       </div>
     </div>
   </div>
 
-  <!-- 內容填充與防拷邏輯 -->
-  <script>
-    const SERVICE_DESC_BA = {
-      BA01:{name:"基本身體清潔",html:`<p class="subttl">內容</p><ul><li>梳頭修面、穿脫衣服、床上擦澡、床上洗頭、排泄物清理（含會陰、尖翼尿片／倒尿袋或相關協助）。</li><li>床上洗頭與排泄物清理，個案如無需求得不執行。</li></ul><p class="subttl">使用原則</p><ul><li>原則一日一組合；必要時得早晚各一組合。</li><li>與 BA07、BA23 不得同一時段申報。</li><li>得依臨時性需求先提供，並於提供後立即通報社區整合型服務中心，且限當次使用。</li></ul>`},
-      BA02:{name:"基本日常照顧",html:`<p class="subttl">內容（摘要）</p><ul><li>生活協助：穿脫衣物、床上/下移位、坐/站、倒尿瓶等。</li><li>環境維護：更換床單、簡易清潔等。</li></ul>`},
-      BA03:{name:"測量生命徵象",html:`<p>測量血壓、體溫、脈搏或呼吸並紀錄；必要時回報。</p>`},
-      BA04:{name:"協助進食或管灌餵食",html:`<p>協助進食（含預約）；管灌需依評估指導。</p>`},
-      BA05:{name:"餐食照顧",html:`<p>備餐、餵食、餐後整理等。</p>`},
-      BA07:{name:"協助沐浴及洗頭",html:`<p>協助或引導完成全身/部分清潔與洗頭；不得與 BA01 同時段申報。</p>`},
-      BA08:{name:"足部照護",html:`<p>依規範評估與執行足部照護。</p>`},
-      BA09:{name:"到宅沐浴-第一型",html:`<p>使用到宅沐浴車或等同設備完成淋浴，含安全維護與場域復原。</p>`},
-      BA09a:{name:"到宅沐浴-第二型",html:`<p>使用簡易設備或浴室完成安全沐浴；含設備收整。</p>`},
-      BA10:{name:"翻身拍背",html:`<p>翻身、叩/拍背或體位變換與護理指導（依指示）。</p>`},
-      BA11:{name:"肢體關節活動",html:`<p>被動/主動關節活動與伸展（依指示）。</p>`},
-      BA12:{name:"協助上（下）樓梯",html:`<p>協助安全上下樓（含行前評估）。</p>`},
-      BA13:{name:"陪同外出",html:`<p>外出工具安排與陪同；每30分鐘為一單位。</p>`},
-      BA14:{name:"陪同就醫",html:`<p>掛號（含預約）、就醫陪同、返家後注意事項說明。</p>`},
-      BA15:{name:"家務協助",html:`<p>一般家務（環境清潔、洗曬衣物、膳食準備等），以日常生活維持為限。</p>`},
-      BA16:{name:"代購或代領或代送服務",html:`<p>購買生活必需品、代領報告、代送文件等。</p>`},
-      BA17a:{name:"人工鼻造管內分泌物抽吸",html:`<p>依指示於人工鼻造管處理分泌物抽吸並紀錄。</p>`},
-      BA17b:{name:"口腔內分泌物抽吸",html:`<p>依指示於口腔內抽吸分泌物，注意無菌與安全。</p>`},
-      BA17c:{name:"尿管及鼻胃管之清潔與固定",html:`<p>清潔、固定與更換敷料（依指示）。</p>`},
-      BA17d:{name:"血糖檢驗",html:`<p>協助檢測與紀錄。</p>`},
-      BA17e:{name:"依指示置入藥盒",html:`<p>依醫囑協助分裝藥盒並衛教。</p>`},
-      BA18:{name:"安全看視",html:`<p>風險情境的即時看視與提醒，維持安全。</p>`},
-      BA20:{name:"陪伴服務",html:`<p class="subttl">內容</p><ul><li>至案家陪伴看視，日常生活參與、談話互動等非照顧性互動。</li></ul><p class="subttl">使用規定</p><ul><li>以三十分鐘為一單位計算。</li><li>不得與照顧組合表之其他組合併同使用，但可接續使用。</li></ul>`},
-      BA22:{name:"巡視服務",html:`<p class="subttl">內容與時段</p><ul><li>於每日 06:00–20:00 至案家探視確認對象狀況；至少三次。</li></ul>`},
-      BA23:{name:"協助洗頭",html:`<p class="subttl">內容</p><ul><li>依需求完成洗頭流程：洗髮、沖洗、擦乾、梳理等。</li></ul>`},
-      BA24:{name:"協助排泄",html:`<p class="subttl">內容</p><ul><li>協助移位或引導至廁所，支持與協助一般大小便。</li><li>尿器/便盆之更換與清理、會陰沖洗、更換尿片。</li></ul>`}
-    };
-
-    document.addEventListener('DOMContentLoaded', () => {
-      // --- 深色模式按鈕邏輯 ---
-      const toggleBtn = document.getElementById('darkToggle');
-      if (toggleBtn) {
-          const icon = toggleBtn.querySelector('.icon');
-          const txt = toggleBtn.querySelector('.txt');
-          const updateBtnUI = (theme) => {
-              icon.textContent = theme === 'dark' ? '☀️' : '🌙';
-              txt.textContent = theme === 'dark' ? '淺色' : '深色';
-          };
-          updateBtnUI(document.documentElement.getAttribute('data-theme'));
-          toggleBtn.addEventListener('click', () => {
-              const currentTheme = document.documentElement.getAttribute('data-theme');
-              const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
-              document.documentElement.setAttribute('data-theme', newTheme);
-              localStorage.setItem('theme', newTheme);
-              updateBtnUI(newTheme);
-          });
-      }
-
-      // --- 資料填充邏輯 ---
-      const fmt = n => Number(n || 0).toLocaleString('zh-TW');
-      const levels = [2,3,4,5,6,7,8];
-      let myCmsQuota = { 2:10020, 3:15460, 4:18580, 5:24100, 6:28070, 7:32090, 8:36180 };
-      let myGaCap = { 2:32340, 3:32340, 4:32340, 5:32340, 6:32340, 7:48510, 8:48510 };
-      let myScCap = { 2:87780, 3:87780, 4:87780, 5:87780, 6:87780, 7:71610, 8:71610 };
-
-      const baTbody = document.querySelector('#baQuotaTable tbody'); 
-      baTbody.innerHTML = '';
-      levels.forEach(cms => {
-         const base = myCmsQuota[cms] || 0;
-         const tr = document.createElement('tr');
-         tr.innerHTML = `
-           <td>CMS${cms}</td>
-           <td>${fmt(Math.round(base*0.84))}</td>
-           <td>${fmt(Math.round(base*0.95))}</td>
-           <td>${fmt(base)}</td>
-           <td>${fmt(base)}</td>`;
-         baTbody.appendChild(tr);
-      });
-
-      const gaTbody = document.querySelector('#gaQuotaTable tbody'); gaTbody.innerHTML = '';
-      levels.forEach(cms => {
-         gaTbody.insertAdjacentHTML('beforeend', `<tr><td>CMS${cms}</td><td>${fmt(myGaCap[cms]||0)}</td></tr>`);
-      });
-
-      const scTbody = document.querySelector('#scQuotaTable tbody'); scTbody.innerHTML = '';
-      levels.forEach(cms => {
-         scTbody.insertAdjacentHTML('beforeend', `<tr><td>CMS${cms}</td><td>${fmt(myScCap[cms]||0)}</td></tr>`);
-      });
-
-      const host = document.getElementById('svcAcc'); host.innerHTML='';
-      Object.keys(SERVICE_DESC_BA).forEach(code=>{
-        const item = SERVICE_DESC_BA[code] || {};
-        const el = document.createElement('div');
-        el.className = 'acc-item';
-        el.innerHTML = `
-          <button class="acc-head" aria-expanded="false">
-            <span class="code">${code}</span>
-            <span class="name">${item.name||''}</span>
-            <span class="hint">點我展開</span>
-          </button>
-          <div class="acc-body">${item.html||'<p class="acc-note">無說明</p>'}</div>`;
-        host.appendChild(el);
-      });
-      host.querySelectorAll('.acc-head').forEach(btn=>{
-        btn.addEventListener('click', ()=>{
-          const body = btn.nextElementSibling;
-          const open = body.classList.toggle('show');
-          btn.setAttribute('aria-expanded', open?'true':'false');
-          const hint = btn.querySelector('.hint'); if(hint) hint.textContent=open?'點我收起':'點我展開';
-        });
-      });
-    });
-    
-    // 防拷設定
-    document.addEventListener('contextmenu', e => e.preventDefault());
-    document.addEventListener('keydown', e => {
-      if ((e.ctrlKey || e.metaKey) && ['u','s','p'].includes(e.key.toLowerCase())) e.preventDefault();
-      if (e.key === 'F12') e.preventDefault();
-    });
-    document.addEventListener('selectstart', e => e.preventDefault());
-    document.addEventListener('copy', e => e.preventDefault());
-  </script>
-
-  <!-- Firebase Script -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
     import { getAuth, signInWithPopup, GoogleAuthProvider, signOut, onAuthStateChanged } 
       from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-    import { getFirestore, doc, getDoc, setDoc, serverTimestamp } 
+    import { getFirestore, collection, addDoc, serverTimestamp, doc, getDoc, setDoc } 
       from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-    const config = {
-      apiKey: "AIzaSyCZMhdUI0HeIoj5masuRh00pzP3SMbF6Yc",
-      authDomain: "hori-test-1b93c.firebaseapp.com",
-      projectId: "hori-test-1b93c",
-      storageBucket: "hori-test-1b93c.firebasestorage.app",
-      messagingSenderId: "549583061796",
-      appId: "1:549583061796:web:ad58b8bf80c2b6b71c29b1"
+    const config={ apiKey: "AIzaSyCZMhdUI0HeIoj5masuRh00pzP3SMbF6Yc", authDomain: "hori-test-1b93c.firebaseapp.com", projectId: "hori-test-1b93c", storageBucket: "hori-test-1b93c.firebasestorage.app", messagingSenderId: "549583061796", appId: "1:549583061796:web:ad58b8bf80c2b6b71c29b1" };
+    const app=initializeApp(config), auth=getAuth(app), db=getFirestore(app), provider=new GoogleAuthProvider();
+
+    const dom={ 
+        login:document.getElementById('btnLogin'), 
+        logout:document.getElementById('btnLogout'), 
+        member:document.getElementById('member-area'), 
+        user:document.getElementById('userDisplay'), 
+        admin:document.getElementById('btnAdminLink'), 
+        edit:document.getElementById('btnEditProfile'), 
+        modal:document.getElementById('profile-modal'), 
+        save:document.getElementById('btn-save-profile'), 
+        cloud:document.getElementById('btnSaveCloud'), 
+        name:document.getElementById('pf-name'), 
+        age:document.getElementById('pf-age'), 
+        title:document.querySelector('#profile-modal h3'),
+        darkToggle: document.getElementById('darkToggle')
     };
 
-    const app = initializeApp(config);
-    const auth = getAuth(app);
-    const db = getFirestore(app);
-    const provider = new GoogleAuthProvider();
-
-    const dom = {
-        login: document.getElementById('btnLogin'),
-        logout: document.getElementById('btnLogout'),
-        member: document.getElementById('member-area'),
-        user: document.getElementById('userDisplay'),
-        admin: document.getElementById('btnAdminLink'),
-        edit: document.getElementById('btnEditProfile'),
-        modal: document.getElementById('profile-modal'),
-        save: document.getElementById('btn-save-profile'),
-        name: document.getElementById('pf-name'),
-        age: document.getElementById('pf-age'),
-        title: document.querySelector('#profile-modal h3')
-    };
-
-    if(dom.login) {
-        dom.login.addEventListener('click', () => {
-            signInWithPopup(auth, provider).catch(error => {
-                if (error.code === 'auth/popup-blocked') {
-                    alert("⚠️ 登入視窗被攔截！請使用 Safari/Chrome 等瀏覽器開啟。");
-                } else {
-                    alert("登入失敗：" + error.message);
-                }
-            });
+    if (dom.darkToggle) {
+        const icon = dom.darkToggle.querySelector('.icon');
+        const txt = dom.darkToggle.querySelector('.txt');
+        const updateBtnUI = (theme) => {
+            icon.textContent = theme === 'dark' ? '☀️' : '🌙';
+            if(txt) txt.textContent = theme === 'dark' ? '淺色' : '深色';
+        };
+        updateBtnUI(document.documentElement.getAttribute('data-theme'));
+        dom.darkToggle.addEventListener('click', () => {
+            const currentTheme = document.documentElement.getAttribute('data-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            document.documentElement.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+            updateBtnUI(newTheme);
         });
     }
 
-    if(dom.logout) dom.logout.addEventListener('click', () => signOut(auth).then(() => { alert("已登出"); location.reload(); }));
-
-    onAuthStateChanged(auth, async (user) => {
-      if (user) {
-        if(dom.login) dom.login.style.display = 'none';
-        if(dom.member) dom.member.style.display = 'flex';
-        if(dom.user) dom.user.textContent = user.displayName || user.email;
-
-        try {
-          const docSnap = await getDoc(doc(db, "users", user.uid));
-          if (docSnap.exists()) {
-             if(dom.user && docSnap.data().name) dom.user.textContent = docSnap.data().name;
-          } else {
-             if(dom.title) dom.title.textContent = "歡迎加入！請完善資料";
-             if(dom.name) dom.name.value = user.displayName || "";
-             if(dom.modal) dom.modal.style.display = 'flex';
-          }
-        } catch(e) {}
-
-        try {
-          const adminSnap = await getDoc(doc(db, "admins", user.email));
-          if (adminSnap.exists() && dom.admin) dom.admin.style.display = 'inline-block';
-        } catch(e) {}
-      } else {
-        if(dom.login) dom.login.style.display = 'block';
-        if(dom.member) dom.member.style.display = 'none';
-        if(dom.admin) dom.admin.style.display = 'none';
-      }
+    if(dom.login) dom.login.onclick = () => signInWithPopup(auth,provider);
+    if(dom.logout) dom.logout.onclick = () => signOut(auth).then(()=>location.reload());
+    
+    onAuthStateChanged(auth, async u=>{
+      if(u){
+        dom.login.style.display='none'; dom.member.style.display='flex'; dom.user.textContent=u.displayName||u.email;
+        const s=await getDoc(doc(db,"users",u.uid));
+        if(s.exists()){ if(s.data().name) dom.user.textContent=s.data().name; }
+        else{ dom.modal.style.display='flex'; }
+        const a=await getDoc(doc(db,"admins",u.email)); if(a.exists()) dom.admin.style.display='inline-block';
+      }else{ dom.login.style.display='block'; dom.member.style.display='none'; }
     });
 
-    if(dom.edit) dom.edit.addEventListener('click', async () => {
+    if(dom.edit) dom.edit.onclick = async () => {
       const s = await getDoc(doc(db, "users", auth.currentUser.uid));
-      if(s.exists()){ const d = s.data(); dom.title.textContent = "修改個人資料"; dom.name.value = d.name || ""; dom.age.value = d.age || ""; dom.modal.style.display = 'flex'; }
-    });
+      if(s.exists()){ const d = s.data(); dom.name.value = d.name; dom.age.value = d.age; dom.modal.style.display = 'flex'; }
+    };
+    
+    if(dom.save) dom.save.onclick = async () => {
+      const n=dom.name.value, a=dom.age.value; if(!n||!a) return alert("請填寫完整");
+      await setDoc(doc(db,"users",auth.currentUser.uid),{name:n,age:a,email:auth.currentUser.email,lastUpdated:serverTimestamp()},{merge:true});
+      dom.modal.style.display='none'; dom.user.textContent=n;
+    };
 
-    if(dom.save) dom.save.addEventListener('click', async () => {
-      const name = dom.name.value.trim();
-      const age = dom.age.value.trim();
-      if(!name || !age) return alert("請填寫完整");
-      
-      const userRef = doc(db, "users", auth.currentUser.uid);
-      try {
-          const docSnap = await getDoc(userRef);
-          let data = { name, age, email: auth.currentUser.email, lastUpdated: serverTimestamp() };
-          if (!docSnap.exists() || !docSnap.data().createdAt) {
-              data.createdAt = serverTimestamp();
-          }
-          await setDoc(userRef, data, { merge: true });
-          alert("儲存成功");
-          dom.modal.style.display = 'none';
-          dom.user.textContent = name;
-      } catch (e) { alert("儲存失敗：" + e.message); }
-    });
-
-    if(dom.modal) dom.modal.addEventListener('click', (e) => {
-        if (e.target === dom.modal && auth.currentUser && dom.user.textContent !== "" && dom.user.textContent !== auth.currentUser.email) {
-            dom.modal.style.display = 'none';
-        }
-    });
+    if(dom.cloud) dom.cloud.onclick = async () => {
+       const cms=document.querySelector('input[name="cms"]:checked'), total=document.getElementById('sumGrand');
+       await addDoc(collection(db,"care_records"),{uid:auth.currentUser.uid,memberName:dom.user.textContent,email:auth.currentUser.email,cmsLevel:cms?cms.value:"0",grandTotal:total?total.textContent:"0",createdAt:serverTimestamp()});
+       alert("備份成功");
+    };
   </script>
 </body>
 </html>
