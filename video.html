@@ -103,7 +103,7 @@
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
     import { getAuth, signInWithPopup, signOut, onAuthStateChanged, GoogleAuthProvider } 
       from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-    import { getFirestore, doc, getDoc, setDoc, serverTimestamp } 
+    import { getFirestore, doc, getDoc, setDoc, updateDoc, increment, serverTimestamp } 
       from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
     const config = { apiKey: "AIzaSyCZMhdUI0HeIoj5masuRh00pzP3SMbF6Yc", authDomain: "hori-test-1b93c.firebaseapp.com", projectId: "hori-test-1b93c", storageBucket: "hori-test-1b93c.firebasestorage.app", messagingSenderId: "549583061796", appId: "1:549583061796:web:ad58b8bf80c2b6b71c29b1" };
@@ -111,10 +111,11 @@
 
     const dom={ login:document.getElementById('btnLogin'), logout:document.getElementById('btnLogout'), member:document.getElementById('member-area'), user:document.getElementById('userDisplay'), admin:document.getElementById('btnAdminLink'), edit:document.getElementById('btnEditProfile'), modal:document.getElementById('profile-modal'), save:document.getElementById('btn-save-profile'), name:document.getElementById('pf-name'), age:document.getElementById('pf-age'), title:document.querySelector('#profile-modal h3'), video:document.getElementById('video-wrapper'), warn:document.getElementById('login-warning'), status:document.getElementById('saveStatus'), watch:document.getElementById('watchTimeDisplay') };
 
-    const YOUTUBE_VIDEO_ID = 'PLG2Uexyi9s';  // ★ 你的影片 ID
+    const YOUTUBE_VIDEO_ID = 'PLG2Uexyi9s'; 
     let currentUser=null, player, timer, currentSec=0, totalSec=0;
 
-    const tag = document.createElement('script'); tag.src = "https://www.youtube.com/iframe_api"; document.head.appendChild(tag);
+    const tag = document.createElement('script'); tag.src = "https://www.youtube.com/iframe_api";
+    document.head.appendChild(tag);
     window.onYouTubeIframeAPIReady = function() {
       player = new YT.Player('video-placeholder', {
         videoId: YOUTUBE_VIDEO_ID, playerVars: { 'playsinline':1, 'modestbranding':1, 'rel':0, 'controls':1, 'fs':0, 'iv_load_policy':3 },
@@ -122,16 +123,46 @@
       });
     };
     function onPlayerStateChange(e){ if(e.data==1) startT(); else stopT(); }
-    function startT(){ if(!currentUser)return; if(timer) clearInterval(timer); timer=setInterval(()=>{ currentSec++; totalSec++; if(dom.watch) dom.watch.textContent=totalSec; if(currentSec%10===0) save(); },1000); }
-    function stopT(){ if(timer){ clearInterval(timer); timer=null; } save(); }
-    async function save(){ 
-        if(!currentUser || currentSec===0) return;
-        if(dom.status) dom.status.textContent="儲存中...";
-        try{ 
-            await setDoc(doc(db,"video_logs",currentUser.uid+"_"+YOUTUBE_VIDEO_ID), { uid:currentUser.uid, email:currentUser.email, videoId:YOUTUBE_VIDEO_ID, videoTitle:"教學影片", lastWatched:serverTimestamp(), totalSeconds:totalSec }, {merge:true}); 
-            currentSec=0; if(dom.status){ dom.status.textContent="已同步"; setTimeout(()=>dom.status.textContent="",2000); }
-        }catch(e){} 
+    
+    function startT(){ 
+        if(!currentUser)return; 
+        if(timer) clearInterval(timer); 
+        timer=setInterval(()=>{ 
+            currentSec++; 
+            totalSec++; 
+            if(dom.watch) dom.watch.textContent=totalSec; 
+            if(currentSec >= 10) save(); // 每累積10秒存一次
+        }, 1000); 
     }
+    
+    function stopT(){ if(timer){ clearInterval(timer); timer=null; } save(); }
+
+    async function save(){ 
+        if(!currentUser || currentSec === 0) return;
+        const addedSec = currentSec; // 紀錄本次要增加的秒數
+        currentSec = 0; // 立即重設，避免重複計算
+        
+        if(dom.status) dom.status.textContent="同步中...";
+        try{ 
+            // 1. 更新詳細影片日誌
+            await setDoc(doc(db,"video_logs",currentUser.uid+"_"+YOUTUBE_VIDEO_ID), { 
+                uid:currentUser.uid, 
+                email:currentUser.email, 
+                videoId:YOUTUBE_VIDEO_ID, 
+                videoTitle:"教學影片", 
+                lastWatched:serverTimestamp(), 
+                totalSeconds:totalSec 
+            }, {merge:true}); 
+
+            // 2. 同步增加使用者資料表中的總觀看時間 (重點修改)
+            await updateDoc(doc(db, "users", currentUser.uid), {
+                totalWatchTime: increment(addedSec)
+            });
+
+            if(dom.status){ dom.status.textContent="已同步"; setTimeout(()=>dom.status.textContent="",2000); }
+        }catch(e){ console.error("Save error:", e); } 
+    }
+
     async function loadHist(u){ try{ const s=await getDoc(doc(db,"video_logs",u.uid+"_"+YOUTUBE_VIDEO_ID)); if(s.exists()) totalSec=s.data().totalSeconds||0; if(dom.watch) dom.watch.textContent=totalSec; }catch(e){} }
 
     dom.login.addEventListener('click',()=>signInWithPopup(auth,provider).catch(e=>alert(e.code==='auth/popup-blocked'?"請用瀏覽器開啟":e.message)));
