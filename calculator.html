@@ -7,7 +7,14 @@
   <meta name="description" content="長照服務額度計算機，快速查詢CMS等級補助額度、計算自付金額與居服薪資。由 hori 製作。">
   <link rel="icon" type="image/x-icon" href="YORU.ico" />
   <link rel="stylesheet" href="style.css" />
-  <!-- topbar-fixed.css 已移除，因為樣式已整合至 style.css，避免衝突 -->
+  
+  <script>
+    /* 立即檢查主題設定，防止頁面閃爍 */
+    (function() {
+        const savedTheme = localStorage.getItem('theme') || 'light';
+        document.documentElement.setAttribute('data-theme', savedTheme);
+    })();
+  </script>
   
   <script src="nav.js" defer></script>
   <script src="script.js" defer></script>
@@ -17,7 +24,7 @@
     .grid-2{
       display: grid;
       grid-template-columns: 2.2fr 1.3fr;
-      gap: 16px; /* 使用變數外的預設值確保穩定 */
+      gap: 16px; 
       align-items: start;
     }
     @media (max-width: 1024px){ .grid-2{ grid-template-columns: 1.8fr 1.2fr; } }
@@ -25,17 +32,48 @@
     
     #addonPlaceholders{ display:none; }
 
-    /* 會員彈窗樣式 */
-    .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(47,47,32,0.6); backdrop-filter: blur(3px); z-index: 2000; display: flex; justify-content: center; align-items: center; padding: 20px; }
-    .modal-content { background: #fffdf5; border: 1px solid #e6dca8; border-radius: 12px; padding: 24px; width: 100%; max-width: 420px; box-shadow: 0 10px 25px rgba(0,0,0,0.15); text-align: center; }
-    .modal-content h3 { color: #2e7d32; margin-top: 0; }
-    .modal-content input { width: 100%; padding: 10px; border: 1px solid #e6dca8; background: #fff; border-radius: 8px; font-size: 16px; margin-top: 4px; box-sizing: border-box; }
+    /* 會員彈窗樣式 - 引用變數支援深色模式 */
+    .modal-overlay { 
+        position: fixed; 
+        top: 0; left: 0; 
+        width: 100%; height: 100%; 
+        background: rgba(47,47,32,0.6); 
+        backdrop-filter: blur(3px); 
+        z-index: 2000; 
+        display: flex; 
+        justify-content: center; 
+        align-items: center; 
+        padding: 20px; 
+    }
+    .modal-content { 
+        background: var(--card); 
+        border: 1px solid var(--line); 
+        border-radius: 12px; 
+        padding: 24px; 
+        width: 100%; 
+        max-width: 420px; 
+        box-shadow: 0 10px 25px rgba(0,0,0,0.15); 
+        text-align: center; 
+        color: var(--ink);
+    }
+    .modal-content h3 { color: var(--green); margin-top: 0; }
+    .modal-content input { 
+        width: 100%; 
+        padding: 10px; 
+        border: 1px solid var(--line); 
+        background: var(--input-bg); 
+        color: var(--ink);
+        border-radius: 8px; 
+        font-size: 16px; 
+        margin-top: 4px; 
+        box-sizing: border-box; 
+    }
     .modal-actions { margin-top: 20px; }
   </style>
 </head>
-<body data-page="calculator"> <!-- Body ID 設為 calculator -->
+<body data-page="calculator"> 
   
-  <!-- 浮水印 (完整) -->
+  <!-- 浮水印 (完整保留) -->
   <div class="watermark" aria-hidden="true">
     <span class="wm-item" style="top:5%; left:5%;  --dur:9s;">@hori版權所有</span>
     <span class="wm-item" style="top:5%; left:35%; --dur:11s;">@hori版權所有</span>
@@ -70,18 +108,22 @@
       <a href="about.html">關於我們</a>
     </nav>
     
-    <!-- 整合後的按鈕區 (排版修正) -->
     <div class="actions" style="display:flex; align-items:center; gap:8px;">
+      <!-- 深色模式切換按鈕 -->
+      <button id="darkToggle" class="theme-btn">
+          <span class="icon">🌙</span> <span class="txt">深色</span>
+      </button>
+
       <button class="btn pill btn-orange" id="btnUnitToggle" type="button" data-unit="B">B單位</button>
       <button class="btn pill btn-green" id="btnReset" type="button">重置</button>
       <button class="btn pill btn-gray" id="btnPrint" type="button" onclick="window.print()">列印</button>
       
-      <div style="width: 1px; height: 20px; background: #ccc; margin: 0 4px;"></div>
+      <div style="width: 1px; height: 20px; background: var(--line); margin: 0 4px;"></div>
       
       <button class="btn pill" style="background:#4285F4; color:white;" id="btnLogin" type="button">Google 登入</button>
       
       <div id="member-area" style="display:none; align-items: center; gap:5px;">
-          <span id="userDisplay" style="font-size: 13px; font-weight: bold; color: #333; margin-right: 4px;"></span>
+          <span id="userDisplay" style="font-size: 13px; font-weight: bold; color: var(--ink); margin-right: 4px;"></span>
           <a href="admin.html" id="btnAdminLink" class="btn pill" style="display:none;background:#673AB7;color:white;font-size:12px;padding:4px 10px;text-decoration:none">後台</a>
           <button class="btn pill" style="background:#777; color:white; font-size:12px; padding:4px 10px;" id="btnEditProfile" type="button">修改</button>
           <button class="btn pill" style="background:#34A853; color:white;" id="btnSaveCloud" type="button">儲存</button>
@@ -146,15 +188,15 @@
           <div class="kv-row"><span>額度總計：</span><b id="sumGrantBA">0</b></div>
           <div class="kv-row"><span>剩餘額度：</span><b id="sumRemainBA">0</b></div>
           <div id="overMain" class="note warn hidden">已超過 BA 額度</div>
-          <hr>
+          <hr style="border: 0; border-top: 1px dashed var(--line); margin: 10px 0;">
           <div class="kv-row"><span>GA 額度：</span><b id="sumGrantGA">0</b></div>
           <div class="kv-row"><span>剩餘額度：</span><b id="sumRemainGA">0</b></div>
           <div id="overGA" class="note warn hidden">已超過 GA 額度</div>
-          <hr>
+          <hr style="border: 0; border-top: 1px dashed var(--line); margin: 10px 0;">
           <div class="kv-row"><span>SC 額度：</span><b id="sumGrantSC">0</b></div>
           <div class="kv-row"><span>剩餘額度：</span><b id="sumRemainSC">0</b></div>
           <div id="overSC" class="note warn hidden">已超過 SC 額度</div>
-          <hr>
+          <hr style="border: 0; border-top: 1px dashed var(--line); margin: 10px 0;">
           <div class="kv-row"><span>部分負擔：</span><b id="sumCopay">0</b></div>
           <div class="kv-row"><span>自付總計：</span><b id="sumSelfpay">0</b></div>
           <div class="kv-row optional"><span>政府補助：</span><b id="sumGovSubsidy">0</b></div>
@@ -180,7 +222,7 @@
     </div>
   </footer>
 
-  <!-- 防拷 -->
+  <!-- 防拷腳本 -->
   <script>
     document.addEventListener('contextmenu', e => e.preventDefault());
     document.addEventListener('keydown', e => {
@@ -191,11 +233,26 @@
     document.addEventListener('copy', e => e.preventDefault());
   </script>
 
-  <!-- 佔位 -->
+  <!-- 佔位 (功能完整保留) -->
   <div id="addonPlaceholders" aria-hidden="true"><span id="addonHint"></span><button id="btnSaveAddons"></button><div id="addonRows"></div><div id="caregiverSalary"></div></div>
 
-  <!-- Firebase Script -->
-  <div id="profile-modal" class="modal-overlay" style="display:none;"><div class="modal-content"><h3>資料完善</h3><input id="pf-name"><input id="pf-age" type="number"><div class="modal-actions"><button id="btn-save-profile" class="btn pill btn-green" style="width:100%">儲存</button></div></div></div>
+  <!-- 會員彈窗 -->
+  <div id="profile-modal" class="modal-overlay" style="display:none;">
+    <div class="modal-content">
+      <h3>歡迎加入！請完善資料</h3>
+      <div style="text-align:left; margin-bottom:12px;">
+        <label style="font-weight:700; font-size:15px;">姓名 / 稱呼</label>
+        <input id="pf-name">
+      </div>
+      <div style="text-align:left; margin-bottom:12px;">
+        <label style="font-weight:700; font-size:15px;">使用者年齡</label>
+        <input id="pf-age" type="number">
+      </div>
+      <div class="modal-actions">
+        <button id="btn-save-profile" class="btn pill btn-green" style="width:100%">儲存並開始使用</button>
+      </div>
+    </div>
+  </div>
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
@@ -207,8 +264,41 @@
     const config={ apiKey: "AIzaSyCZMhdUI0HeIoj5masuRh00pzP3SMbF6Yc", authDomain: "hori-test-1b93c.firebaseapp.com", projectId: "hori-test-1b93c", storageBucket: "hori-test-1b93c.firebasestorage.app", messagingSenderId: "549583061796", appId: "1:549583061796:web:ad58b8bf80c2b6b71c29b1" };
     const app=initializeApp(config), auth=getAuth(app), db=getFirestore(app), provider=new GoogleAuthProvider();
 
-    const dom={ login:document.getElementById('btnLogin'), logout:document.getElementById('btnLogout'), member:document.getElementById('member-area'), user:document.getElementById('userDisplay'), admin:document.getElementById('btnAdminLink'), edit:document.getElementById('btnEditProfile'), modal:document.getElementById('profile-modal'), save:document.getElementById('btn-save-profile'), cloud:document.getElementById('btnSaveCloud'), name:document.getElementById('pf-name'), age:document.getElementById('pf-age'), title:document.querySelector('#profile-modal h3') };
+    const dom={ 
+        login:document.getElementById('btnLogin'), 
+        logout:document.getElementById('btnLogout'), 
+        member:document.getElementById('member-area'), 
+        user:document.getElementById('userDisplay'), 
+        admin:document.getElementById('btnAdminLink'), 
+        edit:document.getElementById('btnEditProfile'), 
+        modal:document.getElementById('profile-modal'), 
+        save:document.getElementById('btn-save-profile'), 
+        cloud:document.getElementById('btnSaveCloud'), 
+        name:document.getElementById('pf-name'), 
+        age:document.getElementById('pf-age'), 
+        title:document.querySelector('#profile-modal h3'),
+        darkToggle: document.getElementById('darkToggle')
+    };
 
+    // --- 深色模式切換邏輯 ---
+    if (dom.darkToggle) {
+        const icon = dom.darkToggle.querySelector('.icon');
+        const txt = dom.darkToggle.querySelector('.txt');
+        const updateBtnUI = (theme) => {
+            icon.textContent = theme === 'dark' ? '☀️' : '🌙';
+            txt.textContent = theme === 'dark' ? '淺色' : '深色';
+        };
+        updateBtnUI(document.documentElement.getAttribute('data-theme'));
+        dom.darkToggle.addEventListener('click', () => {
+            const currentTheme = document.documentElement.getAttribute('data-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            document.documentElement.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+            updateBtnUI(newTheme);
+        });
+    }
+
+    // --- 登入邏輯 ---
     if(dom.login) dom.login.addEventListener('click',()=>signInWithPopup(auth,provider).catch(e=>{
         if(e.code==='auth/popup-blocked')alert("請使用 Chrome/Safari 瀏覽器開啟 (非 LINE/FB 內建)");
         else alert(e.message)
@@ -222,13 +312,13 @@
         try{ 
             const s=await getDoc(doc(db,"users",u.uid));
             if(s.exists()){ if(s.data().name) dom.user.textContent=s.data().name; }
-            else{ dom.title.textContent="歡迎"; dom.name.value=u.displayName||""; dom.modal.style.display='flex'; }
+            else{ dom.title.textContent="歡迎加入！請完善資料"; dom.name.value=u.displayName||""; dom.modal.style.display='flex'; }
         }catch(e){}
         try{ const a=await getDoc(doc(db,"admins",u.email)); if(a.exists()) dom.admin.style.display='inline-block'; }catch(e){}
       }else{ dom.login.style.display='block'; dom.member.style.display='none'; }
     });
 
-    if(dom.edit) dom.edit.addEventListener('click',async()=>{ const s=await getDoc(doc(db,"users",auth.currentUser.uid)); if(s.exists()){ const d=s.data(); dom.title.textContent="修改"; dom.name.value=d.name; dom.age.value=d.age; dom.modal.style.display='flex'; } });
+    if(dom.edit) dom.edit.addEventListener('click',async()=>{ const s=await getDoc(doc(db,"users",auth.currentUser.uid)); if(s.exists()){ const d=s.data(); dom.title.textContent="修改個人資料"; dom.name.value=d.name; dom.age.value=d.age; dom.modal.style.display='flex'; } });
     
     if(dom.save) dom.save.addEventListener('click',async()=>{
         const n=dom.name.value, a=dom.age.value; if(!n||!a) return alert("請填寫完整");
@@ -244,7 +334,7 @@
        try{
            await addDoc(collection(db,"care_records"),{
              uid:auth.currentUser.uid, memberName:dom.user.textContent, email:auth.currentUser.email,
-             cmsLevel:cms?cms.value:"0", grandTotal:total?total.textContent:"0", createdAt:serverTimestamp(), note:"額度計算"
+             cmsLevel:cms?cms.value:"0", grandTotal:total?total.textContent:"0", createdAt:serverTimestamp(), note:"額度計算備份"
            });
            alert("備份成功");
        }catch(e){ alert("失敗:"+e.message); }
