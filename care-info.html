@@ -8,35 +8,112 @@
   <link rel="icon" type="image/x-icon" href="YORU.ico" />
   <link rel="stylesheet" href="style.css" />
   
+  <script>
+    /* 立即檢查主題設定，防止頁面閃爍 */
+    (function() {
+        const savedTheme = localStorage.getItem('theme') || 'light';
+        document.documentElement.setAttribute('data-theme', savedTheme);
+    })();
+  </script>
+
   <style>
-    /* 彈窗樣式 */
-    .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(47,47,32,0.6); backdrop-filter: blur(3px); z-index: 2000; display: flex; justify-content: center; align-items: center; padding: 20px; }
-    .modal-content { background: #fffdf5; border: 1px solid #e6dca8; border-radius: 12px; padding: 24px; width: 100%; max-width: 420px; box-shadow: 0 10px 25px rgba(0,0,0,0.15); text-align: center; }
-    .modal-content h3 { color: #2e7d32; margin-top: 0; }
-    .modal-content input { width: 100%; padding: 10px; border: 1px solid #e6dca8; background: #fff; border-radius: 8px; font-size: 16px; margin-top: 4px; box-sizing: border-box; }
+    /* 彈窗樣式 - 引用變數支援深色模式 */
+    .modal-overlay { 
+        position: fixed; 
+        top: 0; left: 0; 
+        width: 100%; height: 100%; 
+        background: rgba(47,47,32,0.6); 
+        backdrop-filter: blur(3px); 
+        z-index: 2000; 
+        display: flex; 
+        justify-content: center; 
+        align-items: center; 
+        padding: 20px; 
+    }
+    .modal-content { 
+        background: var(--card); 
+        border: 1px solid var(--line); 
+        border-radius: 12px; 
+        padding: 24px; 
+        width: 100%; 
+        max-width: 420px; 
+        box-shadow: 0 10px 25px rgba(0,0,0,0.15); 
+        text-align: center; 
+        color: var(--ink);
+    }
+    .modal-content h3 { color: var(--green); margin-top: 0; }
+    .modal-content input { 
+        width: 100%; 
+        padding: 10px; 
+        border: 1px solid var(--line); 
+        background: var(--input-bg); 
+        color: var(--ink);
+        border-radius: 8px; 
+        font-size: 16px; 
+        margin-top: 4px; 
+        box-sizing: border-box; 
+    }
     .modal-actions { margin-top: 20px; }
 
-    /* 本頁特定表格與摺疊選單樣式 */
-    .info-table{ width:100%; border-collapse:separate; border-spacing:0; background:var(--card); border:1px solid var(--line); border-radius:12px; overflow:hidden; text-align:center; margin-top:10px; }
-    .info-table th{ background:#f6f1d9; color:#5b5534; padding:10px; font-weight:800; border-bottom:1px solid var(--line); }
+    /* 本頁特定表格與摺疊選單樣式 (已改為引用變數) */
+    .info-table{ 
+        width:100%; 
+        border-collapse:separate; 
+        border-spacing:0; 
+        background:var(--card); 
+        border:1px solid var(--line); 
+        border-radius:12px; 
+        overflow:hidden; 
+        text-align:center; 
+        margin-top:10px; 
+        color: var(--ink);
+    }
+    .info-table th{ background:var(--table-head); color:var(--ink); padding:10px; font-weight:800; border-bottom:1px solid var(--line); }
     .info-table td{ padding:10px; border-top:1px solid var(--line); font-weight:600; }
-    .info-table tbody tr:nth-child(even){ background:#fffef9; }
+    .info-table tbody tr:nth-child(even){ background:var(--table-stripe); }
+
     .quick-links{ display:flex; gap:10px; flex-wrap:wrap; margin:14px 0 8px; }
-    .quick-links a{ display:inline-block; padding:8px 14px; border-radius:999px; background:#fff; border:1px solid var(--line); font-weight:700; color:#333; text-decoration:none; }
-    .quick-links a:hover{ filter:brightness(1.02); transform:translateY(-1px); }
-    .accordion{ border:1px solid var(--line); border-radius:12px; overflow:hidden; background:#fff; }
+    .quick-links a{ 
+        display:inline-block; 
+        padding:8px 14px; 
+        border-radius:999px; 
+        background:var(--card); 
+        border:1px solid var(--line); 
+        font-weight:700; 
+        color:var(--ink); 
+        text-decoration:none; 
+    }
+    .quick-links a:hover{ background: var(--line); transform:translateY(-1px); }
+
+    .accordion{ border:1px solid var(--line); border-radius:12px; overflow:hidden; background:var(--card); }
     .acc-item + .acc-item{ border-top:1px solid var(--line); }
-    .acc-head{ width:100%; text-align:left; background:#faf6e4; border:0; padding:12px 16px; display:grid; grid-template-columns:90px 1fr 120px; gap:10px; align-items:center; cursor:pointer; font-weight:800; }
-    .acc-head .code{ font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,"Liberation Mono",monospace; }
-    .acc-head .name{ color:#333; }
+    
+    .acc-head{ 
+        width:100%; 
+        text-align:left; 
+        background:var(--table-head); 
+        border:0; 
+        padding:12px 16px; 
+        display:grid; 
+        grid-template-columns:90px 1fr 120px; 
+        gap:10px; 
+        align-items:center; 
+        cursor:pointer; 
+        font-weight:800; 
+        color: var(--ink);
+    }
+    .acc-head .code{ font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; }
+    .acc-head .name{ color:var(--ink); }
     .acc-head .hint{ color:var(--muted); font-weight:700; text-align:right; }
-    .acc-body{ display:none; padding:14px 16px; background:#fffef9; line-height:1.7; }
+    
+    .acc-body{ display:none; padding:14px 16px; background:var(--table-stripe); line-height:1.7; color: var(--ink); }
     .acc-body.show{ display:block; }
     .acc-body p{ margin:8px 0; }
-    .acc-body .subttl{ font-weight:800; color:#5b5534; margin-top:10px; }
+    .acc-body .subttl{ font-weight:800; color:var(--green); margin-top:10px; }
     .acc-body ul{ margin:6px 0 10px 1.2em; padding:0; }
     .acc-body li{ margin:4px 0; }
     .acc-note{ color:var(--muted); font-size:13px; margin-top:8px; }
+    
     @media (max-width:700px){ .acc-head{ grid-template-columns:70px 1fr 90px; padding:10px 12px; } }
   </style>
 
@@ -63,9 +140,14 @@
     </nav>
     
     <div class="actions" style="align-items: center; gap: 8px;">
+        <!-- 深色模式切換按鈕 -->
+        <button id="darkToggle" class="theme-btn">
+            <span class="icon">🌙</span> <span class="txt">深色</span>
+        </button>
+
         <button class="btn pill" style="background:#4285F4; color:white;" id="btnLogin" type="button">Google 登入</button>
         <div id="member-area" style="display:none; align-items: center; gap:5px;">
-            <span id="userDisplay" style="font-size: 13px; font-weight: bold; color: #333; margin-right: 4px;"></span>
+            <span id="userDisplay" style="font-size: 13px; font-weight: bold; color: var(--ink); margin-right: 4px;"></span>
             <a href="admin.html" id="btnAdminLink" class="btn pill" style="background:#673AB7; color:white; font-size:12px; padding:4px 10px; text-decoration:none; display:none;">管理後台</a>
             <button class="btn pill" style="background:#777; color:white; font-size:12px; padding:4px 10px;" id="btnEditProfile" type="button">修改資料</button>
             <button class="btn pill" style="background:#EA4335; color:white;" id="btnLogout" type="button">登出</button>
@@ -120,7 +202,7 @@
     <!-- 服務碼別說明（BA） -->
     <section id="svcdesc" class="card">
       <h2 class="card-title">服務碼別說明（BA 碼）</h2>
-      <p class="hint">以下為 BA01～BA24 之服務說明（依你提供的文件內容整理）。點標題可展開／收起。</p>
+      <p class="hint">以下為 BA01～BA24 之服務說明（依最新文件內容整理）。點標題可展開／收起。</p>
       <div class="accordion" id="svcAcc"></div>
       <div class="acc-note">※ 以上文字由 <code>SERVICE_DESC_BA</code> 物件動態渲染。</div>
     </section>
@@ -128,17 +210,17 @@
     <!-- 其它區塊 -->
     <section id="laws" class="card">
       <h2 class="card-title">法規與作業要點</h2>
-      <p class="hint">（放各部會連結、作業要點重點條列…）</p>
+      <p class="hint">相關部會連結與作業要點重點條列整理中。</p>
     </section>
 
     <section id="forms" class="card">
       <h2 class="card-title">表單與下載</h2>
-      <p class="hint">（放申請表、同意書、評估表等檔案下載連結）</p>
+      <p class="hint">申請表、同意書、評估表等檔案下載連結更新中。</p>
     </section>
 
     <section id="faq" class="card">
       <h2 class="card-title">常見問題</h2>
-      <p class="hint">（整理家屬與居服常問 Q&A）</p>
+      <p class="hint">整理家屬與居服常問 Q&A 內容規劃中。</p>
     </section>
   </main>
 
@@ -171,7 +253,6 @@
 
   <!-- 內容填充與防拷邏輯 -->
   <script>
-    // 完整定義 SERVICE_DESC_BA，確保內容顯示
     const SERVICE_DESC_BA = {
       BA01:{name:"基本身體清潔",html:`<p class="subttl">內容</p><ul><li>梳頭修面、穿脫衣服、床上擦澡、床上洗頭、排泄物清理（含會陰、尖翼尿片／倒尿袋或相關協助）。</li><li>床上洗頭與排泄物清理，個案如無需求得不執行。</li></ul><p class="subttl">使用原則</p><ul><li>原則一日一組合；必要時得早晚各一組合。</li><li>與 BA07、BA23 不得同一時段申報。</li><li>得依臨時性需求先提供，並於提供後立即通報社區整合型服務中心，且限當次使用。</li></ul>`},
       BA02:{name:"基本日常照顧",html:`<p class="subttl">內容（摘要）</p><ul><li>生活協助：穿脫衣物、床上/下移位、坐/站、倒尿瓶等。</li><li>環境維護：更換床單、簡易清潔等。</li></ul>`},
@@ -189,26 +270,44 @@
       BA14:{name:"陪同就醫",html:`<p>掛號（含預約）、就醫陪同、返家後注意事項說明。</p>`},
       BA15:{name:"家務協助",html:`<p>一般家務（環境清潔、洗曬衣物、膳食準備等），以日常生活維持為限。</p>`},
       BA16:{name:"代購或代領或代送服務",html:`<p>購買生活必需品、代領報告、代送文件等。</p>`},
-      BA17a:{name:"人工鼻造管內（非氣管內管）分泌物抽吸",html:`<p>依指示於人工鼻造管處理分泌物抽吸並紀錄。</p>`},
-      BA17b:{name:"口腔內（懸垂至氣管之前）分泌物抽吸",html:`<p>依指示於口腔內抽吸分泌物，注意無菌與安全。</p>`},
+      BA17a:{name:"人工鼻造管內分泌物抽吸",html:`<p>依指示於人工鼻造管處理分泌物抽吸並紀錄。</p>`},
+      BA17b:{name:"口腔內分泌物抽吸",html:`<p>依指示於口腔內抽吸分泌物，注意無菌與安全。</p>`},
       BA17c:{name:"尿管及鼻胃管之清潔與固定",html:`<p>清潔、固定與更換敷料（依指示）。</p>`},
       BA17d:{name:"血糖檢驗",html:`<p>協助檢測與紀錄。</p>`},
       BA17e:{name:"依指示置入藥盒",html:`<p>依醫囑協助分裝藥盒並衛教。</p>`},
       BA18:{name:"安全看視",html:`<p>風險情境的即時看視與提醒，維持安全。</p>`},
-      BA20:{name:"陪伴服務",html:`<p class="subttl">內容</p><ul><li>至案家陪伴看視，日常生活參與、談話互動、收看電視或新聞資訊等非照顧性互動。</li></ul><p class="subttl">使用規定</p><ul><li>以三十分鐘為一單位（次）計算。</li><li>不得與照顧組合表之其他照顧組合併同使用，但可接續使用。</li></ul>`},
-      BA22:{name:"巡視服務",html:`<p class="subttl">內容與時段</p><ul><li>於每日 <b>06:00–20:00</b> 至案家探視確認長照對象狀況，並進行簡易協助；<b>至少三次</b>。</li></ul><p class="subttl">使用規定</p><ul><li>不得搭配「照顧組合表」之其他照顧組合。</li><li>個案突發急變等臨時狀況，得臨時提供服務；服務後應立即通知社區整合型服務中心，且<b>限當次使用</b>。</li><li>非戶同址之巡視服務，得核實路程交通時間酌量認列後，依實際所需申報 <b>AA08</b>。</li></ul>`},
-      BA23:{name:"協助洗頭",html:`<p class="subttl">內容</p><ul><li>依長照對象需求完成洗頭流程：洗髮、沖洗、擦乾、梳理等（含會陰部清潔除外）。</li></ul><p class="subttl">使用規定</p><ul><li>於床上或浴室（或類似之場所）單獨提供之洗頭服務；同一時段<b>不得併同申報 BA01 或 BA07</b>。</li><li>持續提供衛教與照顧指導。</li><li>得依第二十一條臨時性規定先提供服務，並於提供後立即通知社區整合型服務中心；限當次使用。</li></ul>`},
-      BA24:{name:"協助排泄",html:`<p class="subttl">內容</p><ul><li>協助移位或引導至廁所，支持與協助一般大小便。</li><li>尿器/便盆之更換與清理、會陰沖洗、臥床更換尿片。</li><li>尿袋更換與處理、排泄物清理與環境整復。</li><li>個案如無需求，得不執行。</li></ul><p class="subttl">使用規定</p><ul><li>如於執行 <b>BA01</b> 或 <b>BA07</b> 過程中同時執行者，不得另行申報 BA24。</li><li>得依第二十一條臨時性規定先提供服務，並於提供後立即通知社區整合型服務中心；限當次使用。</li></ul>`}
+      BA20:{name:"陪伴服務",html:`<p class="subttl">內容</p><ul><li>至案家陪伴看視，日常生活參與、談話互動等非照顧性互動。</li></ul><p class="subttl">使用規定</p><ul><li>以三十分鐘為一單位計算。</li><li>不得與照顧組合表之其他組合併同使用，但可接續使用。</li></ul>`},
+      BA22:{name:"巡視服務",html:`<p class="subttl">內容與時段</p><ul><li>於每日 06:00–20:00 至案家探視確認對象狀況；至少三次。</li></ul>`},
+      BA23:{name:"協助洗頭",html:`<p class="subttl">內容</p><ul><li>依需求完成洗頭流程：洗髮、沖洗、擦乾、梳理等。</li></ul>`},
+      BA24:{name:"協助排泄",html:`<p class="subttl">內容</p><ul><li>協助移位或引導至廁所，支持與協助一般大小便。</li><li>尿器/便盆之更換與清理、會陰沖洗、更換尿片。</li></ul>`}
     };
 
     document.addEventListener('DOMContentLoaded', () => {
+      // --- 深色模式按鈕邏輯 ---
+      const toggleBtn = document.getElementById('darkToggle');
+      if (toggleBtn) {
+          const icon = toggleBtn.querySelector('.icon');
+          const txt = toggleBtn.querySelector('.txt');
+          const updateBtnUI = (theme) => {
+              icon.textContent = theme === 'dark' ? '☀️' : '🌙';
+              txt.textContent = theme === 'dark' ? '淺色' : '深色';
+          };
+          updateBtnUI(document.documentElement.getAttribute('data-theme'));
+          toggleBtn.addEventListener('click', () => {
+              const currentTheme = document.documentElement.getAttribute('data-theme');
+              const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+              document.documentElement.setAttribute('data-theme', newTheme);
+              localStorage.setItem('theme', newTheme);
+              updateBtnUI(newTheme);
+          });
+      }
+
+      // --- 資料填充邏輯 ---
       const fmt = n => Number(n || 0).toLocaleString('zh-TW');
       const levels = [2,3,4,5,6,7,8];
-      
-      // 若 script.js 載入成功可直接用變數，若失敗則提供預設值防止頁面壞掉
-      let myCmsQuota = (typeof cmsQuota !== 'undefined') ? cmsQuota : { 2:10020, 3:15460, 4:18580, 5:24100, 6:28070, 7:32090, 8:36180 };
-      let myGaCap = (typeof GA_CAP !== 'undefined') ? GA_CAP : { 2:32340, 3:32340, 4:32340, 5:32340, 6:32340, 7:48510, 8:48510 };
-      let myScCap = (typeof SC_CAP !== 'undefined') ? SC_CAP : { 2:87780, 3:87780, 4:87780, 5:87780, 6:87780, 7:71610, 8:71610 };
+      let myCmsQuota = { 2:10020, 3:15460, 4:18580, 5:24100, 6:28070, 7:32090, 8:36180 };
+      let myGaCap = { 2:32340, 3:32340, 4:32340, 5:32340, 6:32340, 7:48510, 8:48510 };
+      let myScCap = { 2:87780, 3:87780, 4:87780, 5:87780, 6:87780, 7:71610, 8:71610 };
 
       const baTbody = document.querySelector('#baQuotaTable tbody'); 
       baTbody.innerHTML = '';
