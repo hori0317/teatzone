@@ -69,6 +69,17 @@
         box-sizing: border-box; 
     }
     .modal-actions { margin-top: 20px; }
+
+    /* 針對深色按鈕在左側的微調樣式 */
+    .brand .theme-btn {
+        margin-left: 15px; /* 與標題保持距離 */
+        height: 32px;      /* 稍微縮小以配合標題高度 */
+        padding: 0 12px;
+        font-size: 13px;
+    }
+    @media (max-width: 1180px) {
+        .brand .theme-btn { margin-left: 10px; }
+    }
   </style>
 </head>
 <body data-page="calculator"> 
@@ -96,6 +107,11 @@
     <div class="brand">
       <a href="index.html" class="logo-link"><img src="org-logo.png" alt="logo" onerror="this.style.opacity=0.2" /></a>
       <span class="site-title" id="siteTitle" data-sync-title>額度計算機</span>
+      
+      <!-- 深色模式切換按鈕 (已從 Actions 移至此處) -->
+      <button id="darkToggle" class="theme-btn">
+          <span class="icon">🌙</span> <span class="txt">深色</span>
+      </button>
     </div>
     
     <nav class="nav-links" aria-label="主選單">
@@ -108,12 +124,8 @@
       <a href="about.html">關於我們</a>
     </nav>
     
+    <!-- 右側按鈕區 (現在空間變寬裕了) -->
     <div class="actions" style="display:flex; align-items:center; gap:8px;">
-      <!-- 深色模式切換按鈕 -->
-      <button id="darkToggle" class="theme-btn">
-          <span class="icon">🌙</span> <span class="txt">深色</span>
-      </button>
-
       <button class="btn pill btn-orange" id="btnUnitToggle" type="button" data-unit="B">B單位</button>
       <button class="btn pill btn-green" id="btnReset" type="button">重置</button>
       <button class="btn pill btn-gray" id="btnPrint" type="button" onclick="window.print()">列印</button>
@@ -159,8 +171,8 @@
           </div>
         </div>
 
-        <div class="form-row"><label>留用額度：</label><input id="keepQuota" type="number" min="0" /></div>
-        <div class="form-row"><label>給付額度：</label><input id="grantQuota" type="text" readonly /></div>
+        <div class="form-row"><label>留用額度：</label><input id="keepQuota" type="number" min="0" style="background:var(--input-bg); color:var(--ink); border:1px solid var(--line); border-radius:6px; padding:4px 8px;"/></div>
+        <div class="form-row"><label>給付額度：</label><input id="grantQuota" type="text" readonly style="background:var(--table-stripe); color:var(--ink); border:1px solid var(--line); border-radius:6px; padding:4px 8px;"/></div>
 
         <div class="form-row">
           <label>是否有外籍看護：</label>
@@ -233,7 +245,7 @@
     document.addEventListener('copy', e => e.preventDefault());
   </script>
 
-  <!-- 佔位 (功能完整保留) -->
+  <!-- 佔位區 (功能完整保留) -->
   <div id="addonPlaceholders" aria-hidden="true"><span id="addonHint"></span><button id="btnSaveAddons"></button><div id="addonRows"></div><div id="caregiverSalary"></div></div>
 
   <!-- 會員彈窗 -->
@@ -261,6 +273,7 @@
     import { getFirestore, collection, addDoc, serverTimestamp, doc, getDoc, setDoc } 
       from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
+    // Firebase 配置 (保持不變)
     const config={ apiKey: "AIzaSyCZMhdUI0HeIoj5masuRh00pzP3SMbF6Yc", authDomain: "hori-test-1b93c.firebaseapp.com", projectId: "hori-test-1b93c", storageBucket: "hori-test-1b93c.firebasestorage.app", messagingSenderId: "549583061796", appId: "1:549583061796:web:ad58b8bf80c2b6b71c29b1" };
     const app=initializeApp(config), auth=getAuth(app), db=getFirestore(app), provider=new GoogleAuthProvider();
 
