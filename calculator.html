@@ -20,7 +20,7 @@
   <script src="script.js" defer></script>
 
   <style>
-    /* 原版排版：保留 grid-2 與寬度微調 */
+    /* 原版卡片排版樣式 */
     .grid-2{
       display: grid;
       grid-template-columns: 2.2fr 1.3fr;
@@ -71,11 +71,12 @@
     .modal-actions { margin-top: 20px; }
 
     /* ============================================================
-       標題欄 RWD 捲軸移動優化 (參考 news.html)
+       【核心修正：標籤列縮小時支援捲軸移動】
+       參考 care-info.html 的 RWD 行為
        ============================================================ */
     @media (max-width: 1350px) {
         .topbar {
-            grid-template-columns: auto 1fr; /* 讓 Brand 在左，Actions 在右 */
+            grid-template-columns: auto 1fr; /* 結構變為 Brand 在左，Actions 在右 */
             height: auto;
             padding: 10px 24px;
             gap: 10px;
@@ -89,35 +90,45 @@
             justify-self: end; 
         }
 
-        /* 導覽列移到第二行，並開啟橫向捲動 */
+        /* 導覽列標籤：移至獨立第二行並開啟捲軸 */
         .nav-links {
-            grid-column: 1 / -1; /* 橫跨整行 */
+            grid-column: 1 / -1; /* 橫跨整行空間 */
             justify-self: stretch;
-            justify-content: flex-start; /* 靠左對齊，啟動捲動 */
-            overflow-x: auto; /* 開啟橫向捲動 */
-            white-space: nowrap; /* 強制標籤不換行 */
+            display: flex !important;
+            justify-content: flex-start !important; 
+            overflow-x: auto !important; /* 啟動橫向滾動 */
+            overflow-y: hidden !important; 
+            white-space: nowrap !important; /* 禁止標籤文字換行 */
             padding: 12px 0 8px;
-            gap: 30px; /* 增加標籤間距，方便點擊 */
+            gap: 30px; 
             width: 100%;
             -webkit-overflow-scrolling: touch; /* iOS 滾動優化 */
             border-top: 1px dashed var(--line);
-            margin-top: 10px;
+            margin-top: 5px;
         }
-        /* 隱藏電腦版捲軸條但維持捲動功能 */
-        .nav-links::-webkit-scrollbar { display: none; }
-        .nav-links { -ms-overflow-style: none; scrollbar-width: none; }
+
+        /* 徹底隱藏捲軸樣式 (Chrome/Safari/Edge/Firefox) */
+        .nav-links::-webkit-scrollbar {
+            display: none !important;
+            width: 0 !important;
+            height: 0 !important;
+        }
+        .nav-links {
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+        }
     }
 
-    /* 手機版極小螢幕微調 */
+    /* 極小螢幕按鈕優化 */
     @media (max-width: 600px) {
-        .actions .btn.pill span { display: none; } /* 隱藏按鈕文字只留圖示 */
-        .theme-btn .txt { display: none; } /* 隱藏深色/淺色文字 */
+        .actions .btn.pill span { display: none; } /* 隱藏「重置」等文字 */
+        .actions { gap: 4px !important; }
+        .theme-btn .txt { display: none; }
     }
   </style>
 </head>
 <body data-page="calculator"> 
   
-  <!-- 浮水印 (完整保留) -->
   <div class="watermark" aria-hidden="true">
     <span class="wm-item" style="top:5%; left:5%;  --dur:9s;">@hori版權所有</span>
     <span class="wm-item" style="top:5%; left:35%; --dur:11s;">@hori版權所有</span>
@@ -152,8 +163,7 @@
       <a href="about.html">關於我們</a>
     </nav>
     
-    <!-- 右側按鈕區：位置與 news.html 保持一致 -->
-    <div class="actions" style="display:flex; align-items:center; gap:8px;">
+    <div class="actions">
       <!-- 深色模式切換按鈕 -->
       <button id="darkToggle" class="theme-btn">
           <span class="icon">🌙</span> <span class="txt">深色</span>
@@ -180,6 +190,7 @@
 
   <main class="container">
     <section class="grid-2">
+      <!-- 原有表單與資料區塊 (全數保留) -->
       <div class="card">
         <h2 class="card-title">基本資料</h2>
         <div class="form-row">
@@ -270,7 +281,7 @@
     </div>
   </footer>
 
-  <!-- 防拷 -->
+  <!-- 防拷設置 -->
   <script>
     document.addEventListener('contextmenu', e => e.preventDefault());
     document.addEventListener('keydown', e => {
@@ -281,10 +292,9 @@
     document.addEventListener('copy', e => e.preventDefault());
   </script>
 
-  <!-- 佔位區 -->
   <div id="addonPlaceholders" aria-hidden="true"><span id="addonHint"></span><button id="btnSaveAddons"></button><div id="addonRows"></div><div id="caregiverSalary"></div></div>
 
-  <!-- 會員資料彈窗 -->
+  <!-- 會員彈窗 -->
   <div id="profile-modal" class="modal-overlay" style="display:none;">
     <div class="modal-content">
       <h3>歡迎加入！請完善資料</h3>
@@ -328,21 +338,21 @@
         darkToggle: document.getElementById('darkToggle')
     };
 
-    // --- 深色模式邏輯 ---
+    // --- 深色模式切換邏輯 (全站同步) ---
     if (dom.darkToggle) {
         const icon = dom.darkToggle.querySelector('.icon');
         const txt = dom.darkToggle.querySelector('.txt');
-        const updateUI = (theme) => {
+        const updateBtnUI = (theme) => {
             icon.textContent = theme === 'dark' ? '☀️' : '🌙';
             if(txt) txt.textContent = theme === 'dark' ? '淺色' : '深色';
         };
-        updateUI(document.documentElement.getAttribute('data-theme'));
+        updateBtnUI(document.documentElement.getAttribute('data-theme'));
         dom.darkToggle.addEventListener('click', () => {
             const currentTheme = document.documentElement.getAttribute('data-theme');
             const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
             document.documentElement.setAttribute('data-theme', newTheme);
             localStorage.setItem('theme', newTheme);
-            updateUI(newTheme);
+            updateBtnUI(newTheme);
         });
     }
 
