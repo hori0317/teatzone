@@ -71,34 +71,66 @@
     .modal-actions { margin-top: 20px; }
 
     /* ============================================================
-       標題欄擠壓優化 (確保與 news.html 結構一致但不會擠到標籤)
+       標題欄 RWD 優化：參考 news.html 的滾輪移動模式
        ============================================================ */
-    @media (min-width: 1181px) {
-        /* 當螢幕較窄但還沒變成手機版時，縮小按鈕文字或間距 */
-        .actions { gap: 4px !important; }
-        .actions .btn.pill { padding: 6px 10px; font-size: 13px; }
-        .theme-btn { padding: 6px 8px; font-size: 13px; }
+    
+    /* 當螢幕小於 1300px 時，提早進入「兩行模式」以防止擠壓 */
+    @media (max-width: 1300px) {
+        .topbar {
+            grid-template-columns: auto 1fr; /* 變為兩欄：Brand 和 Actions */
+            height: auto;
+            padding: 10px 20px;
+            gap: 10px;
+        }
+        .brand { grid-column: 1; justify-self: start; }
+        .actions { grid-column: 2; justify-self: end; }
+
+        /* 導覽列移到第二行，並支援橫向滾動 */
+        .nav-links {
+            grid-column: 1 / -1; /* 橫跨整行 */
+            justify-self: stretch;
+            justify-content: flex-start; /* 靠左排列 */
+            overflow-x: auto; /* 開啟橫向滾動 */
+            white-space: nowrap; /* 強制不換行 */
+            padding: 10px 0 5px;
+            gap: 25px; /* 標籤間距 */
+            width: 100%;
+            -webkit-overflow-scrolling: touch; /* iOS 滾動流暢 */
+            border-top: 1px dashed var(--line);
+            margin-top: 5px;
+        }
+        /* 隱藏捲軸但保留功能 (可選) */
+        .nav-links::-webkit-scrollbar { display: none; }
+        .nav-links { -ms-overflow-style: none; scrollbar-width: none; }
     }
 
-    @media (max-width: 1350px) and (min-width: 1181px) {
-        /* 在這個區間內，隱藏「重置」與「列印」的文字，只留圖示或變小，防止擠壓中間 */
-        #btnReset, #btnPrint { width: 40px; overflow: hidden; white-space: nowrap; padding: 0; display: flex; justify-content: center; align-items: center; }
-        #btnReset::before { content: "🔄"; }
-        #btnPrint::before { content: "🖨️"; }
-        #btnReset span, #btnPrint span { display: none; } /* 如果 HTML 有包 span 的話 */
-        #btnReset, #btnPrint { font-size: 18px; }
-        #btnReset { color: transparent; }
-        #btnPrint { color: transparent; }
+    /* 手機版極小螢幕微調 */
+    @media (max-width: 600px) {
+        .actions .btn.pill span { display: none; } /* 隱藏部分按鈕文字只留圖示 */
+        .actions { gap: 4px; }
+        .site-title { font-size: 18px; margin-right: 10px; }
     }
   </style>
 </head>
 <body data-page="calculator"> 
   
+  <!-- 浮水印 (完整保留) -->
   <div class="watermark" aria-hidden="true">
     <span class="wm-item" style="top:5%; left:5%;  --dur:9s;">@hori版權所有</span>
+    <span class="wm-item" style="top:5%; left:35%; --dur:11s;">@hori版權所有</span>
     <span class="wm-item" style="top:5%; left:65%; --dur:10s;">@hori版權所有</span>
+    <span class="wm-item" style="top:25%; left:10%; --dur:13s;">@hori版權所有</span>
+    <span class="wm-item" style="top:25%; left:40%; --dur:12s;">@hori版權所有</span>
+    <span class="wm-item" style="top:25%; left:70%; --dur:14s;">@hori版權所有</span>
     <span class="wm-item" style="top:50%; left:5%;  --dur:10s;">@hori版權所有</span>
+    <span class="wm-item" style="top:50%; left:35%; --dur:11s;">@hori版權所有</span>
+    <span class="wm-item" style="top:50%; left:65%; --dur:9s;">@hori版權所有</span>
+    <span class="wm-item" style="top:75%; left:10%; --dur:13s;">@hori版權所有</span>
+    <span class="wm-item" style="top:75%; left:40%; --dur:12s;">@hori版權所有</span>
     <span class="wm-item" style="top:75%; left:70%; --dur:10s;">@hori版權所有</span>
+    <span class="wm-item" style="top:90%; left:15%; --dur:11s;">@hori版權所有</span>
+    <span class="wm-item" style="top:90%; left:45%; --dur:10s;">@hori版權所有</span>
+    <span class="wm-item" style="top:90%; left:75%; --dur:12s;">@hori版權所有</span>
   </div>
 
   <header class="topbar">
@@ -117,9 +149,8 @@
       <a href="about.html">關於我們</a>
     </nav>
     
-    <!-- 右側按鈕區：結構與 news.html 保持完全一致 -->
     <div class="actions">
-      <!-- 深色模式切換按鈕 (回到右側) -->
+      <!-- 深色模式切換按鈕 -->
       <button id="darkToggle" class="theme-btn">
           <span class="icon">🌙</span> <span class="txt">深色</span>
       </button>
