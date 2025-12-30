@@ -82,7 +82,7 @@
     // Firebase SDK 導入
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
     import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-    import { getFirestore, collection, getDocs, doc, setDoc, deleteDoc, getDoc, query, orderBy } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+    import { getFirestore, collection, getDocs, doc, setDoc, deleteDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
     // Firebase 配置 (與影音頁面一致)
     const firebaseConfig = {
@@ -157,6 +157,8 @@
 
     /**
      * 讀取會員列表
+     * 修正：取消 Firestore orderBy 避免過濾掉沒有註冊時間的舊資料
+     * 改用前端排序以確保所有會員都能顯示
      */
     async function loadUsers() {
         const tbody = document.querySelector('#usersTable tbody');
@@ -168,24 +170,38 @@
         tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; padding:30px;">載入會員資料中，請稍候...</td></tr>';
         
         try {
-            // 按照註冊時間排序 (從新到舊)
-            const q = query(collection(db, "users"), orderBy("createdAt", "desc"));
-            const querySnapshot = await getDocs(q);
+            // 直接抓取所有會員文件 (不使用 orderBy)
+            const querySnapshot = await getDocs(collection(db, "users"));
             
+            let rawDataList = [];
+            querySnapshot.forEach((docSnap) => {
+                const data = docSnap.data();
+                rawDataList.push(data);
+            });
+
+            // 在前端進行排序 (從新到舊)，如果資料缺少 createdAt 則排在最後面
+            rawDataList.sort((a, b) => {
+                const timeA = a.createdAt ? (a.createdAt.toMillis ? a.createdAt.toMillis() : new Date(a.createdAt).getTime()) : 0;
+                const timeB = b.createdAt ? (b.createdAt.toMillis ? b.createdAt.toMillis() : new Date(b.createdAt).getTime()) : 0;
+                return timeB - timeA;
+            });
+
             tbody.innerHTML = '';
             allUsersData = []; 
 
-            if (querySnapshot.empty) {
+            if (rawDataList.length === 0) {
                 tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;">目前尚無會員資料</td></tr>';
             }
 
-            querySnapshot.forEach((docSnap) => {
-                const data = docSnap.data();
-                
+            rawDataList.forEach((data) => {
                 // 處理註冊日期顯示
-                let dateStr = '未知';
-                if (data.createdAt && typeof data.createdAt.toDate === 'function') {
-                    dateStr = data.createdAt.toDate().toLocaleString('zh-TW', { year: 'numeric', month: '2-digit', day: '2-digit' });
+                let dateStr = '早期註冊';
+                if (data.createdAt) {
+                    if (typeof data.createdAt.toDate === 'function') {
+                        dateStr = data.createdAt.toDate().toLocaleString('zh-TW', { year: 'numeric', month: '2-digit', day: '2-digit' });
+                    } else {
+                        dateStr = new Date(data.createdAt).toLocaleDateString('zh-TW');
+                    }
                 }
 
                 const name = data.name || '(未填寫)';
