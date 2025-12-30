@@ -6,54 +6,81 @@
   <title>影音學習區｜長照工具</title>
   <link rel="icon" type="image/x-icon" href="YORU.ico" />
   <link rel="stylesheet" href="style.css" />
-  
   <style>
-    /* 深色模式變數設定 */
-    :root {
-        --bg: #fffaf0;
-        --card: #ffffff;
-        --text: #333333;
-        --warn-bg: #f5f5f5;
-    }
-    [data-theme="dark"] {
-        --bg: #1a1a1a;
-        --card: #2d2d2d;
-        --text: #e0e0e0;
-        --warn-bg: #333333;
-    }
-
-    body { background-color: var(--bg); color: var(--text); transition: background 0.3s, color 0.3s; }
-    .card { background-color: var(--card); transition: background 0.3s; }
-
+    /* 將原本硬編碼的顏色改為引用 style.css 的變數 */
     .video-card { text-align: center; margin-bottom: 20px; max-width: 100%; margin: 0 auto; }
-    .video-container { position: relative; width: 100%; padding-bottom: 56.25%; height: 0; overflow: hidden; border-radius: 12px; background: #000; margin: 0 auto; }
+    
+    .video-container { 
+        position: relative; 
+        width: 100%; 
+        padding-bottom: 56.25%; 
+        height: 0; 
+        overflow: hidden; 
+        border-radius: 12px; 
+        background: #000; 
+        margin: 0 auto; 
+    }
+    
     .video-container iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; }
+    
     .video-mask-top { position: absolute; top: 0; left: 0; width: 100%; height: 80px; background: transparent; z-index: 10; cursor: default; }
+    
     .video-mask-logo { position: absolute; bottom: 0; right: 0; width: 120px; height: 50px; background: transparent; z-index: 10; cursor: default; }
     
-    .login-warning-box { padding: 40px 20px; background: var(--warn-bg); border: 2px dashed #ccc; border-radius: 12px; color: #888; font-weight: 700; }
-    
-    .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); backdrop-filter: blur(3px); z-index: 2000; display: flex; justify-content: center; align-items: center; padding: 20px; }
-    .modal-content { background: var(--card); border-radius: 12px; padding: 24px; width: 100%; max-width: 420px; text-align: center; color: var(--text); }
-    .modal-content input { width: 100%; padding: 10px; margin-top: 4px; background: var(--warn-bg); color: var(--text); border: 1px solid #555; border-radius: 5px; }
-
-    .theme-toggle-nav {
-        cursor: pointer;
-        background: none;
-        border: 1px solid #ccc;
-        color: inherit;
-        padding: 5px 10px;
-        border-radius: 15px;
-        font-size: 12px;
-        margin-right: 5px;
+    .login-warning-box { 
+        padding: 40px 20px; 
+        background: var(--card); /* 改用變數 */
+        border: 2px dashed var(--line); /* 改用變數 */
+        border-radius: 12px; 
+        color: var(--muted); /* 改用變數 */
+        font-weight: 700; 
     }
+    
+    .modal-overlay { 
+        position: fixed; 
+        top: 0; left: 0; width: 100%; height: 100%; 
+        background: rgba(47,47,32,0.6); 
+        backdrop-filter: blur(3px); 
+        z-index: 2000; 
+        display: flex; 
+        justify-content: center; 
+        align-items: center; 
+        padding: 20px; 
+    }
+    
+    .modal-content { 
+        background: var(--card); /* 改用變數 */
+        border: 1px solid var(--line); /* 改用變數 */
+        border-radius: 12px; 
+        padding: 24px; 
+        width: 100%; 
+        max-width: 420px; 
+        text-align: center; 
+        color: var(--ink); /* 改用變數 */
+    }
+    
+    .modal-content h3 { color: var(--green); margin-top: 0; }
+    
+    .modal-content input { 
+        width: 100%; 
+        padding: 10px; 
+        margin-top: 4px; 
+        border: 1px solid var(--line); 
+        background: var(--input-bg);
+        color: var(--ink);
+    } 
+    
+    .modal-actions { margin-top: 20px; }
   </style>
+  
   <script>
+    /* 立即檢查主題設定，防止頁面閃爍 */
     (function() {
         const savedTheme = localStorage.getItem('theme') || 'light';
         document.documentElement.setAttribute('data-theme', savedTheme);
     })();
   </script>
+  
   <script src="nav.js" defer></script>
 </head>
 <body data-page="video">
@@ -75,12 +102,14 @@
     </nav>
     
     <div class="actions" style="align-items: center; gap: 8px;">
-        <!-- 深色按鈕 -->
-        <button class="theme-toggle-nav" id="themeToggleBtn">🌙 深色</button>
+        <!-- 深色模式切換按鈕 -->
+        <button id="darkToggle" class="theme-btn">
+            <span class="icon">🌙</span> <span class="txt">深色</span>
+        </button>
 
         <button class="btn pill" style="background:#4285F4; color:white;" id="btnLogin">Google 登入</button>
         <div id="member-area" style="display:none; align-items: center; gap:5px;">
-            <span id="userDisplay" style="font-size: 13px; font-weight: bold; margin-right: 4px;"></span>
+            <span id="userDisplay" style="font-size: 13px; font-weight: bold; color: var(--ink);"></span>
             <a href="admin.html" id="btnAdminLink" class="btn pill" style="background:#673AB7; color:white; font-size:12px; display:none;">管理後台</a>
             <button class="btn pill" style="background:#777; color:white; font-size:12px;" id="btnEditProfile">修改資料</button>
             <button class="btn pill" style="background:#EA4335; color:white;" id="btnLogout">登出</button>
@@ -92,8 +121,7 @@
   <main class="container">
     <section class="card video-card">
         <h2 class="card-title">🎥 學習影片：長照服務介紹</h2>
-        
-        <div id="login-warning" class="login-warning-box">🔒 請先登入會員以觀看教學影片並累積時數</div>
+        <div id="login-warning" class="login-warning-box">🔒 請先登入會員以累積學習時數</div>
     
         <div id="video-wrapper" style="display:none;">
             <div class="video-container">
@@ -101,10 +129,9 @@
                 <div class="video-mask-top"></div>
                 <div class="video-mask-logo"></div>
             </div>
-            
             <p class="hint" style="margin-top:12px; font-size:15px;">
-                累積觀看：<span id="watchTimeDisplay" style="color:#2e7d32; font-weight:bold; font-size:18px;">0</span> 秒
-                <span id="saveStatus" style="font-size:13px; color:#999; margin-left:8px;"></span>
+                您的總學習時數：<span id="watchTimeDisplay" style="color:var(--green); font-weight:bold; font-size:18px;">0</span> 秒
+                <span id="saveStatus" style="font-size:13px; color:var(--muted); margin-left:8px;"></span>
             </p>
         </div>
     </section>
@@ -114,14 +141,14 @@
     <div class="modal-content">
       <h3>歡迎加入！請完善資料</h3>
       <div style="text-align:left; margin-bottom:12px;">
-        <label style="font-weight:700; font-size:15px;">姓名 / 稱呼</label>
-        <input type="text" id="pf-name" placeholder="例如：王小明">
+        <label>姓名 / 稱呼</label>
+        <input type="text" id="pf-name">
       </div>
       <div style="text-align:left; margin-bottom:12px;">
-        <label style="font-weight:700; font-size:15px;">使用者年齡</label>
-        <input type="number" id="pf-age" placeholder="例如：65">
+        <label>使用者年齡</label>
+        <input type="number" id="pf-age">
       </div>
-      <button id="btn-save-profile" class="btn pill btn-green" style="width:100%; font-size:16px; padding:10px;">儲存並開始使用</button>
+      <button id="btn-save-profile" class="btn pill btn-green" style="width:100%;">儲存並開始使用</button>
     </div>
   </div>
 
@@ -135,53 +162,115 @@
 
     const dom={ login:document.getElementById('btnLogin'), logout:document.getElementById('btnLogout'), member:document.getElementById('member-area'), user:document.getElementById('userDisplay'), admin:document.getElementById('btnAdminLink'), edit:document.getElementById('btnEditProfile'), modal:document.getElementById('profile-modal'), save:document.getElementById('btn-save-profile'), name:document.getElementById('pf-name'), age:document.getElementById('pf-age'), title:document.querySelector('#profile-modal h3'), video:document.getElementById('video-wrapper'), warn:document.getElementById('login-warning'), status:document.getElementById('saveStatus'), watch:document.getElementById('watchTimeDisplay') };
 
-    // 深色模式切換
-    const themeBtn = document.getElementById('themeToggleBtn');
-    themeBtn.addEventListener('click', () => {
-        const current = document.documentElement.getAttribute('data-theme');
-        const next = current === 'dark' ? 'light' : 'dark';
-        document.documentElement.setAttribute('data-theme', next);
-        localStorage.setItem('theme', next);
-        themeBtn.textContent = next === 'dark' ? '☀️ 淺色' : '🌙 深色';
+    // 深色模式切換邏輯
+    const toggleBtn = document.getElementById('darkToggle');
+    const toggleIcon = toggleBtn.querySelector('.icon');
+    const toggleTxt = toggleBtn.querySelector('.txt');
+
+    function updateBtnUI(theme) {
+        if (theme === 'dark') {
+            toggleIcon.textContent = '☀️';
+            toggleTxt.textContent = '淺色';
+        } else {
+            toggleIcon.textContent = '🌙';
+            toggleTxt.textContent = '深色';
+        }
+    }
+
+    // 初始化按鈕狀態
+    updateBtnUI(document.documentElement.getAttribute('data-theme'));
+
+    toggleBtn.addEventListener('click', () => {
+        const currentTheme = document.documentElement.getAttribute('data-theme');
+        const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', newTheme);
+        localStorage.setItem('theme', newTheme);
+        updateBtnUI(newTheme);
     });
-    themeBtn.textContent = document.documentElement.getAttribute('data-theme') === 'dark' ? '☀️ 淺色' : '🌙 深色';
 
     const YOUTUBE_VIDEO_ID = 'PLG2Uexyi9s'; 
     let currentUser=null, player, timer, currentSec=0, baseTotalSec=0;
 
-    const tag = document.createElement('script'); tag.src = "https://www.youtube.com/iframe_api";
+    // YouTube API 完整載入
+    const tag = document.createElement('script'); 
+    tag.src = "https://www.youtube.com/iframe_api";
     document.head.appendChild(tag);
+
     window.onYouTubeIframeAPIReady = function() {
       player = new YT.Player('video-placeholder', {
         videoId: YOUTUBE_VIDEO_ID, playerVars: { 'playsinline':1, 'modestbranding':1, 'rel':0, 'controls':1, 'fs':0, 'iv_load_policy':3 },
         events: { 'onStateChange': onPlayerStateChange }
       });
     };
+
     function onPlayerStateChange(e){ if(e.data==1) startT(); else stopT(); }
-    function startT(){ if(!currentUser)return; if(timer) clearInterval(timer); timer=setInterval(()=>{ currentSec++; if(dom.watch) dom.watch.textContent=baseTotalSec+currentSec; if(currentSec>=10) save(); },1000); }
+    
+    function startT(){ 
+        if(!currentUser)return; 
+        if(timer) clearInterval(timer); 
+        timer=setInterval(()=>{ 
+            currentSec++; 
+            // 顯示 = 資料庫原本的總量 + 本次開啟頁面後看的量
+            if(dom.watch) dom.watch.textContent = baseTotalSec + currentSec; 
+            if(currentSec >= 10) save(); 
+        }, 1000); 
+    }
+    
     function stopT(){ if(timer){ clearInterval(timer); timer=null; } save(); }
 
     async function save(){ 
         if(!currentUser || currentSec === 0) return;
-        const added = currentSec; currentSec = 0;
+        const addedSec = currentSec; 
+        currentSec = 0; // 立即歸零避免重複計算
+        
         if(dom.status) dom.status.textContent="同步中...";
         try{ 
-            await updateDoc(doc(db, "users", currentUser.uid), { totalWatchTime: increment(added) });
-            baseTotalSec += added;
+            // 1. 更新使用者總時數 (這是後台讀取的來源)
+            const userRef = doc(db, "users", currentUser.uid);
+            await updateDoc(userRef, {
+                totalWatchTime: increment(addedSec),
+                lastActive: serverTimestamp()
+            });
+
+            // 2. 同步更新本地基準值，確保 UI 顯示連續
+            baseTotalSec += addedSec;
+
+            // 3. 另外存一份詳細日誌
+            setDoc(doc(db,"video_logs",currentUser.uid+"_"+YOUTUBE_VIDEO_ID), { 
+                lastWatched:serverTimestamp(), 
+                totalSeconds: baseTotalSec 
+            }, {merge:true}); 
+
             if(dom.status){ dom.status.textContent="已同步"; setTimeout(()=>dom.status.textContent="",2000); }
-        }catch(e){} 
+        }catch(e){ console.error(e); } 
     }
 
-    async function loadHist(u){ try{ const s=await getDoc(doc(db,"users",u.uid)); if(s.exists()) baseTotalSec=s.data().totalWatchTime||0; if(dom.watch) dom.watch.textContent=baseTotalSec; }catch(e){} }
+    // 初始化時從 users 讀取總時數
+    async function loadHist(u){ 
+        try{ 
+            const s = await getDoc(doc(db, "users", u.uid)); 
+            if(s.exists()){
+                baseTotalSec = s.data().totalWatchTime || 0;
+            } else {
+                baseTotalSec = 0;
+            }
+            if(dom.watch) dom.watch.textContent = baseTotalSec; 
+        }catch(e){ console.error(e); } 
+    }
 
     dom.login.addEventListener('click',()=>signInWithPopup(auth,provider));
     dom.logout.addEventListener('click',()=>signOut(auth).then(()=>location.reload()));
 
     onAuthStateChanged(auth, async u=>{
       if(u){
-        currentUser=u; dom.login.style.display='none'; dom.warn.style.display='none'; dom.video.style.display='block'; dom.member.style.display='flex'; dom.user.textContent=u.displayName||u.email; await loadHist(u);
-        try{ const s=await getDoc(doc(db,"users",u.uid)); if(s.exists()){ if(s.data().name) dom.user.textContent=s.data().name; } else { dom.modal.style.display='flex'; } }catch(e){}
-        try{ const a=await getDoc(doc(db,"admins",u.email)); if(a.exists()) dom.admin.style.display='inline-block'; }catch(e){}
+        currentUser=u; dom.login.style.display='none'; dom.warn.style.display='none'; dom.video.style.display='block'; dom.member.style.display='flex'; dom.user.textContent=u.displayName||u.email; 
+        await loadHist(u); // 先讀取歷史時數
+        try{ 
+            const s=await getDoc(doc(db,"users",u.uid)); 
+            if(!s.exists()){ dom.modal.style.display='flex'; } 
+            else if(s.data().name) dom.user.textContent=s.data().name;
+            const a=await getDoc(doc(db,"admins",u.email)); if(a.exists()) dom.admin.style.display='inline-block';
+        }catch(e){}
       }else{ dom.login.style.display='block'; dom.member.style.display='none'; dom.warn.style.display='block'; dom.video.style.display='none'; }
     });
 
