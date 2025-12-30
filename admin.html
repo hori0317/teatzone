@@ -18,162 +18,205 @@
         input.admin-input { padding: 8px 12px; border: 1px solid #ccc; border-radius: 8px; flex: 1; min-width: 250px; font-size: 15px; }
         .btn-group { margin-bottom: 15px; display: flex; gap: 10px; }
         .badge-self { background: #e6fffa; color: #00a080; padding: 2px 8px; border-radius: 10px; font-size: 12px; border: 1px solid #b2f5ea; margin-left: 5px;}
+        .watch-time-cell { font-family: monospace; color: #2e7d32; font-weight: bold; }
     </style>
 </head>
 <body>
 
-    <div class="admin-header">
-        <h1>🛠️ 管理員後台</h1>
-        <div>
-            <span id="currentAdminInfo" style="margin-right: 10px; font-weight: bold; color: #555;">檢查權限中...</span>
-            <a href="index.html" class="btn pill btn-gray">回首頁</a>
+<div class="admin-header">
+    <h1>🛠️ 管理員後台</h1>
+    <div>
+        <span id="currentAdminInfo" style="margin-right: 10px; font-weight: bold; color: #555;">檢查權限中...</span>
+        <a href="index.html" class="btn pill btn-gray">回首頁</a>
+    </div>
+</div>
+
+<div id="loading" style="text-align: center; margin-top: 50px;">
+    <p style="font-size: 18px; color: #666;">正在驗證管理員身分...</p>
+</div>
+
+<div id="dashboard" style="display: none;">
+    
+    <!-- 會員列表 -->
+    <div class="section-card">
+        <h2>👥 會員資料列表</h2>
+        <div class="btn-group">
+            <button id="btnRefreshUsers" class="btn pill btn-green" style="font-size:14px;">重新整理列表</button>
+            <button id="btnExportExcel" class="btn pill btn-orange" style="font-size:14px;">匯出 Excel</button>
+        </div>
+        <div style="overflow-x: auto;">
+            <table id="usersTable">
+                <thead>
+                    <tr>
+                        <th>姓名</th>
+                        <th>年齡</th>
+                        <th>Email</th>
+                        <th>註冊時間</th>
+                        <th>總觀看時長</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
         </div>
     </div>
 
-    <div id="loading" style="text-align: center; margin-top: 50px;">
-        <p style="font-size: 18px; color: #666;">正在驗證管理員身分...</p>
+    <!-- 管理員權限 -->
+    <div class="section-card" id="superAdminSection">
+        <h2>🔑 管理員權限設定</h2>
+        <p class="hint">輸入對方的 Google Email 來賦予管理權限。</p>
+        <div class="admin-controls">
+            <input type="email" id="newAdminEmail" class="admin-input" placeholder="例如：colleague@gmail.com">
+            <button id="btnAddAdmin" class="btn pill btn-orange">新增管理員</button>
+        </div>
+        <h3 style="font-size: 16px; margin-top: 25px; color: #5b5534;">目前管理員名單：</h3>
+        <ul id="adminList" style="list-style: none; padding: 0;"></ul>
     </div>
+</div>
 
-    <div id="dashboard" style="display: none;">
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+    import { getFirestore, collection, getDocs, doc, setDoc, deleteDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+    const firebaseConfig = {
+        apiKey: "AIzaSyCZMhdUI0HeIoj5masuRh00pzP3SMbF6Yc",
+        authDomain: "hori-test-1b93c.firebaseapp.com",
+        projectId: "hori-test-1b93c",
+        storageBucket: "hori-test-1b93c.firebasestorage.app",
+        messagingSenderId: "549583061796",
+        appId: "1:549583061796:web:ad58b8bf80c2b6b71c29b1"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    let allUsersData = [], currentUserEmail = "";
+
+    // 時間格式化工具：將秒轉為 分:秒
+    function formatTime(totalSeconds) {
+        if (!totalSeconds || isNaN(totalSeconds)) return "0 秒";
+        if (totalSeconds < 60) return `${totalSeconds} 秒`;
+        const mins = Math.floor(totalSeconds / 60);
+        const secs = totalSeconds % 60;
+        return `${mins} 分 ${secs} 秒`;
+    }
+
+    onAuthStateChanged(auth, async (user) => {
+        if (user) {
+            currentUserEmail = user.email;
+            try {
+                const adminSnap = await getDoc(doc(db, "admins", user.email));
+                if (adminSnap.exists()) {
+                    let displayName = user.displayName || user.email;
+                    try {
+                        const u = await getDoc(doc(db, "users", user.uid));
+                        if (u.exists() && u.data().name) displayName = u.data().name;
+                    } catch(err){}
+                    
+                    document.getElementById('currentAdminInfo').textContent = `嗨，${displayName}`;
+                    document.getElementById('loading').style.display = 'none';
+                    document.getElementById('dashboard').style.display = 'block';
+                    loadUsers(); loadAdmins();
+                } else {
+                    document.body.innerHTML = "<h2 style='text-align:center; margin-top:50px;'>⛔ 權限不足：你不在管理員名單中<br><br><a href='index.html'>回首頁</a></h2>";
+                }
+            } catch (e) { alert("驗證錯誤"); }
+        } else {
+            document.body.innerHTML = "<h2 style='text-align:center; margin-top:50px;'>請先登入<br><br><a href='index.html'>回首頁</a></h2>";
+        }
+    });
+
+    async function loadUsers() {
+        const tbody = document.querySelector('#usersTable tbody');
+        const btn = document.getElementById('btnRefreshUsers');
+        const orgText = btn.textContent;
+        btn.textContent = "讀取中...";
+        tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;">更新中...</td></tr>';
         
-        <!-- 會員列表 -->
-        <div class="section-card">
-            <h2>👥 會員資料列表</h2>
-            <div class="btn-group">
-                <button id="btnRefreshUsers" class="btn pill btn-green" style="font-size:14px;">重新整理列表</button>
-                <button id="btnExportExcel" class="btn pill btn-orange" style="font-size:14px;">匯出 Excel</button>
-            </div>
-            <div style="overflow-x: auto;">
-                <table id="usersTable">
-                    <thead><tr><th>姓名</th><th>年齡</th><th>Email</th><th>註冊時間</th></tr></thead>
-                    <tbody></tbody>
-                </table>
-            </div>
-        </div>
+        try {
+            const querySnapshot = await getDocs(collection(db, "users"));
+            tbody.innerHTML = '';
+            allUsersData = []; 
+            querySnapshot.forEach((doc) => {
+                const data = doc.data();
+                
+                // 處理日期
+                let date = '未知';
+                if (data.createdAt && typeof data.createdAt.toDate === 'function') {
+                    date = data.createdAt.toDate().toLocaleDateString('zh-TW');
+                } else if (data.createdAt) {
+                    try{ date = new Date(data.createdAt).toLocaleDateString('zh-TW'); }catch(e){}
+                }
 
-        <!-- 管理員權限 -->
-        <div class="section-card" id="superAdminSection">
-            <h2>🔑 管理員權限設定</h2>
-            <p class="hint">輸入對方的 Google Email 來賦予管理權限。</p>
-            <div class="admin-controls">
-                <input type="email" id="newAdminEmail" class="admin-input" placeholder="例如：colleague@gmail.com">
-                <button id="btnAddAdmin" class="btn pill btn-orange">新增管理員</button>
-            </div>
-            <h3 style="font-size: 16px; margin-top: 25px; color: #5b5534;">目前管理員名單：</h3>
-            <ul id="adminList" style="list-style: none; padding: 0;"></ul>
-        </div>
-    </div>
+                const name = data.name || '(未填寫)';
+                const watchTimeRaw = data.totalWatchTime || 0; // 取得總秒數
+                const watchTimeDisplay = formatTime(watchTimeRaw);
 
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-        import { getFirestore, collection, getDocs, doc, setDoc, deleteDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-
-        const firebaseConfig = {
-            apiKey: "AIzaSyCZMhdUI0HeIoj5masuRh00pzP3SMbF6Yc",
-            authDomain: "hori-test-1b93c.firebaseapp.com",
-            projectId: "hori-test-1b93c",
-            storageBucket: "hori-test-1b93c.firebasestorage.app",
-            messagingSenderId: "549583061796",
-            appId: "1:549583061796:web:ad58b8bf80c2b6b71c29b1"
-        };
-
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-        const db = getFirestore(app);
-
-        let allUsersData = [], currentUserEmail = "";
-
-        onAuthStateChanged(auth, async (user) => {
-            if (user) {
-                currentUserEmail = user.email;
-                try {
-                    const adminSnap = await getDoc(doc(db, "admins", user.email));
-                    if (adminSnap.exists()) {
-                        let displayName = user.displayName || user.email;
-                        try {
-                            const u = await getDoc(doc(db, "users", user.uid));
-                            if (u.exists() && u.data().name) displayName = u.data().name;
-                        } catch(err){}
-                        
-                        document.getElementById('currentAdminInfo').textContent = `嗨，${displayName}`;
-                        document.getElementById('loading').style.display = 'none';
-                        document.getElementById('dashboard').style.display = 'block';
-                        loadUsers(); loadAdmins();
-                    } else {
-                        document.body.innerHTML = "<h2 style='text-align:center; margin-top:50px;'>⛔ 權限不足：你不在管理員名單中<br><br><a href='index.html'>回首頁</a></h2>";
-                    }
-                } catch (e) { alert("驗證錯誤"); }
-            } else {
-                document.body.innerHTML = "<h2 style='text-align:center; margin-top:50px;'>請先登入<br><br><a href='index.html'>回首頁</a></h2>";
-            }
-        });
-
-        async function loadUsers() {
-            const tbody = document.querySelector('#usersTable tbody');
-            const btn = document.getElementById('btnRefreshUsers');
-            const orgText = btn.textContent;
-            btn.textContent = "讀取中...";
-            tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;">更新中...</td></tr>';
-            
-            try {
-                const querySnapshot = await getDocs(collection(db, "users"));
-                tbody.innerHTML = '';
-                allUsersData = []; 
-                querySnapshot.forEach((doc) => {
-                    const data = doc.data();
-                    let date = '未知';
-                    if (data.createdAt && typeof data.createdAt.toDate === 'function') {
-                        date = data.createdAt.toDate().toLocaleDateString('zh-TW');
-                    } else if (data.createdAt) {
-                        try{ date = new Date(data.createdAt).toLocaleDateString('zh-TW'); }catch(e){}
-                    }
-                    const name = data.name || '(未填寫)';
-                    allUsersData.push({ name, age: data.age||'-', email: data.email, date: date });
-                    tbody.innerHTML += `<tr><td>${name}</td><td>${data.age||'-'}</td><td>${data.email}</td><td>${date}</td></tr>`;
+                allUsersData.push({ 
+                    name, 
+                    age: data.age || '-', 
+                    email: data.email, 
+                    date: date, 
+                    watchTime: watchTimeDisplay 
                 });
-            } catch (e) { tbody.innerHTML = `<tr><td colspan="4" style="color:red">失敗</td></tr>`; } 
-            finally { btn.textContent = orgText; }
-        }
 
-        async function loadAdmins() {
-            const list = document.getElementById('adminList');
-            list.innerHTML = '載入中...';
-            try {
-                const querySnapshot = await getDocs(collection(db, "admins"));
-                list.innerHTML = '';
-                querySnapshot.forEach((docSnap) => {
-                    const email = docSnap.id;
-                    const isSelf = (email === currentUserEmail);
-                    const btn = isSelf ? `<span class="badge-self">自己</span>` : `<button class="btn pill btn-gray" style="font-size:12px;padding:2px 8px;" onclick="removeAdmin('${email}')">移除</button>`;
-                    list.innerHTML += `<li style="padding:10px 0;border-bottom:1px dashed #ddd;display:flex;justify-content:space-between"><b>${email}</b><div>${btn}</div></li>`;
-                });
-            } catch (e){}
-        }
+                tbody.innerHTML += `
+                    <tr>
+                        <td>${name}</td>
+                        <td>${data.age||'-'}</td>
+                        <td>${data.email}</td>
+                        <td>${date}</td>
+                        <td class="watch-time-cell">${watchTimeDisplay}</td>
+                    </tr>`;
+            });
+        } catch (e) { 
+            console.error(e);
+            tbody.innerHTML = `<tr><td colspan="5" style="color:red; text-align:center;">載入失敗</td></tr>`; 
+        } finally { btn.textContent = orgText; }
+    }
 
-        document.getElementById('btnAddAdmin').addEventListener('click', async () => {
-            const email = document.getElementById('newAdminEmail').value.trim();
-            if(!email) return alert("請輸入 Email");
-            try { await setDoc(doc(db, "admins", email), { role: "admin", addedAt: new Date() }); alert("成功"); document.getElementById('newAdminEmail').value=''; loadAdmins(); } 
-            catch (e) { alert("失敗：權限不足"); }
+    async function loadAdmins() {
+        const list = document.getElementById('adminList');
+        list.innerHTML = '載入中...';
+        try {
+            const querySnapshot = await getDocs(collection(db, "admins"));
+            list.innerHTML = '';
+            querySnapshot.forEach((docSnap) => {
+                const email = docSnap.id;
+                const isSelf = (email === currentUserEmail);
+                const btn = isSelf ? `<span class="badge-self">自己</span>` : `<button class="btn pill btn-gray" style="font-size:12px;padding:2px 8px;" onclick="removeAdmin('${email}')">移除</button>`;
+                list.innerHTML += `<li style="padding:10px 0;border-bottom:1px dashed #ddd;display:flex;justify-content:space-between"><b>${email}</b><div>${btn}</div></li>`;
+            });
+        } catch (e){}
+    }
+
+    document.getElementById('btnAddAdmin').addEventListener('click', async () => {
+        const email = document.getElementById('newAdminEmail').value.trim();
+        if(!email) return alert("請輸入 Email");
+        try { await setDoc(doc(db, "admins", email), { role: "admin", addedAt: new Date() }); alert("成功"); document.getElementById('newAdminEmail').value=''; loadAdmins(); } 
+        catch (e) { alert("失敗：權限不足"); }
+    });
+
+    document.getElementById('btnExportExcel').addEventListener('click', () => {
+        if (allUsersData.length === 0) return alert("無資料");
+        // 增加「觀看時間」欄位到 CSV
+        let csv = "\uFEFF姓名,年齡,Email,註冊時間,觀看時長\n";
+        allUsersData.forEach(user => { 
+            csv += `${user.name},${user.age},${user.email},${user.date},${user.watchTime}\n`; 
         });
+        const link = document.createElement("a");
+        link.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv;charset=utf-8;' }));
+        link.download = `會員資料_${new Date().toISOString().split('T')[0]}.csv`;
+        link.click();
+    });
 
-        document.getElementById('btnExportExcel').addEventListener('click', () => {
-            if (allUsersData.length === 0) return alert("無資料");
-            let csv = "\uFEFF姓名,年齡,Email,註冊時間\n";
-            allUsersData.forEach(user => { csv += `${user.name},${user.age},${user.email},${user.date}\n`; });
-            const link = document.createElement("a");
-            link.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv;charset=utf-8;' }));
-            link.download = `會員資料_${new Date().toISOString().split('T')[0]}.csv`;
-            link.click();
-        });
-
-        window.removeAdmin = async (email) => {
-            if (email === currentUserEmail) return alert("不能移除自己");
-            if(!confirm(`確定移除 ${email}？`)) return;
-            try { await deleteDoc(doc(db, "admins", email)); alert("已移除"); loadAdmins(); } catch(e) { alert("權限不足"); }
-        };
-        document.getElementById('btnRefreshUsers').addEventListener('click', loadUsers);
-    </script>
+    window.removeAdmin = async (email) => {
+        if (email === currentUserEmail) return alert("不能移除自己");
+        if(!confirm(`確定移除 ${email}？`)) return;
+        try { await deleteDoc(doc(db, "admins", email)); alert("已移除"); loadAdmins(); } catch(e) { alert("權限不足"); }
+    };
+    document.getElementById('btnRefreshUsers').addEventListener('click', loadUsers);
+</script>
 </body>
 </html>
