@@ -6,30 +6,125 @@
     <title>管理後台 | 長照工具平台</title>
     <link rel="stylesheet" href="style.css"> 
     <style>
-        body { padding: 20px; max-width: 1200px; margin: 0 auto; background-color: #fffaf0; font-family: "Microsoft JhengHei", sans-serif; }
-        .admin-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 2px solid #e6dca8; padding-bottom: 10px; }
-        .section-card { background: #fff; border: 1px solid #e6dca8; border-radius: 12px; padding: 20px; margin-bottom: 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+        /* 定義顏色變數 */
+        :root {
+            --bg-color: #fffaf0;
+            --card-bg: #ffffff;
+            --text-main: #333333;
+            --text-sub: #555555;
+            --border-color: #e6dca8;
+            --header-border: #e6dca8;
+            --table-th-bg: #f6f1d9;
+            --table-th-text: #5b5534;
+            --table-hover: #f9f9f9;
+            --input-bg: #ffffff;
+            --input-border: #cccccc;
+        }
+
+        /* 深色模式變數 */
+        [data-theme="dark"] {
+            --bg-color: #1a1a1a;
+            --card-bg: #2d2d2d;
+            --text-main: #e0e0e0;
+            --text-sub: #bbbbbb;
+            --border-color: #444444;
+            --header-border: #2e7d32;
+            --table-th-bg: #3d3d3d;
+            --table-th-text: #a5d6a7;
+            --table-hover: #363636;
+            --input-bg: #3d3d3d;
+            --input-border: #555555;
+        }
+
+        body { 
+            padding: 20px; 
+            max-width: 1200px; 
+            margin: 0 auto; 
+            background-color: var(--bg-color); 
+            color: var(--text-main);
+            font-family: "Microsoft JhengHei", sans-serif; 
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        .admin-header { 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            margin-bottom: 20px; 
+            border-bottom: 2px solid var(--header-border); 
+            padding-bottom: 10px; 
+        }
+
+        .section-card { 
+            background: var(--card-bg); 
+            border: 1px solid var(--border-color); 
+            border-radius: 12px; 
+            padding: 20px; 
+            margin-bottom: 20px; 
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1); 
+            transition: background-color 0.3s, border-color 0.3s;
+        }
+
         h2 { margin-top: 0; color: #2e7d32; font-size: 1.5rem; border-bottom: 1px dashed #eee; padding-bottom: 10px; margin-bottom: 15px; }
+        [data-theme="dark"] h2 { color: #81c784; border-bottom-color: #444; }
+
         table { width: 100%; border-collapse: collapse; margin-top: 0; }
-        th, td { padding: 12px 10px; text-align: left; border-bottom: 1px solid #eee; font-size: 15px; }
-        th { background-color: #f6f1d9; color: #5b5534; font-weight: bold; white-space: nowrap; }
-        tr:hover { background-color: #f9f9f9; }
+        th, td { padding: 12px 10px; text-align: left; border-bottom: 1px solid var(--border-color); font-size: 15px; }
+        th { background-color: var(--table-th-bg); color: var(--table-th-text); font-weight: bold; white-space: nowrap; }
+        tr:hover { background-color: var(--table-hover); }
+
         .admin-controls { display: flex; gap: 10px; margin-top: 15px; flex-wrap: wrap; }
-        input.admin-input { padding: 8px 12px; border: 1px solid #ccc; border-radius: 8px; flex: 1; min-width: 250px; font-size: 15px; }
+        input.admin-input { 
+            padding: 8px 12px; 
+            border: 1px solid var(--input-border); 
+            border-radius: 8px; 
+            flex: 1; 
+            min-width: 250px; 
+            font-size: 15px; 
+            background-color: var(--input-bg);
+            color: var(--text-main);
+        }
+
         .btn-group { margin-bottom: 15px; display: flex; gap: 10px; }
         .badge-self { background: #e6fffa; color: #00a080; padding: 2px 8px; border-radius: 10px; font-size: 12px; border: 1px solid #b2f5ea; margin-left: 5px;}
-        
-        /* 針對時間顯示的特別樣式 */
+        [data-theme="dark"] .badge-self { background: #1e3a3a; color: #4fd1c5; border-color: #285e5e; }
+
         .watch-time-cell { font-family: "Courier New", monospace; color: #2e7d32; font-weight: bold; font-size: 14px; }
+        [data-theme="dark"] .watch-time-cell { color: #81c784; }
         .raw-seconds { font-size: 11px; color: #999; margin-left: 5px; font-weight: normal; }
+
+        /* 深色模式切換按鈕樣式 */
+        .theme-toggle {
+            cursor: pointer;
+            padding: 8px 12px;
+            border-radius: 20px;
+            border: 1px solid var(--border-color);
+            background: var(--card-bg);
+            color: var(--text-main);
+            font-size: 14px;
+            margin-right: 10px;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
     </style>
+    <script>
+        // 初始化深色模式 (放在 Head 避免閃爍)
+        (function() {
+            const savedTheme = localStorage.getItem('theme') || 'light';
+            document.documentElement.setAttribute('data-theme', savedTheme);
+        })();
+    </script>
 </head>
 <body>
 
 <div class="admin-header">
     <h1>🛠️ 管理員後台</h1>
-    <div>
-        <span id="currentAdminInfo" style="margin-right: 10px; font-weight: bold; color: #555;">檢查權限中...</span>
+    <div style="display: flex; align-items: center;">
+        <button class="theme-toggle" id="themeToggle">
+            <span id="themeIcon">🌙</span> <span id="themeText">深色模式</span>
+        </button>
+        <span id="currentAdminInfo" style="margin-right: 10px; font-weight: bold; color: var(--text-sub);">檢查權限中...</span>
         <a href="index.html" class="btn pill btn-gray">回首頁</a>
     </div>
 </div>
@@ -39,8 +134,6 @@
 </div>
 
 <div id="dashboard" style="display: none;">
-    
-    <!-- 會員列表 -->
     <div class="section-card">
         <h2>👥 會員資料列表</h2>
         <div class="btn-group">
@@ -58,14 +151,11 @@
                         <th>總觀看學習時長</th>
                     </tr>
                 </thead>
-                <tbody>
-                    <!-- 資料將由 JS 填入 -->
-                </tbody>
+                <tbody></tbody>
             </table>
         </div>
     </div>
 
-    <!-- 管理員權限 -->
     <div class="section-card" id="superAdminSection">
         <h2>🔑 管理員權限設定</h2>
         <p class="hint">輸入對方的 Google Email 來賦予管理權限。</p>
@@ -73,18 +163,16 @@
             <input type="email" id="newAdminEmail" class="admin-input" placeholder="例如：colleague@gmail.com">
             <button id="btnAddAdmin" class="btn pill btn-orange">新增管理員</button>
         </div>
-        <h3 style="font-size: 16px; margin-top: 25px; color: #5b5534;">目前管理員名單：</h3>
+        <h3 style="font-size: 16px; margin-top: 25px; color: var(--table-th-text);">目前管理員名單：</h3>
         <ul id="adminList" style="list-style: none; padding: 0;"></ul>
     </div>
 </div>
 
 <script type="module">
-    // Firebase SDK 導入
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
     import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
     import { getFirestore, collection, getDocs, doc, setDoc, deleteDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-    // Firebase 配置 (與影音頁面一致)
     const firebaseConfig = {
         apiKey: "AIzaSyCZMhdUI0HeIoj5masuRh00pzP3SMbF6Yc",
         authDomain: "hori-test-1b93c.firebaseapp.com",
@@ -101,36 +189,46 @@
     let allUsersData = []; 
     let currentUserEmail = "";
 
-    /**
-     * 時間格式化工具
-     * 將總秒數轉換為 00時00分00秒 格式
-     */
+    // 深色模式切換邏輯
+    const themeBtn = document.getElementById('themeToggle');
+    const themeIcon = document.getElementById('themeIcon');
+    const themeText = document.getElementById('themeText');
+
+    function updateThemeUI(theme) {
+        themeIcon.textContent = theme === 'dark' ? '☀️' : '🌙';
+        themeText.textContent = theme === 'dark' ? '淺色模式' : '深色模式';
+    }
+
+    // 初始 UI 設定
+    updateThemeUI(document.documentElement.getAttribute('data-theme'));
+
+    themeBtn.addEventListener('click', () => {
+        let currentTheme = document.documentElement.getAttribute('data-theme');
+        let newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', newTheme);
+        localStorage.setItem('theme', newTheme);
+        updateThemeUI(newTheme);
+    });
+
     function formatTime(totalSeconds) {
         if (!totalSeconds || isNaN(totalSeconds) || totalSeconds <= 0) return "0 秒";
-        
         const hrs = Math.floor(totalSeconds / 3600);
         const mins = Math.floor((totalSeconds % 3600) / 60);
         const secs = totalSeconds % 60;
-
         let result = "";
         if (hrs > 0) result += `${hrs} 小時 `;
         if (mins > 0 || hrs > 0) result += `${mins} 分 `;
         result += `${secs} 秒`;
-        
         return result;
     }
 
-    // 監聽登入狀態
     onAuthStateChanged(auth, async (user) => {
         if (user) {
             currentUserEmail = user.email;
             try {
-                // 檢查是否為管理員
                 const adminSnap = await getDoc(doc(db, "admins", user.email));
                 if (adminSnap.exists()) {
                     let displayName = user.displayName || user.email;
-                    
-                    // 嘗試抓取管理員自己的姓名
                     try {
                         const u = await getDoc(doc(db, "users", user.uid));
                         if (u.exists() && u.data().name) displayName = u.data().name;
@@ -139,47 +237,28 @@
                     document.getElementById('currentAdminInfo').textContent = `嗨，${displayName}`;
                     document.getElementById('loading').style.display = 'none';
                     document.getElementById('dashboard').style.display = 'block';
-                    
-                    // 執行資料加載
-                    loadUsers(); 
-                    loadAdmins();
+                    loadUsers(); loadAdmins();
                 } else {
-                    document.body.innerHTML = "<h2 style='text-align:center; margin-top:100px;'>⛔ 權限不足<br><p style='font-size:16px; color:666;'>你不在管理員名單中，無法存取後台。</p><br><a href='index.html' class='btn pill btn-gray'>回首頁</a></h2>";
+                    document.body.innerHTML = "<h2 style='text-align:center; margin-top:100px;'>⛔ 權限不足<br><br><a href='index.html' class='btn pill btn-gray'>回首頁</a></h2>";
                 }
-            } catch (e) { 
-                console.error(e);
-                alert("驗證權限時發生錯誤"); 
-            }
+            } catch (e) { alert("驗證錯誤"); }
         } else {
-            document.body.innerHTML = "<h2 style='text-align:center; margin-top:100px;'>請先登入管理員帳號<br><br><a href='index.html' class='btn pill btn-gray'>回首頁</a></h2>";
+            document.body.innerHTML = "<h2 style='text-align:center; margin-top:100px;'>請先登入<br><br><a href='index.html' class='btn pill btn-gray'>回首頁</a></h2>";
         }
     });
 
-    /**
-     * 讀取會員列表
-     * 修正：取消 Firestore orderBy 避免過濾掉沒有註冊時間的舊資料
-     * 改用前端排序以確保所有會員都能顯示
-     */
     async function loadUsers() {
         const tbody = document.querySelector('#usersTable tbody');
         const btn = document.getElementById('btnRefreshUsers');
-        const orgText = btn.textContent;
-        
         btn.disabled = true;
         btn.textContent = "讀取中...";
-        tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; padding:30px;">載入會員資料中，請稍候...</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; padding:30px;">載入中...</td></tr>';
         
         try {
-            // 直接抓取所有會員文件 (不使用 orderBy)
             const querySnapshot = await getDocs(collection(db, "users"));
-            
             let rawDataList = [];
-            querySnapshot.forEach((docSnap) => {
-                const data = docSnap.data();
-                rawDataList.push(data);
-            });
+            querySnapshot.forEach((docSnap) => { rawDataList.push(docSnap.data()); });
 
-            // 在前端進行排序 (從新到舊)，如果資料缺少 createdAt 則排在最後面
             rawDataList.sort((a, b) => {
                 const timeA = a.createdAt ? (a.createdAt.toMillis ? a.createdAt.toMillis() : new Date(a.createdAt).getTime()) : 0;
                 const timeB = b.createdAt ? (b.createdAt.toMillis ? b.createdAt.toMillis() : new Date(b.createdAt).getTime()) : 0;
@@ -188,66 +267,26 @@
 
             tbody.innerHTML = '';
             allUsersData = []; 
-
-            if (rawDataList.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;">目前尚無會員資料</td></tr>';
-            }
+            if (rawDataList.length === 0) tbody.innerHTML = '<tr><td colspan="5">無資料</td></tr>';
 
             rawDataList.forEach((data) => {
-                // 處理註冊日期顯示
                 let dateStr = '早期註冊';
                 if (data.createdAt) {
-                    if (typeof data.createdAt.toDate === 'function') {
-                        dateStr = data.createdAt.toDate().toLocaleString('zh-TW', { year: 'numeric', month: '2-digit', day: '2-digit' });
-                    } else {
-                        dateStr = new Date(data.createdAt).toLocaleDateString('zh-TW');
-                    }
+                    dateStr = typeof data.createdAt.toDate === 'function' ? data.createdAt.toDate().toLocaleDateString('zh-TW') : new Date(data.createdAt).toLocaleDateString('zh-TW');
                 }
+                const name = data.name || '(未填寫)', email = data.email || '無 Email', age = data.age || '-';
+                const totalSec = data.totalWatchTime || 0, formattedTime = formatTime(totalSec);
+                allUsersData.push({ name, age, email, date: dateStr, watchTime: formattedTime, rawSeconds: totalSec });
 
-                const name = data.name || '(未填寫)';
-                const email = data.email || '無 Email';
-                const age = data.age || '-';
-                
-                // 關鍵：讀取總觀看秒數
-                const totalWatchSeconds = data.totalWatchTime || 0;
-                const formattedTime = formatTime(totalWatchSeconds);
-
-                // 存入全域變數供 Excel 導出
-                allUsersData.push({ 
-                    name, 
-                    age, 
-                    email, 
-                    date: dateStr, 
-                    watchTime: formattedTime,
-                    rawSeconds: totalWatchSeconds 
-                });
-
-                // 渲染表格行
-                const row = document.createElement('tr');
-                row.innerHTML = `
-                    <td>${name}</td>
-                    <td>${age}</td>
-                    <td>${email}</td>
-                    <td>${dateStr}</td>
-                    <td class="watch-time-cell">
-                        ${formattedTime}
-                        <span class="raw-seconds">(${totalWatchSeconds}s)</span>
-                    </td>
-                `;
-                tbody.appendChild(row);
+                tbody.innerHTML += `<tr>
+                    <td>${name}</td><td>${age}</td><td>${email}</td><td>${dateStr}</td>
+                    <td class="watch-time-cell">${formattedTime}<span class="raw-seconds">(${totalSec}s)</span></td>
+                </tr>`;
             });
-        } catch (e) { 
-            console.error("Load users error:", e);
-            tbody.innerHTML = `<tr><td colspan="5" style="color:red; text-align:center;">讀取失敗：${e.message}</td></tr>`; 
-        } finally { 
-            btn.disabled = false;
-            btn.textContent = orgText; 
-        }
+        } catch (e) { tbody.innerHTML = `<tr><td colspan="5" style="color:red">讀取失敗</td></tr>`; } 
+        finally { btn.disabled = false; btn.textContent = "🔄 重新整理列表"; }
     }
 
-    /**
-     * 讀取管理員名單
-     */
     async function loadAdmins() {
         const list = document.getElementById('adminList');
         list.innerHTML = '<li>載入中...</li>';
@@ -255,100 +294,42 @@
             const querySnapshot = await getDocs(collection(db, "admins"));
             list.innerHTML = '';
             querySnapshot.forEach((docSnap) => {
-                const email = docSnap.id;
-                const isSelf = (email === currentUserEmail);
-                
+                const email = docSnap.id, isSelf = (email === currentUserEmail);
                 const li = document.createElement('li');
-                li.style.cssText = "padding:10px 0; border-bottom:1px dashed #ddd; display:flex; justify-content:space-between; align-items:center;";
-                
-                const badge = isSelf ? `<span class="badge-self">自己</span>` : `<button class="btn pill btn-gray" style="font-size:12px; padding:2px 8px;" data-email="${email}">移除</button>`;
-                
-                li.innerHTML = `<b>${email}</b><div>${badge}</div>`;
-                
-                // 綁定移除按鈕事件
-                if (!isSelf) {
-                    li.querySelector('button').addEventListener('click', () => removeAdmin(email));
-                }
-                
+                li.style.cssText = "padding:10px 0; border-bottom:1px dashed var(--border-color); display:flex; justify-content:space-between; align-items:center;";
+                const btnHtml = isSelf ? `<span class="badge-self">自己</span>` : `<button class="btn pill btn-gray" style="font-size:12px; padding:2px 8px;" onclick="removeAdmin('${email}')">移除</button>`;
+                li.innerHTML = `<b>${email}</b><div>${btnHtml}</div>`;
                 list.appendChild(li);
             });
-        } catch (e){
-            list.innerHTML = '<li style="color:red;">載入名單失敗</li>';
-        }
+        } catch (e){ list.innerHTML = '<li>載入失敗</li>'; }
     }
 
-    /**
-     * 新增管理員
-     */
     document.getElementById('btnAddAdmin').addEventListener('click', async () => {
         const email = document.getElementById('newAdminEmail').value.trim().toLowerCase();
-        if(!email) return alert("請輸入對方的 Email");
-        if(!confirm(`確定要賦予 ${email} 管理員權限嗎？`)) return;
-
+        if(!email) return alert("請輸入 Email");
         try { 
-            await setDoc(doc(db, "admins", email), { 
-                role: "admin", 
-                addedAt: new Date(),
-                addedBy: currentUserEmail
-            }); 
-            alert("成功新增管理員"); 
-            document.getElementById('newAdminEmail').value = ''; 
-            loadAdmins(); 
-        } catch (e) { 
-            alert("失敗：您的權限不足或網路問題"); 
-        }
+            await setDoc(doc(db, "admins", email), { role: "admin", addedAt: new Date() }); 
+            alert("成功新增"); document.getElementById('newAdminEmail').value = ''; loadAdmins(); 
+        } catch (e) { alert("失敗：權限不足"); }
     });
 
-    /**
-     * 移除管理員
-     */
-    async function removeAdmin(email) {
+    window.removeAdmin = async (email) => {
         if (email === currentUserEmail) return alert("不能移除自己");
-        if(!confirm(`確定要移除 ${email} 的管理權限嗎？`)) return;
-        
-        try { 
-            await deleteDoc(doc(db, "admins", email)); 
-            alert("已移除權限"); 
-            loadAdmins(); 
-        } catch(e) { 
-            alert("移除失敗：權限不足"); 
-        }
-    }
+        if(!confirm(`確定移除 ${email}？`)) return;
+        try { await deleteDoc(doc(db, "admins", email)); alert("已移除"); loadAdmins(); } catch(e) { alert("權限不足"); }
+    };
 
-    /**
-     * 匯出 Excel (CSV 格式)
-     */
     document.getElementById('btnExportExcel').addEventListener('click', () => {
-        if (allUsersData.length === 0) return alert("目前沒有資料可以匯出");
-        
-        // CSV 標題
-        let csvContent = "\uFEFF姓名,年齡,Email,註冊時間,總觀看學習時長(格式化),原始秒數\n";
-        
-        // 填入內容
-        allUsersData.forEach(user => { 
-            csvContent += `"${user.name}","${user.age}","${user.email}","${user.date}","${user.watchTime}","${user.rawSeconds}"\n`; 
-        });
-        
-        // 建立下載連結
-        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-        const url = URL.createObjectURL(blob);
+        if (allUsersData.length === 0) return alert("無資料");
+        let csvContent = "\uFEFF姓名,年齡,Email,註冊時間,總觀看時長,原始秒數\n";
+        allUsersData.forEach(u => { csvContent += `"${u.name}","${u.age}","${u.email}","${u.date}","${u.watchTime}","${u.rawSeconds}"\n`; });
         const link = document.createElement("a");
-        const today = new Date().toISOString().split('T')[0];
-        
-        link.setAttribute("href", url);
-        link.setAttribute("download", `會員學習進度表_${today}.csv`);
-        link.style.visibility = 'hidden';
-        document.body.appendChild(link);
+        link.href = URL.createObjectURL(new Blob([csvContent], { type: 'text/csv;charset=utf-8;' }));
+        link.download = `會員進度_${new Date().toISOString().split('T')[0]}.csv`;
         link.click();
-        document.body.removeChild(link);
     });
 
-    // 重新整理按鈕事件
     document.getElementById('btnRefreshUsers').addEventListener('click', loadUsers);
-
-    // 將移除函數掛載到 window 以供動態生成的 HTML 調用 (如果需要)
-    window.removeAdmin = removeAdmin;
-
 </script>
 </body>
 </html>
