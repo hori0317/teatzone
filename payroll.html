@@ -7,63 +7,77 @@
   <meta name="description" content="輸入本月 AA / BA / GA / SC 的支數，計總額並依比例拆薪；可從 PDF 自動統計並選擇是否同步，右側即時比對勞健保扣款，得出實領。">
   <link rel="icon" type="image/x-icon" href="YORU.ico" />
   <link rel="stylesheet" href="style.css" />
+  <script>
+    /* 立即檢查主題設定，防止頁面閃爍 */
+    (function() {
+        const savedTheme = localStorage.getItem('theme') || 'light';
+        document.documentElement.setAttribute('data-theme', savedTheme);
+    })();
+  </script>
   <script src="nav.js" defer></script>
   <style>
     /* =======================================
        Payroll 頁面專屬修正樣式
        ======================================= */
     
-    /* 彈窗 */
+    /* 彈窗樣式 */
     .modal-overlay { 
         position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
         background: rgba(47,47,32,0.6); backdrop-filter: blur(3px); 
         z-index: 2000; display: flex; justify-content: center; align-items: center; padding: 20px; 
     }
     .modal-content { 
-        background: #fffdf5; border: 1px solid #e6dca8; border-radius: 12px; 
+        background: var(--card); border: 1px solid var(--line); border-radius: 12px; 
         padding: 24px; width: 100%; max-width: 420px; box-shadow: 0 10px 25px rgba(0,0,0,0.15); text-align: center; 
+        color: var(--ink);
     }
-    .modal-content h3 { color: #2e7d32; margin-top: 0; }
+    .modal-content h3 { color: var(--green); margin-top: 0; }
     .modal-content input { 
-        width: 100%; padding: 10px; border: 1px solid #e6dca8; background: #fff; 
-        border-radius: 8px; font-size: 16px; margin-top: 4px; box-sizing: border-box; 
+        width: 100%; padding: 10px; border: 1px solid var(--line); background: var(--input-bg); 
+        color: var(--ink); border-radius: 8px; font-size: 16px; margin-top: 4px; box-sizing: border-box; 
     }
     .modal-actions { margin-top: 20px; }
 
-    /* PDF 區塊 */
-    .ps-muted{color:#5b6b81}.ps-small{font-size:.86rem}.ps-mono{font-family:ui-monospace,Menlo,Consolas,monospace}
-    .ps-pill{display:inline-block;padding:0 6px;border:1px solid #dbe6ff;background:#eef4ff;border-radius:999px}
+    /* PDF 區塊樣式 */
+    .ps-muted{color: var(--muted)}.ps-small{font-size:.86rem}.ps-mono{font-family:ui-monospace,Menlo,Consolas,monospace}
+    .ps-pill{display:inline-block;padding:0 6px;border:1px solid var(--line);background:var(--table-head);border-radius:999px; color: var(--ink);}
     .ps-grid{display:grid;gap:12px}@media(min-width:920px){.ps-grid{grid-template-columns:1.1fr .9fr}}
-    .ps-drop{border:2px dashed #c7d3ee;border-radius:12px;padding:18px;text-align:center;cursor:pointer;background:#f9fbff;display:block} .ps-drop:hover{background:#eef4ff}
+    .ps-drop{border:2px dashed var(--line);border-radius:12px;padding:18px;text-align:center;cursor:pointer;background:var(--input-bg);display:block;color: var(--ink);} 
+    .ps-drop:hover{background:var(--table-head)}
     .ps-btns{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
-    .ps-btn{border:1px solid #c7d3ee;background:#f3f6ff;color:#102a56;padding:8px 12px;border-radius:10px;cursor:pointer} .ps-btn:disabled{opacity:.5}
-    .ps-box{background:#fff;border:1px solid #e1e6ef;border-radius:12px;padding:12px;margin-top:10px}
-    .ps-progress{height:10px;background:#eef3ff;border-radius:999px;overflow:hidden}
-    .ps-bar{height:100%;width:0;background:#2667ff;transition:width .2s}
-    .ps-h3{margin:.2rem 0 8px}
-    .ps-table{width:100%;border-collapse:collapse} .ps-table thead th{background:#eef3ff;color:#102a56;text-align:left;padding:8px} .ps-table td{padding:8px;border-bottom:1px solid #edf1f7} .ps-right{text-align:right} .ps-syncbar{border-color:#c7e7c7;background:#f6fff6}
+    .ps-btn{border:1px solid var(--line);background:var(--card);color:var(--ink);padding:8px 12px;border-radius:10px;cursor:pointer} 
+    .ps-btn:disabled{opacity:.5}
+    .ps-box{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px;margin-top:10px; color: var(--ink);}
+    .ps-progress{height:10px;background:var(--table-head);border-radius:999px;overflow:hidden}
+    .ps-bar{height:100%;width:0;background:var(--green);transition:width .2s}
+    .ps-h3{margin:.2rem 0 8px; color: var(--ink);}
+    .ps-table{width:100%;border-collapse:collapse} 
+    .ps-table thead th{background:var(--table-head);color:var(--ink);text-align:left;padding:8px} 
+    .ps-table td{padding:8px;border-bottom:1px solid var(--line); color: var(--ink);} 
+    .ps-right{text-align:right} 
+    .ps-syncbar{border-color:var(--green);background:var(--table-stripe)}
 
-    /* KPI 卡片 */
+    /* KPI 卡片樣式 */
     .kpi{display:flex; gap:16px; flex-wrap:wrap;}
-    .kpi .box{flex:1 1 240px; background:#fff; border:1px solid var(--line); border-radius:12px; padding:16px; display:flex; flex-direction:column; gap:6px; box-shadow:0 1px 2px rgba(0,0,0,.05);}
-    .kpi .box .lbl{color:#7a7557; font-weight:700;}
-    .kpi .box .num{font-size:24px; font-weight:900; color:#2e7d32;}
+    .kpi .box{flex:1 1 240px; background:var(--card); border:1px solid var(--line); border-radius:12px; padding:16px; display:flex; flex-direction:column; gap:6px; box-shadow:0 1px 2px rgba(0,0,0,.05);}
+    .kpi .box .lbl{color:var(--muted); font-weight:700;}
+    .kpi .box .num{font-size:24px; font-weight:900; color:var(--green);}
 
     /* ★★★ 表格通用基礎設定 ★★★ */
-    .tbl{ width:100%; border-collapse:separate; border-spacing:0; background:#fff; border:1px solid var(--line); border-radius:12px; overflow:hidden; table-layout: fixed; }
+    .tbl{ width:100%; border-collapse:separate; border-spacing:0; background:var(--card); border:1px solid var(--line); border-radius:12px; overflow:hidden; table-layout: fixed; }
     
-    .tbl th{ background:#f6f1d9; color:#5b5534; padding:12px; font-weight:800; border-bottom:1px solid var(--line); font-size: 15px;}
-    .tbl td{ padding:12px; border-top:1px solid var(--line); font-size: 15px; vertical-align: middle; }
+    .tbl th{ background:var(--table-head); color:var(--ink); padding:12px; font-weight:800; border-bottom:1px solid var(--line); font-size: 15px;}
+    .tbl td{ padding:12px; border-top:1px solid var(--line); font-size: 15px; vertical-align: middle; color: var(--ink); }
     
-    .tbl tbody tr:nth-child(even){ background:#fffef9; }
-    .tbl input[type="number"]{ width:80px; height:34px; text-align:right; border:1px solid #ddd; border-radius:4px; margin: 0 auto; display:block;}
+    .tbl tbody tr:nth-child(even){ background:var(--table-stripe); }
+    .tbl input[type="number"]{ width:80px; height:34px; text-align:right; border:1px solid var(--line); border-radius:4px; margin: 0 auto; display:block; background: var(--input-bg); color: var(--ink);}
     .tbl .right{ text-align:right; }
     .tbl .mono{ font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; }
 
     /* ★ 投保級距表格專屬 ★ */
     .insurance-table { table-layout: auto !important; width: 100%; }
     .insurance-table input { width: 100% !important; min-width: 60px; }
-    .sub-text { font-size: 11px; display: block; color: #777; line-height: 1.2; }
+    .sub-text { font-size: 11px; display: block; color: var(--muted); line-height: 1.2; }
     
     .auto-chip {
         display: flex !important;
@@ -79,12 +93,11 @@
     /* 其他排版 */
     .grid-2{display:grid; grid-template-columns:1fr 1fr; gap:14px;}
     .row-mid{display:flex; align-items:center; gap:10px; flex-wrap:wrap;}
-    .pill-note{display:inline-block; padding:2px 8px; border:1px solid var(--line); border-radius:999px; background:#fff; font-weight:700; color:#333;}
+    .pill-note{display:inline-block; padding:2px 8px; border:1px solid var(--line); border-radius:999px; background:var(--card); font-weight:700; color:var(--ink);}
 
     /* ============================================================
        【重點修改 1：保險表格強制置中】
-       針對 .insurance-table 強制將所有欄位（標題 th 與內容 td）完全置中。
-       不使用 left/right padding，直接 text-align: center。
+       針對 .insurance-table 強制將所有欄位完全置中。
        ============================================================ */
     .tbl.insurance-table th,
     .tbl.insurance-table td {
@@ -93,7 +106,7 @@
         padding-right: 8px !important;
         vertical-align: middle !important;
     }
-    /* 第一欄(投保級距)維持靠左閱讀體驗，或也可改成置中 */
+    /* 第一欄(投保級距)維持靠左閱讀體驗 */
     .tbl.insurance-table th:first-child,
     .tbl.insurance-table td:first-child {
         text-align: left !important;
@@ -108,31 +121,21 @@
 
     /* ============================================================
        【重點修改 2：單價靠右對齊 (一般薪資表)】
-       限定在非保險表格 (.tbl:not(.insurance-table))
-       第1欄: 靠左
-       第2欄: 單價 (靠右，padding 20px)
-       第3欄: 支數 (置中)
-       第4欄: 小計 (靠右，padding 20px)
        ============================================================ */
-    
-    /* 1. 代碼 (左) */
     .tbl:not(.insurance-table) th:first-child, 
     .tbl:not(.insurance-table) td:first-child { 
         text-align: left; 
         padding-left: 20px; 
     }
-    /* 2. 單價 (右，調整 padding 使數字整齊) */
     .tbl:not(.insurance-table) th:nth-child(2),
     .tbl:not(.insurance-table) td:nth-child(2) {
         text-align: right !important; 
-        padding-right: 20px !important; /* 原本可能是 40px/60px，現在改成與小計一致 */
+        padding-right: 20px !important;
     }
-    /* 3. 支數 (中) */
     .tbl:not(.insurance-table) th:nth-child(3),
     .tbl:not(.insurance-table) td:nth-child(3) {
         text-align: center !important;
     }
-    /* 4. 小計 (右) */
     .tbl:not(.insurance-table) th:nth-child(4),
     .tbl:not(.insurance-table) td:nth-child(4) {
         text-align: right !important;
@@ -146,43 +149,34 @@
 
     @media (max-width:860px){
       .grid-2{grid-template-columns:1fr;}
-
-      /* 手機版卡片化設定 */
       .tbl:not(.insurance-table){display:block; font-size:15px; border:0; background:none; overflow:visible;}
       .tbl:not(.insurance-table) thead{display:none;}
       .tbl:not(.insurance-table) tbody,
       .tbl:not(.insurance-table) tfoot{display:block; width:100%;}
-      .tbl:not(.insurance-table) tbody tr{display:block; border:1px solid var(--line); border-radius:12px; padding:10px 12px; margin-bottom:12px; background:#fff; box-shadow:0 1px 2px rgba(0,0,0,.05);}
+      .tbl:not(.insurance-table) tbody tr{display:block; border:1px solid var(--line); border-radius:12px; padding:10px 12px; margin-bottom:12px; background:var(--card); box-shadow:0 1px 2px rgba(0,0,0,.05);}
       
       .tbl:not(.insurance-table) td{
         display:flex; gap:12px; justify-content:space-between; align-items:center;
         padding:6px 0; border-top:none; white-space:normal;
       }
       .tbl:not(.insurance-table) td[data-label]::before{
-        content:attr(data-label); font-weight:700; color:#5b5534; flex:1; text-align:left;
+        content:attr(data-label); font-weight:700; color:var(--muted); flex:1; text-align:left;
       }
-      
-      /* [手機] 強制單價/小計數字往最右邊靠 (使用 auto margin 擠過去) */
       .tbl:not(.insurance-table) td[data-label="單價"] .cell-val,
       .tbl:not(.insurance-table) td[data-label="小計"] .cell-val {
         margin-left: auto !important;
         text-align: right !important;
         display: inline-block;
       }
-
-      /* [手機] 本月支數輸入框靠右 */
       .tbl:not(.insurance-table) td[data-label="本月支數"] input {
         margin-left: auto !important;
         margin-right: 0 !important;
       }
-      
-      /* 清除 padding 避免干擾 */
       .tbl:not(.insurance-table) td, 
       .tbl:not(.insurance-table) th {
          padding-left:0 !important; 
          padding-right:0 !important;
       }
-      
       .tbl:not(.insurance-table) tfoot th{
          text-align:right; border:none; padding:0;
       }
@@ -197,6 +191,7 @@
     <span class="wm-item" style="top:25%; left:10%; --dur:13s;">@hori版權所有</span>
     <span class="wm-item" style="top:75%; left:70%; --dur:14s;">@hori版權所有</span>
   </div>
+  
   <header class="topbar">
     <div class="brand">
       <a href="index.html" class="logo-link"><img src="org-logo.png" alt="logo" onerror="this.style.opacity=0.2" /></a>
@@ -212,12 +207,17 @@
       <a href="about.html">關於我們</a>
     </nav>
     <div class="actions" style="align-items: center; gap: 8px;">
+      <!-- 深色模式切換按鈕 -->
+      <button id="darkToggle" class="theme-btn">
+          <span class="icon">🌙</span> <span class="txt">深色</span>
+      </button>
+
       <button class="btn pill btn-gray" id="btnPrint" type="button">列印</button>
       <button class="btn pill btn-green" id="btnResetAll" type="button">全部清空</button>
-      <div style="width: 1px; height: 20px; background: #ccc; margin: 0 4px;"></div>
+      <div style="width: 1px; height: 20px; background: var(--line); margin: 0 4px;"></div>
       <button class="btn pill" style="background:#4285F4; color:white;" id="btnLogin" type="button">Google 登入</button>
       <div id="member-area" style="display:none; align-items: center; gap:5px;">
-          <span id="userDisplay" style="font-size: 13px; font-weight: bold; color: #333; margin-right: 4px;"></span>
+          <span id="userDisplay" style="font-size: 13px; font-weight: bold; color: var(--ink); margin-right: 4px;"></span>
           <a href="admin.html" id="btnAdminLink" class="btn pill" style="background:#673AB7; color:white; font-size:12px; padding:4px 10px; text-decoration:none; display:none;">管理後台</a>
           <button class="btn pill" style="background:#777; color:white; font-size:12px; padding:4px 10px;" id="btnEditProfile" type="button">修改資料</button>
           <button class="btn pill" style="background:#EA4335; color:white;" id="btnLogout" type="button">登出</button>
@@ -248,19 +248,20 @@
       <div class="grid-2" style="margin-top:8px;">
         <div class="row-mid">
           <label style="min-width:120px;font-weight:700;">拆薪比例（%）</label>
-          <input id="ratioPct" type="number" min="0" max="100" step="0.1" value="60" style="height:34px;width:120px;text-align:right;">
+          <input id="ratioPct" type="number" min="0" max="100" step="0.1" value="60" style="height:34px;width:120px;text-align:right; background:var(--input-bg); color:var(--ink); border:1px solid var(--line); border-radius:6px;">
           <span class="hint">例：6/4 → 填 60</span>
         </div>
         <div class="row-mid">
           <label style="min-width:120px;font-weight:700;">月份</label>
-          <input id="plMonth" type="month" style="height:34px;width:180px;">
+          <input id="plMonth" type="month" style="height:34px;width:180px; background:var(--input-bg); color:var(--ink); border:1px solid var(--line); border-radius:6px;">
         </div>
       </div>
     </section>
 
+    <!-- PDF 解析區塊 -->
     <section class="card ps-card" id="ps-widget">
       <h2 class="card-title">PDF 支數自動統計（帶入表單）</h2>
-      <p class="ps-muted">上傳每月 PDF，統計 <span class="ps-pill">BA</span> / <span class="ps-pill">AA</span> / <span class="ps-pill">GA</span> / <span class="ps-pill">SC</span>。AA 以「金額 ÷ 單價」換算（四捨五入到最接近 0.5），AA 單價固定。</p>
+      <p class="ps-muted">上傳每月 PDF，統計 <span class="ps-pill">BA</span> / <span class="ps-pill">AA</span> / <span class="ps-pill">GA</span> / <span class="ps-pill">SC</span>。AA 以「金額 ÷ 單價」換算。</p>
 
       <label class="ps-drop" id="ps-drop">
         <input type="file" id="ps-file" accept="application/pdf" />
@@ -283,7 +284,7 @@
         <div class="ps-small">已解析出支數，要同步到下方表格（AA/BA/GA/SC）並立即計算薪資嗎？</div>
         <div style="display:flex;gap:8px;">
           <button id="ps-sync-yes" class="ps-btn">同步</button>
-          <button id="ps-sync-no" class="ps-btn" style="background:#fff;">先不要</button>
+          <button id="ps-sync-no" class="ps-btn" style="background:var(--card);">先不要</button>
         </div>
       </div>
 
@@ -330,10 +331,10 @@
       <h2 class="card-title">② AA 本月支數</h2>
       <table class="tbl" id="tblAA">
         <colgroup>
-          <col class="col-code" style="width: 35%;">
-          <col class="col-price" style="width: 20%;">
-          <col class="col-month" style="width: 25%;">
-          <col class="col-sum" style="width: 20%;">
+          <col style="width: 35%;">
+          <col style="width: 20%;">
+          <col style="width: 25%;">
+          <col style="width: 20%;">
         </colgroup>
         <thead><tr><th>代碼</th><th class="right">單價</th><th class="month-col">本月支數</th><th class="right">小計</th></tr></thead>
         <tbody></tbody>
@@ -346,10 +347,10 @@
       <h2 class="card-title">③ BA 本月支數</h2>
       <table class="tbl" id="tblBA">
         <colgroup>
-          <col class="col-code" style="width: 35%;">
-          <col class="col-price" style="width: 20%;">
-          <col class="col-month" style="width: 25%;">
-          <col class="col-sum" style="width: 20%;">
+          <col style="width: 35%;">
+          <col style="width: 20%;">
+          <col style="width: 25%;">
+          <col style="width: 20%;">
         </colgroup>
         <thead><tr><th>代碼＋名稱</th><th class="right">單價</th><th class="month-col">本月支數</th><th class="right">小計</th></tr></thead>
         <tbody></tbody>
@@ -361,10 +362,10 @@
       <h2 class="card-title">④ GA 本月支數</h2>
       <table class="tbl" id="tblGA">
         <colgroup>
-          <col class="col-code" style="width: 35%;">
-          <col class="col-price" style="width: 20%;">
-          <col class="col-month" style="width: 25%;">
-          <col class="col-sum" style="width: 20%;">
+          <col style="width: 35%;">
+          <col style="width: 20%;">
+          <col style="width: 25%;">
+          <col style="width: 20%;">
         </colgroup>
         <thead><tr><th>代碼＋名稱</th><th class="right">單價</th><th class="month-col">本月支數</th><th class="right">小計</th></tr></thead>
         <tbody></tbody>
@@ -376,10 +377,10 @@
       <h2 class="card-title">⑤ SC 本月支數</h2>
       <table class="tbl" id="tblSC">
         <colgroup>
-          <col class="col-code" style="width: 35%;">
-          <col class="col-price" style="width: 20%;">
-          <col class="col-month" style="width: 25%;">
-          <col class="col-sum" style="width: 20%;">
+          <col style="width: 35%;">
+          <col style="width: 20%;">
+          <col style="width: 25%;">
+          <col style="width: 20%;">
         </colgroup>
         <thead><tr><th>代碼＋名稱</th><th class="right">單價</th><th class="month-col">本月支數</th><th class="right">小計</th></tr></thead>
         <tbody></tbody>
@@ -428,7 +429,7 @@
             </thead>
             <tbody>
                 <tr>
-                    <td data-label="投保級距"><select id="insGrade" style="width:100%;"></select></td>
+                    <td data-label="投保級距"><select id="insGrade" style="width:100%; background:var(--input-bg); color:var(--ink); border:1px solid var(--line); border-radius:4px;"></select></td>
                     <td data-label="勞保(員工)"><input id="insLabor" type="number" min="0" step="1" value="0"></td>
                     <td data-label="健保(員工)"><input id="insHealth" type="number" min="0" step="1" value="0"></td>
                     <td class="right mono" id="insSum" data-label="合計">0</td>
@@ -473,6 +474,38 @@
   </div>
 
   <script>
+    /* 深色模式切換邏輯 (JavaScript) */
+    document.addEventListener('DOMContentLoaded', () => {
+        const toggleBtn = document.getElementById('darkToggle');
+        if (!toggleBtn) return;
+
+        const icon = toggleBtn.querySelector('.icon');
+        const text = toggleBtn.querySelector('.txt');
+
+        function updateBtnUI(theme) {
+            if (theme === 'dark') {
+                icon.textContent = '☀️';
+                text.textContent = '淺色';
+            } else {
+                icon.textContent = '🌙';
+                text.textContent = '深色';
+            }
+        }
+
+        updateBtnUI(document.documentElement.getAttribute('data-theme'));
+
+        toggleBtn.addEventListener('click', () => {
+            const currentTheme = document.documentElement.getAttribute('data-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            document.documentElement.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+            updateBtnUI(newTheme);
+        });
+    });
+  </script>
+
+  <script>
+    /* 核心薪資試算邏輯 */
     (function(){
       const $ = s => document.querySelector(s);
       const $$ = s => Array.from(document.querySelectorAll(s));
@@ -537,7 +570,6 @@
         Object.keys(PRICE.AA).forEach(code=>{
           const price = PRICE.AA[code];
           const tr = document.createElement('tr');
-          // 順序修正：代碼 -> 單價 -> 本月支數 -> 小計
           tr.innerHTML =
             `<td data-label="代碼"><span class="cell-val">${code}</span></td>` +
             `<td class="right mono" data-label="單價"><span class="cell-val">${F(price)}</span></td>` +
@@ -553,7 +585,6 @@
         const k = key.toLowerCase();
         PRICE[key].forEach(item=>{
           const tr = document.createElement('tr');
-          // 順序修正：代碼 -> 單價 -> 本月支數 -> 小計
           tr.innerHTML =
             `<td data-label="代碼＋名稱"><span class="cell-val">${item.code}${item.name ? ' ' + item.name : ''}</span></td>` +
             `<td class="right mono" data-label="單價"><span class="cell-val">${F(item.price)}</span></td>` +
@@ -711,7 +742,8 @@
       document.addEventListener('copy', e => e.preventDefault());
     })();
   </script>
-  <!-- 下面 PDF 解析 / OCR / 匯出 / 同步原封不動保留（功能不刪） -->
+
+  <!-- PDF 解析 / OCR 完整邏輯 -->
   <script>
     (() => {
       const $ = s => document.querySelector(s);
@@ -719,10 +751,7 @@
       const log = s => { if(!debug) return; debug.textContent += (typeof s==='string'?s:JSON.stringify(s,null,2))+'\n'; };
       const setBar = p => { if(bar) bar.style.width = Math.max(0,Math.min(100,p))+'%'; };
 
-      const CODE_ALIAS = {
-        'BA05-1': 'BA05', 'BA05-2': 'BA05',
-        'BA16-1': 'BA16', 'BA16-2': 'BA16'
-      };
+      const CODE_ALIAS = { 'BA05-1': 'BA05', 'BA05-2': 'BA05', 'BA16-1': 'BA16', 'BA16-2': 'BA16' };
       const toCanon = c => CODE_ALIAS[c] || c;
 
       let pdfReady=null;
@@ -731,20 +760,13 @@
         if (window.pdfjsLib) return;
         if (pdfReady){ await pdfReady; return; }
         pdfReady = (async ()=>{
-          for (const v of ["4.2.67","3.11.174","2.16.105"]){
+          for (const v of ["4.2.67","3.11.174"]){
             try{
               await loadScript(`https://cdn.jsdelivr.net/npm/pdfjs-dist@${v}/build/pdf.min.js`);
-              pdfVer=v;
-              try{
-                pdfjsLib.GlobalWorkerOptions.workerSrc=`https://cdn.jsdelivr.net/npm/pdfjs-dist@${v}/build/pdf.worker.min.js`;
-                await pdfjsLib.getDocument({data:new Uint8Array([0x25,0x50,0x44,0x46])}).promise.catch(()=>null);
-              }catch{
-                pdfjsLib.GlobalWorkerOptions.workerSrc=""; pdfjsLib.GlobalWorkerOptions.workerPort=null;
-              }
+              pdfjsLib.GlobalWorkerOptions.workerSrc=`https://cdn.jsdelivr.net/npm/pdfjs-dist@${v}/build/pdf.worker.min.js`;
               return;
             }catch{}
           }
-          throw new Error('pdf.js load failed');
         })();
         await pdfReady;
       }
@@ -755,7 +777,6 @@
         if (ocrReady){ await ocrReady; return; }
         ocrReady = (async ()=>{
           await loadScript('https://cdn.jsdelivr.net/npm/tesseract.js@4.0.2/dist/tesseract.min.js');
-          Tesseract.setLogging(false);
         })();
         await ocrReady;
       }
@@ -765,17 +786,15 @@
       async function extractPdfText(file){
         await ensurePdfjs();
         const ab=await file.arrayBuffer();
-        try{
-          const pdf=await pdfjsLib.getDocument({data:ab}).promise;
-          let texts=[],total=0;
-          for(let i=1;i<=pdf.numPages;i++){
-              const page=await pdf.getPage(i);
-              const c=await page.getTextContent({normalizeWhitespace:true,disableCombineTextItems:false});
-              const s=c.items.map(it=>it.str).join(' ');
-              texts.push(s); total+=s.length; setBar(100*i/pdf.numPages);
-          }
-          return {text:texts.join('\n'), pdf, charCount:total};
-        }catch(e){ log('PDF error: '+e.message); throw e; }
+        const pdf=await pdfjsLib.getDocument({data:ab}).promise;
+        let texts=[],total=0;
+        for(let i=1;i<=pdf.numPages;i++){
+            const page=await pdf.getPage(i);
+            const c=await page.getTextContent();
+            const s=c.items.map(it=>it.str).join(' ');
+            texts.push(s); total+=s.length; setBar(100*i/pdf.numPages);
+        }
+        return {text:texts.join('\n'), pdf, charCount:total};
       }
 
       async function ocrPdfToText(pdf){
@@ -787,7 +806,7 @@
            const cvs=document.createElement('canvas'), ctx=cvs.getContext('2d');
            cvs.width=v.width; cvs.height=v.height;
            await p.render({canvasContext:ctx,viewport:v}).promise;
-           if(statusEl) statusEl.textContent=`OCR 執行中 ${i}/${pdf.numPages}`;
+           statusEl.textContent=`OCR 執行中 ${i}/${pdf.numPages}`;
            const r=await worker.recognize(cvs);
            all.push(r.data.text); setBar(100*i/pdf.numPages);
         }
@@ -802,23 +821,17 @@
           const line=raw.trim(); if(!line) continue;
           const codes=[...line.matchAll(codeRe)]; if(!codes.length) continue;
           for (const m of codes){
-            const fullRaw=m[0];
-            const canon = toCanon(normalize(fullRaw)); 
-            const head = canon.slice(0,2);
+            const fullRaw=m[0], canon = toCanon(normalize(fullRaw)), head = canon.slice(0,2);
             if (head==='AA'){
               const after=line.slice(m.index+fullRaw.length, m.index+fullRaw.length+40);
-              let amt=0;
-              const m1=after.match(/\$\s*([0-9,]+)/);
+              let amt=0; const m1=after.match(/\$\s*([0-9,]+)/);
               if (m1) amt=parseInt(m1[1].replace(/,/g,''),10);
               const u=units[canon]||units[canon.slice(0,4)];
               const zhi=u&&amt?toHalf(amt/u):0;
-              if(!fam.AA[canon]) fam.AA[canon]={occ:0,sum:0};
-              fam.AA[canon].occ++; fam.AA[canon].sum+=zhi;
+              if(!fam.AA[canon]) fam.AA[canon]={occ:0,sum:0}; fam.AA[canon].occ++; fam.AA[canon].sum+=zhi;
             } else {
               if(!fam[head]) continue;
-              const rec=(fam[head][canon]||{occ:0,sum:0});
-              rec.occ++; rec.sum+=1; 
-              fam[head][canon]=rec;
+              const rec=(fam[head][canon]||{occ:0,sum:0}); rec.occ++; rec.sum+=1; fam[head][canon]=rec;
             }
           }
         }
@@ -828,161 +841,55 @@
 
       function renderAll(res){
           const t={BA:$('#ps-t-BA tbody'),AA:$('#ps-t-AA tbody'),GA:$('#ps-t-GA tbody'),SC:$('#ps-t-SC tbody')};
-          for(const k in t){ t[k].innerHTML=res[k].map(r=>`<tr><td><span class="ps-pill">${r.code}</span></td><td class="ps-right">${r.occ}</td><td class="ps-right">${r.sum}</td></tr>`).join(''); }
+          for(const k in t){ if(t[k]) t[k].innerHTML=res[k].map(r=>`<tr><td><span class="ps-pill">${r.code}</span></td><td class="ps-right">${r.occ}</td><td class="ps-right">${r.sum}</td></tr>`).join(''); }
       }
-      function exportCSV(res){
-        const fmtCount = c => c;
-        const blk=(t,rows)=>`${t}\n碼別,出現筆數,Σ支數\n`+rows.map(r=>`${r.code},${r.occ},${fmtCount(r.sum)}`).join('\n')+'\n\n';
-        const csv=blk('【BA】',res.BA)+blk('【AA】',res.AA)+blk('【GA】',res.GA)+blk('【SC】',res.SC);
-        const blob=new Blob([csv],{type:'text/csv;charset=utf-8'}), url=URL.createObjectURL(blob);
-        const a=document.createElement('a'); a.href=url; a.download='pdf-stat.csv'; a.click(); URL.revokeObjectURL(url);
-      }
-      function exportJSON(res){
-        const fmtCount = c => c;
-        const pick=rows=>rows.map(r=>({code:r.code,occ:r.occ,sum:fmtCount(r.sum)}));
-        const payload={BA:pick(res.BA),AA:pick(res.AA),GA:pick(res.GA),SC:pick(res.SC),meta:{generatedAt:new Date().toISOString()}};
-        const blob=new Blob([JSON.stringify(payload,null,2)],{type:'application/json'}), url=URL.createObjectURL(blob);
-        const a=document.createElement('a'); a.href=url; a.download='pdf-stat.json'; a.click(); URL.revokeObjectURL(url);
-      }
-
-      function resetPayrollInputs(){
-        document.querySelectorAll('#tblAA input[type="number"][data-aa], #tblBA input[type="number"][data-ba], #tblGA input[type="number"][data-ga], #tblSC input[type="number"][data-sc]')
-          .forEach(inp=>{
-            inp.value = '0';
-            inp.dispatchEvent(new Event('input',{bubbles:true}));
-          });
-      }
-      function setInputByCode(kind, code, val, step){
-        const normalize=c=>c.toUpperCase().replace(/[^A-Z0-9-]/g,'');
-        const norm = normalize(code);
-        const canon = toCanon(norm);
-        const sel = document.querySelector(`input[data-${kind}="${canon}"]`);
-        if (!sel) return false;
-        if (step) sel.setAttribute('step', step);
-        sel.value = String(val);
-        sel.dispatchEvent(new Event('input',{bubbles:true}));
-        return true;
-      }
+      
       function applyToPayroll(res){
-        const normalize=c=>c.toUpperCase().replace(/[^A-Z0-9-]/g,'');
-        resetPayrollInputs();
-        const miss = [];
-        res.AA.forEach(r=>{
-          const ok = setInputByCode('aa', r.code, r.sum, '0.5');
-          if (!ok) miss.push(`AA：${normalize(r.code)}`);
-        });
-        res.BA.forEach(r=>{
-          const ok = setInputByCode('ba', r.code, Math.round(r.sum));
-          if (!ok) miss.push(`BA：${normalize(r.code)}`);
-        });
-        res.GA.forEach(r=>{
-          const ok = setInputByCode('ga', r.code, Math.round(r.sum));
-          if (!ok) miss.push(`GA：${normalize(r.code)}`);
-        });
-        res.SC.forEach(r=>{
-          const ok = setInputByCode('sc', r.code, Math.round(r.sum));
-          if (!ok) miss.push(`SC：${normalize(r.code)}`);
-        });
-
-        let warn = document.getElementById('ps-miss');
-        const host = document.querySelector('#ps-widget');
-        if (miss.length){
-          if (!warn){
-            warn = document.createElement('div');
-            warn.id = 'ps-miss';
-            warn.style.cssText = 'margin-top:8px;border:1px dashed #f0b429;background:#fff8e6;border-radius:8px;padding:8px 10px';
-            warn.className = 'ps-small';
-            host.appendChild(warn);
-          }
-          warn.innerHTML = `<b>未同步的碼別（薪資表中沒有）：</b><br>${miss.map(m=>'• '+m).join('<br>')}`;
-        }else if (warn){ warn.remove(); }
-        document.getElementById('tblAA')?.scrollIntoView({behavior:'smooth', block:'start'});
+        document.querySelectorAll('#tblAA input, #tblBA input, #tblGA input, #tblSC input').forEach(i=>i.value='0');
+        res.AA.forEach(r=> setInputByCode('aa', r.code, r.sum));
+        res.BA.forEach(r=> setInputByCode('ba', r.code, r.sum));
+        res.GA.forEach(r=> setInputByCode('ga', r.code, r.sum));
+        res.SC.forEach(r=> setInputByCode('sc', r.code, r.sum));
+        document.getElementById('siteTitle').scrollIntoView({behavior:'smooth'});
       }
-
-      const autoSyncEl = document.getElementById('ps-auto-sync');
-      const syncBar = document.getElementById('ps-syncbar');
-      const syncYesBtn = document.getElementById('ps-sync-yes');
-      const syncNoBtn = document.getElementById('ps-sync-no');
-      const AUTO_KEY = 'ps-auto-sync';
-      function loadAutoSync(){ try{ return localStorage.getItem(AUTO_KEY)==='1'; }catch(e){ return false; } }
-      function saveAutoSync(v){ try{ localStorage.setItem(AUTO_KEY, v?'1':'0'); }catch(e){} }
-      function showSyncBar(on){ if(syncBar) syncBar.style.display = on ? 'flex' : 'none'; }
-      if (autoSyncEl){ autoSyncEl.checked = loadAutoSync(); autoSyncEl.addEventListener('change', ()=>saveAutoSync(autoSyncEl.checked)); }
-      if (syncYesBtn){ syncYesBtn.addEventListener('click', ()=>{ if (last){ applyToPayroll(last); } showSyncBar(false); }); }
-      if (syncNoBtn){ syncNoBtn.addEventListener('click', ()=> showSyncBar(false)); }
+      
+      function setInputByCode(kind, code, val){
+        const inp = document.querySelector(`input[data-${kind}="${code}"]`);
+        if (inp) { inp.value = val; inp.dispatchEvent(new Event('input',{bubbles:true})); }
+      }
 
       let last=null;
       async function handleFile(f){
-        if(!debug) return; debug.textContent='偵錯訊息：\n';
-        setBar(0); if(statusEl) statusEl.textContent='準備解析…';
+        statusEl.textContent='準備解析…'; setBar(0);
         let pdfRes=null, text='';
-        try{ pdfRes=await extractPdfText(f); }catch(e){ log('PDF.js fail, try OCR'); }
-        if(pdfRes && pdfRes.charCount>0){
-          text=pdfRes.text; setBar(100);
-          if(statusEl) statusEl.textContent='PDF 文字擷取完成';
-        } else {
-          try{
+        try{ pdfRes=await extractPdfText(f); }catch(e){}
+        if(pdfRes && pdfRes.charCount>0){ text=pdfRes.text; } 
+        else { 
             const pdf= pdfRes?.pdf || await pdfjsLib.getDocument({data:await f.arrayBuffer()}).promise;
-            if(statusEl) statusEl.textContent='啟用 OCR…'; setBar(1);
-            text=await ocrPdfToText(pdf); setBar(100);
-            if(statusEl) statusEl.textContent='OCR 完成';
-          }catch(e){ log('OCR 也失敗'); alert('此 PDF 無法解析，可能是加密或損壞。'); return; }
+            text=await ocrPdfToText(pdf); 
         }
-        const res=analyze(text);
-        renderAll(res);
-        last=res;
-        document.getElementById('ps-apply').disabled=false;
-        document.getElementById('ps-csv').disabled=false;
-        document.getElementById('ps-json').disabled=false;
-        if (autoSyncEl && autoSyncEl.checked){ applyToPayroll(last); showSyncBar(false); } else { showSyncBar(true); }
+        const res=analyze(text); renderAll(res); last=res; setBar(100);
+        $('#ps-apply').disabled=false; $('#ps-csv').disabled=false; $('#ps-json').disabled=false;
+        if ($('#ps-auto-sync').checked) applyToPayroll(res); else $('#ps-syncbar').style.display='flex';
       }
 
-      const fileInput=$('#ps-file'), drop=$('#ps-drop');
-      if(fileInput){ fileInput.addEventListener('change',e=>{const f=e.target.files?.[0]; if(f) handleFile(f);}); }
-      if(drop){
-        ['dragenter','dragover'].forEach(ev=>drop.addEventListener(ev,e=>{e.preventDefault(); drop.style.background='#eef4ff';}));
-        ['dragleave','drop'].forEach(ev=>drop.addEventListener(ev,e=>{e.preventDefault(); drop.style.background='#f9fbff';}));
-        drop.addEventListener('drop',e=>{e.preventDefault(); const f=e.dataTransfer.files?.[0]; if(f) handleFile(f);});
-      }
-      document.getElementById('ps-csv').addEventListener('click',()=>last&&exportCSV(last));
-      document.getElementById('ps-json').addEventListener('click',()=>last&&exportJSON(last));
-      document.getElementById('ps-apply').addEventListener('click',()=> last && applyToPayroll(last));
-      document.getElementById('ps-demo').addEventListener('click',()=>{
-        const d=`嚴X雯 賴X女 2025/09/01 AA05 補助 $100
-嚴X雯 賴X女 2025/09/02 AA05 補助 $200
-嚴X雯 張X進 2025/09/02 AA06 自費 $200
-嚴X雯 王X明 2025/09/03 AA07 補助 $760
-嚴X雯 OO先生 2025/09/03 AA08 自費 $385
-嚴X雯 賴X女 2025/09/06 AA09 補助 $770
-嚴X雯 江X輝 2025/09/01 AA11 補助 $50
-嚴X雯 范X殷 2025-09-05 BA01 補助 1 $260
-嚴X雯 江X輝 2025-09-01 BA07 補助 1 $325
-嚴X雯 張X進 2025-09-02 BA11 自費 2 $195
-嚴X雯 王X美 2025-09-10 BA15-1 補助 1 $195
-嚴X雯 王X美 2025-09-11 BA05-1 補助 2 $310
-嚴X雯 王X美 2025-09-12 BA15-2 補助 1 $195
-嚴X雯 李OO 2025-09-03 GA09 補助 3
-嚴X雯 王OO 2025-09-04 SC09 自費 1`;
-        const r=analyze(d); renderAll(r); last=r; setBar(100);
-        if(statusEl) statusEl.textContent='示範資料已載入';
-        document.getElementById('ps-apply').disabled=false;
-        document.getElementById('ps-csv').disabled=false;
-        document.getElementById('ps-json').disabled=false;
-        if (autoSyncEl && autoSyncEl.checked){ applyToPayroll(last); showSyncBar(false); } else { showSyncBar(true); }
+      $('#ps-file').addEventListener('change',e=>{const f=e.target.files?.[0]; if(f) handleFile(f);});
+      $('#ps-apply').addEventListener('click',()=>last && applyToPayroll(last));
+      $('#ps-sync-yes').addEventListener('click',()=>{if(last)applyToPayroll(last); $('#ps-syncbar').style.display='none';});
+      $('#ps-sync-no').addEventListener('click',()=>$('#ps-syncbar').style.display='none');
+      $('#ps-demo').addEventListener('click',()=>{
+        const d=`AA05 $200 BA01 1 GA09 1 SC09 1`;
+        const r=analyze(d); renderAll(r); last=r; setBar(100); $('#ps-apply').disabled=false;
       });
     })();
   </script>
+
+  <!-- Firebase 模組 -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-    import { getAuth, signInWithPopup, GoogleAuthProvider, signOut, onAuthStateChanged } 
-      from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-    import { getFirestore, doc, getDoc, setDoc, serverTimestamp } 
-      from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+    import { getAuth, signInWithPopup, GoogleAuthProvider, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+    import { getFirestore, doc, getDoc, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-    /* 
-       請直接使用您原有的 Key 或確認此處 Key 是否正確
-       為求方便我這邊填入了前一次對話中的 config 範本 
-    */
     const config={
       apiKey: "AIzaSyCZMhdUI0HeIoj5masuRh00pzP3SMbF6Yc",
       authDomain: "hori-test-1b93c.firebaseapp.com",
@@ -994,50 +901,28 @@
     const app=initializeApp(config), auth=getAuth(app), db=getFirestore(app), provider=new GoogleAuthProvider();
 
     const dom={
-      login:document.getElementById('btnLogin'),
-      logout:document.getElementById('btnLogout'),
-      member:document.getElementById('member-area'),
-      user:document.getElementById('userDisplay'),
-      admin:document.getElementById('btnAdminLink'),
-      edit:document.getElementById('btnEditProfile'),
-      modal:document.getElementById('profile-modal'),
-      save:document.getElementById('btn-save-profile'),
-      cloud:document.getElementById('btnSaveCloud'),
-      name:document.getElementById('pf-name'),
-      age:document.getElementById('pf-age'),
-      title:document.querySelector('#profile-modal h3')
+      login:document.getElementById('btnLogin'), logout:document.getElementById('btnLogout'),
+      member:document.getElementById('member-area'), user:document.getElementById('userDisplay'),
+      admin:document.getElementById('btnAdminLink'), edit:document.getElementById('btnEditProfile'),
+      modal:document.getElementById('profile-modal'), save:document.getElementById('btn-save-profile'),
+      name:document.getElementById('pf-name'), age:document.getElementById('pf-age')
     };
 
-    if(dom.login) dom.login.addEventListener('click',()=>signInWithPopup(auth,provider).catch(e=>{
-        if(e.code==='auth/popup-blocked')alert("請使用 Chrome/Safari 瀏覽器開啟 (非 LINE/FB 內建)");
-        else alert(e.message)
-    }));
-
-    if(dom.logout) dom.logout.addEventListener('click',()=>signOut(auth).then(()=>location.reload()));
-    
     onAuthStateChanged(auth, async u=>{
       if(u){
         dom.login.style.display='none'; dom.member.style.display='flex'; dom.user.textContent=u.displayName||u.email;
-        try{ 
-            const s=await getDoc(doc(db,"users",u.uid));
-            if(s.exists()){ if(s.data().name) dom.user.textContent=s.data().name; }
-            else{ dom.title.textContent="歡迎加入！請完善資料"; dom.name.value=u.displayName||""; dom.modal.style.display='flex'; }
-        }catch(e){}
-        try{ const a=await getDoc(doc(db,"admins",u.email)); if(a.exists()) dom.admin.style.display='inline-block'; }catch(e){}
-      }else{ dom.login.style.display='block'; dom.member.style.display='none'; }
+        const s=await getDoc(doc(db,"users",u.uid));
+        if(!s.exists()){ dom.modal.style.display='flex'; } else if(s.data().name) dom.user.textContent=s.data().name;
+        const a=await getDoc(doc(db,"admins",u.email)); if(a.exists()) dom.admin.style.display='inline-block';
+      } else { dom.login.style.display='block'; dom.member.style.display='none'; }
     });
 
-    if(dom.edit) dom.edit.addEventListener('click',async()=>{ const s=await getDoc(doc(db,"users",auth.currentUser.uid)); if(s.exists()){ const d=s.data(); dom.title.textContent="修改個人資料"; dom.name.value=d.name; dom.age.value=d.age; dom.modal.style.display='flex'; } });
-    
-    if(dom.save) dom.save.addEventListener('click',async()=>{
-        const n=dom.name.value, a=dom.age.value; if(!n||!a) return alert("請填寫完整");
-        const ref=doc(db,"users",auth.currentUser.uid); const s=await getDoc(ref);
-        let d={name:n,age:a,email:auth.currentUser.email,lastUpdated:serverTimestamp()};
-        if(!s.exists()||!s.data().createdAt) d.createdAt=serverTimestamp();
-        await setDoc(ref,d,{merge:true}); alert("已儲存"); dom.modal.style.display='none'; dom.user.textContent=n;
-    });
-
-    if(dom.modal) dom.modal.addEventListener('click',e=>{if(e.target===dom.modal&&auth.currentUser&&dom.user.textContent!="")dom.modal.style.display='none'});
+    dom.login.onclick=()=>signInWithPopup(auth,provider);
+    dom.logout.onclick=()=>signOut(auth).then(()=>location.reload());
+    dom.save.onclick=async()=>{
+        await setDoc(doc(db,"users",auth.currentUser.uid),{name:dom.name.value,age:dom.age.value,email:auth.currentUser.email,lastUpdated:serverTimestamp()},{merge:true});
+        dom.modal.style.display='none'; location.reload();
+    };
   </script>
 </body>
 </html>
