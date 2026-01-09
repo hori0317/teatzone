@@ -55,6 +55,13 @@
     .ps-table thead th{background:var(--table-head);color:var(--ink);text-align:left;padding:8px} 
     .ps-table td{padding:8px;border-bottom:1px solid var(--line); color: var(--ink);} 
     .ps-right{text-align:right} 
+    
+    /* ★★★ 修正：強制讓最後一欄 (Σ 支數) 置中 ★★★ */
+    .ps-table th:last-child,
+    .ps-table td:last-child {
+        text-align: center !important;
+    }
+
     .ps-syncbar{border-color:var(--green);background:var(--table-stripe)}
 
     /* KPI 卡片樣式 */
