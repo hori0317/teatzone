@@ -51,15 +51,46 @@
     .ps-progress{height:10px;background:var(--table-head);border-radius:999px;overflow:hidden}
     .ps-bar{height:100%;width:0;background:var(--green);transition:width .2s}
     .ps-h3{margin:.2rem 0 8px; color: var(--ink);}
-    .ps-table{width:100%;border-collapse:collapse} 
-    .ps-table thead th{background:var(--table-head);color:var(--ink);text-align:left;padding:8px} 
-    .ps-table td{padding:8px;border-bottom:1px solid var(--line); color: var(--ink);} 
-    .ps-right{text-align:right} 
     
-    /* ★★★ 修正：強制讓最後一欄 (Σ 支數) 置中 ★★★ */
+    /* ★★★ PDF 統計表格樣式 (修正對齊與固定寬度) ★★★ */
+    .ps-table {
+        width: 100%;
+        border-collapse: collapse;
+        table-layout: fixed; /* 關鍵：固定表格佈局，無論有無內容，欄寬都不會跑掉 */
+    } 
+    .ps-table thead th {
+        background: var(--table-head);
+        color: var(--ink);
+        padding: 8px;
+        font-weight: 700;
+        border-bottom: 1px solid var(--line);
+    } 
+    .ps-table td {
+        padding: 8px;
+        border-bottom: 1px solid var(--line);
+        color: var(--ink);
+    } 
+
+    /* 第一欄：碼別 (靠左, 佔 40%) */
+    .ps-table th:first-child,
+    .ps-table td:first-child {
+        width: 40%;
+        text-align: left;
+        padding-left: 12px;
+    }
+
+    /* 第二欄：出現筆數 (置中, 佔 30%) */
+    .ps-table th:nth-child(2),
+    .ps-table td:nth-child(2) {
+        width: 30%;
+        text-align: center !important; /* 強制標題與數字都置中 */
+    }
+
+    /* 第三欄：Σ 支數 (置中, 佔 30%) */
     .ps-table th:last-child,
     .ps-table td:last-child {
-        text-align: center !important;
+        width: 30%;
+        text-align: center !important; /* 強制標題與數字都置中 */
     }
 
     .ps-syncbar{border-color:var(--green);background:var(--table-stripe)}
