@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>管理後台 | 長照工具平台</title>
-    <!-- 不引用 script.js，確保沒有防拷邏輯 -->
+    <!-- 引用外部樣式，但稍後會用內嵌樣式強制覆蓋它的防拷設定 -->
     <link rel="stylesheet" href="style.css"> 
     <style>
         /* 針對後台頁面的顏色變數對接 */
@@ -22,6 +22,15 @@
             --input-border: var(--line, #cccccc);
         }
 
+        /* ★★★ 關鍵修正：強制允許所有元素可被選取 (覆蓋 style.css 的設定) ★★★ */
+        *, body, div, p, span, td, th, h1, h2, h3, li {
+            -webkit-user-select: text !important;
+            -moz-user-select: text !important;
+            -ms-user-select: text !important;
+            user-select: text !important;
+            cursor: auto; /* 恢復預設游標 */
+        }
+
         body { 
             padding: 20px; 
             max-width: 1200px; 
@@ -31,8 +40,6 @@
             font-family: "Microsoft JhengHei", -apple-system, sans-serif; 
             transition: background-color 0.3s, color 0.3s;
             line-height: 1.5;
-            
-            /* ★★★ 已移除 user-select: none，現在可以自由選取文字了 ★★★ */
         }
 
         .admin-header { 
@@ -62,7 +69,7 @@
             border-collapse: collapse; 
             margin-top: 0; 
             background-color: var(--card-bg); 
-            table-layout: fixed; /* 固定佈局，防止破版 */
+            table-layout: fixed; 
         }
         
         th, td { 
@@ -71,7 +78,7 @@
             border-bottom: 1px solid var(--border-color); 
             font-size: 15px; 
             vertical-align: middle; 
-            word-wrap: break-word; /* 允許文字換行 */
+            word-wrap: break-word; 
         }
         
         th { background-color: var(--table-th-bg); color: var(--table-th-text); font-weight: bold; white-space: nowrap; }
@@ -84,7 +91,7 @@
         .col-action { width: 110px; text-align: center; }
         .col-feedback { width: auto; }
 
-        /* 回饋內容捲軸樣式 (保留捲軸以免太長，但允許選取) */
+        /* 回饋內容捲軸樣式 */
         .feedback-wrapper {
             max-height: 100px;       
             overflow-y: auto;        
@@ -94,7 +101,6 @@
             color: var(--text-main);
             line-height: 1.5;
             padding-right: 5px;
-            cursor: text; /* 滑鼠移上去變成文字游標，提示可選取 */
         }
         .feedback-wrapper::-webkit-scrollbar { width: 6px; }
         .feedback-wrapper::-webkit-scrollbar-track { background: transparent; }
