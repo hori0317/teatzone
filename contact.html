@@ -96,6 +96,12 @@
         font-size: 16px;
         box-sizing: border-box;
     }
+    /* 針對多行輸入框的特別樣式 */
+    textarea.form-input {
+        resize: vertical;
+        min-height: 80px;
+        font-family: inherit;
+    }
     .form-input:focus {
         outline: 2px solid var(--green);
         border-color: transparent;
@@ -151,19 +157,25 @@
           <p><b>Email：</b> shenghanfootorthoses@gmail.com</p>
       </div>
 
-      <!-- 新增：加入我們 / 留單區塊 -->
+      <!-- 加入我們 / 留單區塊 -->
       <div class="join-form">
           <div class="join-title">👋 加入我們 / 留下聯絡資訊</div>
-          <p class="hint" style="margin-bottom:15px;">若您想加入我們，或有其他合作需求，請留下姓名與電話，我們會盡快聯繫您。</p>
+          <p class="hint" style="margin-bottom:15px;">若您想加入我們，或有其他合作需求，請留下資料，我們會盡快聯繫您。</p>
           
           <div class="form-group">
-              <label class="form-label">您的稱呼 / 姓名</label>
+              <label class="form-label">您的稱呼 / 姓名 <span style="color:red">*</span></label>
               <input type="text" id="recruitName" class="form-input" placeholder="例如：王小明">
           </div>
           
           <div class="form-group">
-              <label class="form-label">聯絡電話</label>
+              <label class="form-label">聯絡電話 <span style="color:red">*</span></label>
               <input type="tel" id="recruitPhone" class="form-input" placeholder="例如：0912-345-678">
+          </div>
+
+          <!-- 新增：其他回饋欄位 -->
+          <div class="form-group">
+              <label class="form-label">其他回饋 / 備註事項</label>
+              <textarea id="recruitFeedback" class="form-input" rows="3" placeholder="如果您有任何建議或想說的話，歡迎在此留言..."></textarea>
           </div>
 
           <button id="btnSubmitRecruit" class="btn pill btn-green" style="width:100%; font-size:1.1rem; padding:10px;">送出資料</button>
@@ -231,9 +243,10 @@
         age: document.getElementById('pf-age'),
         title: document.querySelector('#profile-modal h3'),
         darkToggle: document.getElementById('darkToggle'),
-        // 新增留單 DOM
+        // 留單相關 DOM
         recruitName: document.getElementById('recruitName'),
         recruitPhone: document.getElementById('recruitPhone'),
+        recruitFeedback: document.getElementById('recruitFeedback'), // 新增回饋欄位
         btnRecruit: document.getElementById('btnSubmitRecruit')
     };
 
@@ -252,7 +265,6 @@
             }
         };
 
-        // 初始化按鈕顯示
         updateBtnUI(document.documentElement.getAttribute('data-theme'));
 
         dom.darkToggle.addEventListener('click', () => {
@@ -334,21 +346,31 @@
       } catch (e) { alert("儲存失敗：" + e.message); }
     });
 
-    // --- 點擊背景關閉彈窗 ---
     if(dom.modal) dom.modal.addEventListener('click', (e) => {
       if (e.target === dom.modal && auth.currentUser && dom.user.textContent !== "" && dom.user.textContent !== auth.currentUser.email) {
           dom.modal.style.display = 'none';
       }
     });
 
-    // --- 新增：留單提交邏輯 ---
+    // --- 留單提交邏輯 (已包含權限檢查) ---
     if (dom.btnRecruit) {
         dom.btnRecruit.addEventListener('click', async () => {
+            
+            // 1. 檢查是否登入
+            if (!auth.currentUser) {
+                alert("🔒 請先登入會員後，才能送出資料喔！");
+                if(dom.login && dom.login.style.display !== 'none') {
+                    dom.login.click(); // 自動開啟登入
+                }
+                return;
+            }
+
             const name = dom.recruitName.value.trim();
             const phone = dom.recruitPhone.value.trim();
+            const feedback = dom.recruitFeedback.value.trim(); // 獲取回饋內容
             
             if (!name || !phone) {
-                return alert("請填寫姓名與聯絡電話！");
+                return alert("請至少填寫「姓名」與「聯絡電話」！");
             }
 
             dom.btnRecruit.textContent = "傳送中...";
@@ -359,16 +381,24 @@
                 await addDoc(collection(db, "recruitment"), {
                     name: name,
                     phone: phone,
+                    feedback: feedback, // 存入回饋
+                    submittedBy: auth.currentUser.uid,
+                    submittedEmail: auth.currentUser.email,
                     createdAt: serverTimestamp(),
-                    status: 'new' // 狀態標記
+                    status: 'new'
                 });
 
                 alert("資料已送出！我們會盡快與您聯繫。");
                 dom.recruitName.value = "";
                 dom.recruitPhone.value = "";
+                dom.recruitFeedback.value = "";
             } catch (e) {
-                console.error(e);
-                alert("送出失敗，請稍後再試或直接來電。");
+                console.error("送出失敗:", e);
+                if (e.code === 'permission-denied') {
+                    alert("送出失敗：權限不足。\n請確認您是否已登入，且網域已加入 Firebase 白名單。");
+                } else {
+                    alert("送出失敗：" + e.message);
+                }
             } finally {
                 dom.btnRecruit.textContent = "送出資料";
                 dom.btnRecruit.disabled = false;
