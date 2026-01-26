@@ -138,18 +138,18 @@
 
 <div id="dashboard" style="display: none;">
     
-    <!-- 加入/聯繫留單管理 -->
+    <!-- 加入/聯繫留言管理 -->
     <div class="section-card">
-        <h2>📋 加入我們 / 聯繫留單</h2>
+        <h2>📋 加入我們 / 聯繫留言</h2>
         <div class="btn-group">
-            <button id="btnRefreshRecruit" class="btn pill btn-green" style="font-size:14px;">🔄 重新整理留單</button>
+            <button id="btnRefreshRecruit" class="btn pill btn-green" style="font-size:14px;">🔄 重新整理留言</button>
         </div>
         <div style="overflow-x: auto;">
             <table id="recruitTable">
                 <thead>
                     <tr>
                         <!-- 設定欄位寬度與操作欄置中 -->
-                        <th class="col-time">留單時間</th>
+                        <th class="col-time">留言時間</th>
                         <th class="col-name">姓名</th>
                         <th class="col-phone">聯絡電話</th>
                         <th>其他回饋</th> 
@@ -292,7 +292,7 @@
         }
     });
 
-    // 載入留單資料 (優化樣式版)
+    // 載入留言資料 (優化樣式版)
     async function loadRecruitmentData() {
         const tbody = document.querySelector('#recruitTable tbody');
         const btn = document.getElementById('btnRefreshRecruit');
@@ -305,7 +305,7 @@
             
             tbody.innerHTML = '';
             if (querySnapshot.empty) {
-                tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; color:var(--text-sub);">目前沒有留單資料</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; color:var(--text-sub);">目前沒有留言資料</td></tr>';
             } else {
                 querySnapshot.forEach(docSnap => {
                     const data = docSnap.data();
@@ -339,13 +339,13 @@
             console.error(e);
             tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; color:red;">讀取失敗</td></tr>';
         } finally {
-            btn.disabled = false; btn.textContent = "🔄 重新整理留單";
+            btn.disabled = false; btn.textContent = "🔄 重新整理留言";
         }
     }
 
-    // 刪除留單
+    // 刪除留言
     window.deleteRecruit = async (id, name) => {
-        if (!confirm(`確認刪除 ${name} 的留單資料？\n(請確認已聯繫或處理完畢)`)) return;
+        if (!confirm(`確認刪除 ${name} 的留言資料？\n(請確認已聯繫或處理完畢)`)) return;
         try {
             await deleteDoc(doc(db, "recruitment", id));
             loadRecruitmentData(); 
