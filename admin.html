@@ -59,7 +59,7 @@
             border-collapse: collapse; 
             margin-top: 0; 
             background-color: var(--card-bg); 
-            table-layout: fixed; /* 關鍵：固定表格佈局，防止被長內容撐開 */
+            table-layout: fixed; /* 固定佈局 */
         }
         
         th, td { 
@@ -68,7 +68,6 @@
             border-bottom: 1px solid var(--border-color); 
             font-size: 15px; 
             vertical-align: middle; 
-            word-wrap: break-word; /* 允許長單字換行 */
         }
         
         th { background-color: var(--table-th-bg); color: var(--table-th-text); font-weight: bold; white-space: nowrap; }
@@ -80,16 +79,26 @@
         .col-phone { width: 120px; }
         .col-action { width: 110px; text-align: center; }
         
-        /* ★★★ 修復重點：回饋欄位強制換行 ★★★ */
         .col-feedback { 
-            width: auto; /* 佔用剩餘空間 */
-            white-space: normal; /* 允許換行 */
-            word-break: break-all; /* 強制切斷長字串 (如 123123...) */
-            overflow-wrap: break-word; /* 現代瀏覽器換行 */
+            width: auto; 
+        }
+
+        /* ★★★ 新增：回饋內容捲軸容器 ★★★ */
+        /* 這樣如果文字超長，會出現捲軸，不會把表格撐爆，也不會執行 HTML */
+        .feedback-wrapper {
+            max-height: 100px;       /* 限制最大高度 */
+            overflow-y: auto;        /* 超過高度出現捲軸 */
+            white-space: pre-wrap;   /* 保留換行 */
+            word-break: break-word;  /* 長單字自動換行 */
             font-size: 14px;
             color: var(--text-main);
             line-height: 1.5;
+            padding-right: 5px;      /* 避免文字貼著捲軸 */
         }
+        /* 自訂捲軸樣式 (Chrome/Safari) */
+        .feedback-wrapper::-webkit-scrollbar { width: 6px; }
+        .feedback-wrapper::-webkit-scrollbar-track { background: transparent; }
+        .feedback-wrapper::-webkit-scrollbar-thumb { background: #ccc; border-radius: 3px; }
 
         .admin-controls { display: flex; gap: 10px; margin-top: 15px; flex-wrap: wrap; }
         input.admin-input { 
@@ -279,6 +288,18 @@
         return result;
     }
 
+    // ★★★ 安全函式：防止 HTML Injection ★★★
+    // 將特殊符號轉義，避免輸入 HTML 破壞版面
+    function escapeHtml(text) {
+        if (!text) return text;
+        return text
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;")
+            .replace(/'/g, "&#039;");
+    }
+
     // 身分驗證
     onAuthStateChanged(auth, async (user) => {
         if (user) {
@@ -333,18 +354,22 @@
                         timeStr = d.toLocaleString('zh-TW', { month:'2-digit', day:'2-digit', hour:'2-digit', minute:'2-digit' });
                     }
 
-                    const feedback = data.feedback ? data.feedback : '<span style="color:#aaa;">(無)</span>';
+                    // 1. 使用 escapeHtml 防止 HTML 破壞版面
+                    // 2. 如果沒有資料顯示 (無)
+                    let rawFeedback = data.feedback ? escapeHtml(data.feedback) : '<span style="color:#aaa;">(無)</span>';
+                    
+                    // 3. 包裹在 feedback-wrapper 中限制高度與捲軸
+                    const feedbackHtml = `<div class="feedback-wrapper">${rawFeedback}</div>`;
 
-                    // 這裡加上 class="col-feedback"
                     tbody.innerHTML += `
                         <tr>
                             <td>${timeStr}</td>
-                            <td style="font-weight:bold;">${data.name || '未填寫'}</td>
-                            <td>${data.phone || '未填寫'}</td>
-                            <td class="col-feedback">${feedback}</td>
+                            <td style="font-weight:bold;">${escapeHtml(data.name) || '未填寫'}</td>
+                            <td>${escapeHtml(data.phone) || '未填寫'}</td>
+                            <td class="col-feedback">${feedbackHtml}</td>
                             <td class="col-action">
                                 <button class="btn pill btn-gray" style="font-size:12px; padding:6px 12px; white-space:nowrap;" 
-                                        onclick="deleteRecruit('${id}', '${data.name}')">刪除/已處理</button>
+                                        onclick="deleteRecruit('${id}', '${escapeHtml(data.name)}')">刪除/已處理</button>
                             </td>
                         </tr>
                     `;
@@ -368,6 +393,7 @@
             alert("刪除失敗：" + e.message);
         }
     };
+
 
     // 載入會員資料
     async function loadUsers() {
@@ -414,9 +440,9 @@
                 allUsersData.push({ name, age, email, date: dateStr, watchTime: formattedTime, rawSeconds: totalSec });
 
                 tbody.innerHTML += `<tr>
-                    <td>${name}</td>
-                    <td>${age}</td>
-                    <td>${email}</td>
+                    <td>${escapeHtml(name)}</td>
+                    <td>${escapeHtml(age)}</td>
+                    <td>${escapeHtml(email)}</td>
                     <td>${dateStr}</td>
                     <td class="watch-time-cell">
                         ${formattedTime}
@@ -451,7 +477,7 @@
                     ? `<span class="badge-self">自己</span>` 
                     : `<button class="btn pill btn-gray" style="font-size:12px; padding:2px 8px;" onclick="removeAdmin('${email}')">移除</button>`;
                 
-                li.innerHTML = `<b>${email}</b><div>${btnHtml}</div>`;
+                li.innerHTML = `<b>${escapeHtml(email)}</b><div>${btnHtml}</div>`;
                 list.appendChild(li);
             });
         } catch (e){ list.innerHTML = '<li>載入失敗</li>'; }
@@ -486,7 +512,10 @@
         
         let csvContent = "\uFEFF姓名,年齡,Email,註冊時間,總觀看時長,原始秒數\n";
         allUsersData.forEach(u => { 
-            csvContent += `"${u.name}","${u.age}","${u.email}","${u.date}","${u.watchTime}","${u.rawSeconds}"\n`; 
+            // CSV 內容比較安全，但也稍微處理一下雙引號
+            const safeName = (u.name || "").replace(/"/g, '""');
+            const safeEmail = (u.email || "").replace(/"/g, '""');
+            csvContent += `"${safeName}","${u.age}","${safeEmail}","${u.date}","${u.watchTime}","${u.rawSeconds}"\n`; 
         });
         
         const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
