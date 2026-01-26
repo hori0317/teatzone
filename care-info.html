@@ -263,37 +263,24 @@
         <!-- 下載項目 1 -->
         <li class="download-item">
           <div class="file-info">
-            <span class="file-name">服務紀錄單.docx</span>
-            <span class="file-meta">檔案大小：21KB｜更新：2026/01</span>
+            <!-- 檔名顯示 -->
+            <span class="file-name">服務紀錄表 (範本)</span>
+            <span class="file-meta">檔案格式：DOCX｜大小：--</span>
           </div>
-          <!-- href="files/..." 指向您的 files 資料夾內的檔案 -->
-          <a href="files/care-apply-form.pdf" download="record_sheet.docx" class="btn-download">
+          <!-- 
+             ★ 關鍵設定：
+             1. href="files/record_sheet.docx" 
+                (代表檔案放在 files 資料夾，且檔名是 record_sheet.docx)
+             2. download="服務紀錄表.docx" 
+                (代表下載下來後，使用者的電腦會看到這個中文檔名)
+          -->
+          <a href="files/record_sheet.docx" download="服務紀錄表_2024.docx" class="btn-download">
             ⬇ 下載
           </a>
         </li>
 
-        <!-- 下載項目 2 -->
-        <li class="download-item">
-          <div class="file-info">
-            <span class="file-name">服務同意書範本.docx</span>
-            <span class="file-meta">適用於居家服務簽約使用</span>
-          </div>
-          <a href="files/agreement.docx" download class="btn-download">
-            ⬇ 下載
-          </a>
-        </li>
-
-        <!-- 下載項目 3 -->
-        <li class="download-item">
-          <div class="file-info">
-            <span class="file-name">CMS 評估量表參考.pdf</span>
-            <span class="file-meta">專業評估人員參考用</span>
-          </div>
-          <a href="files/assessment-tool.pdf" download class="btn-download">
-            ⬇ 下載
-          </a>
-        </li>
-
+        <!-- 如果您有更多檔案，請複製上面的 li 區塊並修改 href -->
+        
       </ul>
     </section>
 
