@@ -62,6 +62,44 @@
         line-height: 1.8;
         color: var(--ink);
     }
+
+    /* 新增：加入我們表單樣式 */
+    .join-form {
+        margin-top: 30px;
+        padding-top: 20px;
+        border-top: 1px dashed var(--line);
+    }
+    .join-title {
+        font-size: 1.2rem;
+        font-weight: bold;
+        color: var(--green);
+        margin-bottom: 10px;
+    }
+    .form-group {
+        margin-bottom: 12px;
+        text-align: left;
+    }
+    .form-label {
+        display: block;
+        font-size: 0.9rem;
+        font-weight: 700;
+        color: var(--muted);
+        margin-bottom: 4px;
+    }
+    .form-input {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid var(--line);
+        background: var(--input-bg);
+        color: var(--ink);
+        border-radius: 8px;
+        font-size: 16px;
+        box-sizing: border-box;
+    }
+    .form-input:focus {
+        outline: 2px solid var(--green);
+        border-color: transparent;
+    }
   </style>
   <script src="nav.js" defer></script>
   <script src="script.js" defer></script>
@@ -112,6 +150,25 @@
           <p><b>地址：</b> 新北市</p>
           <p><b>Email：</b> shenghanfootorthoses@gmail.com</p>
       </div>
+
+      <!-- 新增：加入我們 / 留單區塊 -->
+      <div class="join-form">
+          <div class="join-title">👋 加入我們 / 留下聯絡資訊</div>
+          <p class="hint" style="margin-bottom:15px;">若您想加入我們，或有其他合作需求，請留下姓名與電話，我們會盡快聯繫您。</p>
+          
+          <div class="form-group">
+              <label class="form-label">您的稱呼 / 姓名</label>
+              <input type="text" id="recruitName" class="form-input" placeholder="例如：王小明">
+          </div>
+          
+          <div class="form-group">
+              <label class="form-label">聯絡電話</label>
+              <input type="tel" id="recruitPhone" class="form-input" placeholder="例如：0912-345-678">
+          </div>
+
+          <button id="btnSubmitRecruit" class="btn pill btn-green" style="width:100%; font-size:1.1rem; padding:10px;">送出資料</button>
+      </div>
+
     </section>
   </main>
 
@@ -143,7 +200,7 @@
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
     import { getAuth, signInWithPopup, GoogleAuthProvider, signOut, onAuthStateChanged } 
       from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-    import { getFirestore, doc, getDoc, setDoc, serverTimestamp } 
+    import { getFirestore, doc, getDoc, setDoc, addDoc, collection, serverTimestamp } 
       from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
     // Firebase 配置
@@ -173,7 +230,11 @@
         name: document.getElementById('pf-name'),
         age: document.getElementById('pf-age'),
         title: document.querySelector('#profile-modal h3'),
-        darkToggle: document.getElementById('darkToggle')
+        darkToggle: document.getElementById('darkToggle'),
+        // 新增留單 DOM
+        recruitName: document.getElementById('recruitName'),
+        recruitPhone: document.getElementById('recruitPhone'),
+        btnRecruit: document.getElementById('btnSubmitRecruit')
     };
 
     // --- 深色模式切換邏輯 ---
@@ -279,6 +340,41 @@
           dom.modal.style.display = 'none';
       }
     });
+
+    // --- 新增：留單提交邏輯 ---
+    if (dom.btnRecruit) {
+        dom.btnRecruit.addEventListener('click', async () => {
+            const name = dom.recruitName.value.trim();
+            const phone = dom.recruitPhone.value.trim();
+            
+            if (!name || !phone) {
+                return alert("請填寫姓名與聯絡電話！");
+            }
+
+            dom.btnRecruit.textContent = "傳送中...";
+            dom.btnRecruit.disabled = true;
+
+            try {
+                // 將資料寫入 'recruitment' 集合
+                await addDoc(collection(db, "recruitment"), {
+                    name: name,
+                    phone: phone,
+                    createdAt: serverTimestamp(),
+                    status: 'new' // 狀態標記
+                });
+
+                alert("資料已送出！我們會盡快與您聯繫。");
+                dom.recruitName.value = "";
+                dom.recruitPhone.value = "";
+            } catch (e) {
+                console.error(e);
+                alert("送出失敗，請稍後再試或直接來電。");
+            } finally {
+                dom.btnRecruit.textContent = "送出資料";
+                dom.btnRecruit.disabled = false;
+            }
+        });
+    }
   </script>
 </body>
 </html>
