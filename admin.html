@@ -53,10 +53,26 @@
 
         h2 { margin-top: 0; color: var(--green, #2e7d32); font-size: 1.5rem; border-bottom: 1px dashed var(--border-color); padding-bottom: 10px; margin-bottom: 15px; }
 
+        /* --- 表格樣式優化 --- */
         table { width: 100%; border-collapse: collapse; margin-top: 0; background-color: var(--card-bg); }
-        th, td { padding: 12px 10px; text-align: left; border-bottom: 1px solid var(--border-color); font-size: 15px; }
+        
+        /* 讓表格內容垂直置中 */
+        th, td { 
+            padding: 12px 10px; 
+            text-align: left; 
+            border-bottom: 1px solid var(--border-color); 
+            font-size: 15px; 
+            vertical-align: middle; /* 關鍵：垂直置中 */
+        }
+        
         th { background-color: var(--table-th-bg); color: var(--table-th-text); font-weight: bold; white-space: nowrap; }
         tr:hover { background-color: var(--table-hover); }
+
+        /* 操作欄位專用樣式 */
+        .col-action { text-align: center; width: 120px; }
+        .col-time { width: 150px; }
+        .col-name { width: 100px; }
+        .col-phone { width: 130px; }
 
         .admin-controls { display: flex; gap: 10px; margin-top: 15px; flex-wrap: wrap; }
         input.admin-input { 
@@ -132,11 +148,12 @@
             <table id="recruitTable">
                 <thead>
                     <tr>
-                        <th style="width: 120px;">留單時間</th>
-                        <th>姓名</th>
-                        <th>聯絡電話</th>
-                        <th>其他回饋</th> <!-- 新增這一欄 -->
-                        <th style="width: 100px;">操作</th>
+                        <!-- 設定欄位寬度與操作欄置中 -->
+                        <th class="col-time">留單時間</th>
+                        <th class="col-name">姓名</th>
+                        <th class="col-phone">聯絡電話</th>
+                        <th>其他回饋</th> 
+                        <th class="col-action">操作</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -275,7 +292,7 @@
         }
     });
 
-    // 載入留單資料 (更新：加入 feedback 顯示)
+    // 載入留單資料 (優化樣式版)
     async function loadRecruitmentData() {
         const tbody = document.querySelector('#recruitTable tbody');
         const btn = document.getElementById('btnRefreshRecruit');
@@ -300,17 +317,18 @@
                         timeStr = d.toLocaleString('zh-TW', { month:'2-digit', day:'2-digit', hour:'2-digit', minute:'2-digit' });
                     }
 
-                    // 處理回饋內容，如果太長可以截斷，或直接顯示
                     const feedback = data.feedback ? data.feedback : '<span style="color:#aaa;">(無)</span>';
 
+                    // 優化：操作欄位加上 .col-action class 來置中
+                    // 優化：按鈕加上 white-space: nowrap 防止換行
                     tbody.innerHTML += `
                         <tr>
                             <td style="font-size:14px; color:var(--text-sub);">${timeStr}</td>
                             <td style="font-weight:bold;">${data.name || '未填寫'}</td>
                             <td>${data.phone || '未填寫'}</td>
-                            <td style="font-size:14px; color:var(--text-main);">${feedback}</td>
-                            <td>
-                                <button class="btn pill btn-gray" style="font-size:12px; padding:4px 10px;" 
+                            <td style="font-size:14px; color:var(--text-main); line-height:1.4;">${feedback}</td>
+                            <td class="col-action">
+                                <button class="btn pill btn-gray" style="font-size:12px; padding:6px 12px; white-space:nowrap;" 
                                         onclick="deleteRecruit('${id}', '${data.name}')">刪除/已處理</button>
                             </td>
                         </tr>
@@ -335,8 +353,6 @@
             alert("刪除失敗：" + e.message);
         }
     };
-
-    document.getElementById('btnRefreshRecruit').addEventListener('click', loadRecruitmentData);
 
 
     // 載入會員資料
