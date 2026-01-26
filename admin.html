@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>管理後台 | 長照工具平台</title>
+    <!-- 不引用 script.js，確保沒有防拷邏輯 -->
     <link rel="stylesheet" href="style.css"> 
     <style>
         /* 針對後台頁面的顏色變數對接 */
@@ -30,6 +31,8 @@
             font-family: "Microsoft JhengHei", -apple-system, sans-serif; 
             transition: background-color 0.3s, color 0.3s;
             line-height: 1.5;
+            
+            /* ★★★ 已移除 user-select: none，現在可以自由選取文字了 ★★★ */
         }
 
         .admin-header { 
@@ -53,13 +56,13 @@
 
         h2 { margin-top: 0; color: var(--green, #2e7d32); font-size: 1.5rem; border-bottom: 1px dashed var(--border-color); padding-bottom: 10px; margin-bottom: 15px; }
 
-        /* --- 表格樣式優化 --- */
+        /* --- 表格樣式 --- */
         table { 
             width: 100%; 
             border-collapse: collapse; 
             margin-top: 0; 
             background-color: var(--card-bg); 
-            table-layout: fixed; /* 固定佈局 */
+            table-layout: fixed; /* 固定佈局，防止破版 */
         }
         
         th, td { 
@@ -68,6 +71,7 @@
             border-bottom: 1px solid var(--border-color); 
             font-size: 15px; 
             vertical-align: middle; 
+            word-wrap: break-word; /* 允許文字換行 */
         }
         
         th { background-color: var(--table-th-bg); color: var(--table-th-text); font-weight: bold; white-space: nowrap; }
@@ -78,24 +82,20 @@
         .col-name { width: 100px; }
         .col-phone { width: 120px; }
         .col-action { width: 110px; text-align: center; }
-        
-        .col-feedback { 
-            width: auto; 
-        }
+        .col-feedback { width: auto; }
 
-        /* ★★★ 新增：回饋內容捲軸容器 ★★★ */
-        /* 這樣如果文字超長，會出現捲軸，不會把表格撐爆，也不會執行 HTML */
+        /* 回饋內容捲軸樣式 (保留捲軸以免太長，但允許選取) */
         .feedback-wrapper {
-            max-height: 100px;       /* 限制最大高度 */
-            overflow-y: auto;        /* 超過高度出現捲軸 */
-            white-space: pre-wrap;   /* 保留換行 */
-            word-break: break-word;  /* 長單字自動換行 */
+            max-height: 100px;       
+            overflow-y: auto;        
+            white-space: pre-wrap;   
+            word-break: break-word;  
             font-size: 14px;
             color: var(--text-main);
             line-height: 1.5;
-            padding-right: 5px;      /* 避免文字貼著捲軸 */
+            padding-right: 5px;
+            cursor: text; /* 滑鼠移上去變成文字游標，提示可選取 */
         }
-        /* 自訂捲軸樣式 (Chrome/Safari) */
         .feedback-wrapper::-webkit-scrollbar { width: 6px; }
         .feedback-wrapper::-webkit-scrollbar-track { background: transparent; }
         .feedback-wrapper::-webkit-scrollbar-thumb { background: #ccc; border-radius: 3px; }
@@ -288,8 +288,7 @@
         return result;
     }
 
-    // ★★★ 安全函式：防止 HTML Injection ★★★
-    // 將特殊符號轉義，避免輸入 HTML 破壞版面
+    // 防止 HTML Injection
     function escapeHtml(text) {
         if (!text) return text;
         return text
@@ -329,7 +328,7 @@
         }
     });
 
-    // 載入留單資料 (修復版)
+    // 載入留單資料
     async function loadRecruitmentData() {
         const tbody = document.querySelector('#recruitTable tbody');
         const btn = document.getElementById('btnRefreshRecruit');
@@ -354,11 +353,7 @@
                         timeStr = d.toLocaleString('zh-TW', { month:'2-digit', day:'2-digit', hour:'2-digit', minute:'2-digit' });
                     }
 
-                    // 1. 使用 escapeHtml 防止 HTML 破壞版面
-                    // 2. 如果沒有資料顯示 (無)
                     let rawFeedback = data.feedback ? escapeHtml(data.feedback) : '<span style="color:#aaa;">(無)</span>';
-                    
-                    // 3. 包裹在 feedback-wrapper 中限制高度與捲軸
                     const feedbackHtml = `<div class="feedback-wrapper">${rawFeedback}</div>`;
 
                     tbody.innerHTML += `
@@ -512,7 +507,6 @@
         
         let csvContent = "\uFEFF姓名,年齡,Email,註冊時間,總觀看時長,原始秒數\n";
         allUsersData.forEach(u => { 
-            // CSV 內容比較安全，但也稍微處理一下雙引號
             const safeName = (u.name || "").replace(/"/g, '""');
             const safeEmail = (u.email || "").replace(/"/g, '""');
             csvContent += `"${safeName}","${u.age}","${safeEmail}","${u.date}","${u.watchTime}","${u.rawSeconds}"\n`; 
