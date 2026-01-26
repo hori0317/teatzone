@@ -125,6 +125,29 @@
 
 <div id="dashboard" style="display: none;">
     
+    <!-- 新增：加入/聯繫留單管理 -->
+    <div class="section-card">
+        <h2>📋 加入我們 / 聯繫留單</h2>
+        <div class="btn-group">
+            <button id="btnRefreshRecruit" class="btn pill btn-green" style="font-size:14px;">🔄 重新整理留單</button>
+        </div>
+        <div style="overflow-x: auto;">
+            <table id="recruitTable">
+                <thead>
+                    <tr>
+                        <th style="width: 120px;">留單時間</th>
+                        <th>姓名</th>
+                        <th>聯絡電話</th>
+                        <th style="width: 100px;">操作</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- JS 動態填入 -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
     <!-- 會員列表 -->
     <div class="section-card">
         <h2>👥 會員資料列表</h2>
@@ -168,7 +191,8 @@
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
     import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-    import { getFirestore, collection, getDocs, doc, setDoc, deleteDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+    import { getFirestore, collection, getDocs, doc, setDoc, deleteDoc, getDoc, query, orderBy } 
+        from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
     // Firebase 配置 (保持不變)
     const firebaseConfig = {
@@ -245,6 +269,7 @@
                     document.getElementById('dashboard').style.display = 'block';
                     
                     // 載入資料
+                    loadRecruitmentData(); // 新增：載入留單
                     loadUsers(); 
                     loadAdmins();
                 } else {
@@ -255,6 +280,68 @@
             document.body.innerHTML = "<h2 style='text-align:center; margin-top:100px;'>請先登入<br><br><a href='index.html'>回首頁</a></h2>";
         }
     });
+
+    // --- 新增：載入留單資料 ---
+    async function loadRecruitmentData() {
+        const tbody = document.querySelector('#recruitTable tbody');
+        const btn = document.getElementById('btnRefreshRecruit');
+        btn.disabled = true; btn.textContent = "讀取中...";
+        tbody.innerHTML = '<tr><td colspan="4" style="text-align:center; padding:20px;">讀取中...</td></tr>';
+
+        try {
+            // 依時間倒序排列
+            const q = query(collection(db, "recruitment"), orderBy("createdAt", "desc"));
+            const querySnapshot = await getDocs(q);
+            
+            tbody.innerHTML = '';
+            if (querySnapshot.empty) {
+                tbody.innerHTML = '<tr><td colspan="4" style="text-align:center; color:var(--text-sub);">目前沒有留單資料</td></tr>';
+            } else {
+                querySnapshot.forEach(docSnap => {
+                    const data = docSnap.data();
+                    const id = docSnap.id;
+                    
+                    // 時間轉換
+                    let timeStr = "-";
+                    if (data.createdAt) {
+                        const d = data.createdAt.toDate ? data.createdAt.toDate() : new Date(data.createdAt);
+                        timeStr = d.toLocaleString('zh-TW', { month:'2-digit', day:'2-digit', hour:'2-digit', minute:'2-digit' });
+                    }
+
+                    tbody.innerHTML += `
+                        <tr>
+                            <td style="font-size:14px; color:var(--text-sub);">${timeStr}</td>
+                            <td style="font-weight:bold;">${data.name || '未填寫'}</td>
+                            <td>${data.phone || '未填寫'}</td>
+                            <td>
+                                <button class="btn pill btn-gray" style="font-size:12px; padding:4px 10px;" 
+                                        onclick="deleteRecruit('${id}', '${data.name}')">刪除/已處理</button>
+                            </td>
+                        </tr>
+                    `;
+                });
+            }
+        } catch (e) {
+            console.error(e);
+            tbody.innerHTML = '<tr><td colspan="4" style="text-align:center; color:red;">讀取失敗</td></tr>';
+        } finally {
+            btn.disabled = false; btn.textContent = "🔄 重新整理留單";
+        }
+    }
+
+    // --- 新增：刪除留單 (掛載到 window) ---
+    window.deleteRecruit = async (id, name) => {
+        if (!confirm(`確認刪除 ${name} 的留單資料？\n(請確認已聯繫或處理完畢)`)) return;
+        try {
+            await deleteDoc(doc(db, "recruitment", id));
+            loadRecruitmentData(); // 重新整理表格
+        } catch(e) {
+            alert("刪除失敗：" + e.message);
+        }
+    };
+
+    document.getElementById('btnRefreshRecruit').addEventListener('click', loadRecruitmentData);
+
 
     // --- 載入會員資料 (含排序與舊會員相容邏輯) ---
     async function loadUsers() {
