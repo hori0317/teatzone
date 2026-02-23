@@ -9,7 +9,7 @@
   <link rel="stylesheet" href="style.css" />
   
   <script>
-    /* 立即檢查主題設定 */
+    /* 立即檢查主題設定，防止頁面閃爍 */
     (function() {
         const savedTheme = localStorage.getItem('theme') || 'light';
         document.documentElement.setAttribute('data-theme', savedTheme);
@@ -20,148 +20,7 @@
   <script src="script.js" defer></script>
 
   <style>
-    /* ============================================================
-       導航欄與工具列優化 (仿圖二樣式)
-       ============================================================ */
-    
-    /* 導航列整體容器 */
-    .topbar {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      flex-wrap: nowrap;
-      padding: 10px 20px;
-      gap: 15px;
-    }
-
-    /* 品牌 Logo */
-    .brand {
-      flex-shrink: 0;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-
-    /* 主選單：基本樣式 */
-    .nav-links {
-      display: flex;
-      align-items: center;
-      gap: 20px;
-      flex-grow: 1;
-      white-space: nowrap;
-    }
-
-    /* 主選單連結樣式 (仿圖二：預設黑字，選中橘字橘底線) */
-    .nav-links a {
-      text-decoration: none;
-      color: var(--ink); /* 深色模式自動變色 */
-      font-weight: bold;
-      font-size: 16px;
-      padding: 8px 0;
-      border-bottom: 3px solid transparent;
-      transition: all 0.2s;
-    }
-
-    .nav-links a:hover,
-    .nav-links a.active,
-    body[data-page="calculator"] .nav-links a[href="calculator.html"] {
-      color: #F59E0B; /* 橘色文字 */
-      border-bottom-color: #F59E0B; /* 橘色底線 */
-    }
-
-    /* 工具列 (右側按鈕區) */
-    .actions {
-      display: flex;
-      align-items: center;
-      gap: 6px; /* 緊湊間距 */
-      flex-shrink: 0;
-    }
-
-    /* 按鈕文字不換行 */
-    .actions .btn, .theme-btn {
-      white-space: nowrap;
-    }
-
-    /* 深色模式切換鈕 (仿圖二：圓角框線) */
-    .theme-btn {
-      background: transparent;
-      border: 1px solid var(--line);
-      color: var(--ink);
-      border-radius: 20px;
-      padding: 5px 12px;
-      font-size: 14px;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      gap: 4px;
-    }
-    .theme-btn:hover { background: var(--table-stripe); }
-
-    /* ============================================================
-       響應式設計 (手機/平板) - 模擬圖二結構
-       ============================================================ */
-    @media (max-width: 1100px) {
-        .topbar {
-            flex-direction: column; /* 垂直排列 */
-            align-items: stretch; /* 寬度佔滿 */
-            padding: 10px;
-            gap: 10px;
-        }
-
-        /* 品牌置中或靠左 */
-        .brand {
-            justify-content: center;
-            margin-bottom: 5px;
-        }
-
-        /* 主選單：橫向捲軸模式 */
-        .nav-links {
-            width: 100%;
-            overflow-x: auto; /* 開啟捲軸 */
-            justify-content: flex-start;
-            gap: 25px; /* 增加間距讓手指好點 */
-            padding-bottom: 8px; /* 留位置給捲軸 */
-            border-bottom: 1px solid var(--line); /* 分隔線 */
-            
-            /* 平滑滾動 */
-            -webkit-overflow-scrolling: touch; 
-        }
-
-        /* 自訂捲軸樣式 (仿圖二：灰色圓角) */
-        .nav-links::-webkit-scrollbar {
-            height: 6px;
-        }
-        .nav-links::-webkit-scrollbar-track {
-            background: #f1f1f1; /* 淺灰軌道 */
-            border-radius: 3px;
-        }
-        .nav-links::-webkit-scrollbar-thumb {
-            background: #888; /* 深灰拉桿 */
-            border-radius: 3px;
-        }
-        /* 深色模式下的捲軸適配 */
-        [data-theme="dark"] .nav-links::-webkit-scrollbar-track { background: #333; }
-        [data-theme="dark"] .nav-links::-webkit-scrollbar-thumb { background: #666; }
-
-        /* 工具列：自動換行，置中排列 */
-        .actions {
-            width: 100%;
-            justify-content: center;
-            flex-wrap: wrap;
-            gap: 8px;
-            margin-top: 5px;
-        }
-        
-        /* 手機版按鈕微調 */
-        .actions .btn.pill, .theme-btn {
-            font-size: 13px;
-            padding: 6px 10px;
-        }
-    }
-
-    /* ============================================================
-       計算機專用樣式
-       ============================================================ */
+    /* 原版排版：保留 grid-2 與寬度微調 */
     .grid-2{
       display: grid;
       grid-template-columns: 2.2fr 1.3fr;
@@ -175,15 +34,12 @@
 
     /* 會員彈窗樣式 */
     .modal-overlay { 
-        position: fixed; 
-        top: 0; left: 0; 
+        position: fixed; top: 0; left: 0; 
         width: 100%; height: 100%; 
         background: rgba(47,47,32,0.6); 
         backdrop-filter: blur(3px); 
         z-index: 2000; 
-        display: flex; 
-        justify-content: center; 
-        align-items: center; 
+        display: flex; justify-content: center; align-items: center; 
         padding: 20px; 
     }
     .modal-content { 
@@ -191,25 +47,105 @@
         border: 1px solid var(--line); 
         border-radius: 12px; 
         padding: 24px; 
-        width: 100%; 
-        max-width: 420px; 
+        width: 100%; max-width: 420px; 
         box-shadow: 0 10px 25px rgba(0,0,0,0.15); 
-        text-align: center; 
-        color: var(--ink);
+        text-align: center; color: var(--ink);
     }
     .modal-content h3 { color: var(--green); margin-top: 0; }
     .modal-content input { 
-        width: 100%; 
-        padding: 10px; 
+        width: 100%; padding: 10px; 
         border: 1px solid var(--line); 
         background: var(--input-bg); 
         color: var(--ink);
-        border-radius: 8px; 
-        font-size: 16px; 
-        margin-top: 4px; 
-        box-sizing: border-box; 
+        border-radius: 8px; font-size: 16px; 
+        margin-top: 4px; box-sizing: border-box; 
     }
     .modal-actions { margin-top: 20px; }
+
+    /* ============================================================
+       [修正 v2] Header 佈局與捲軸樣式
+       ============================================================ */
+    
+    .topbar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        width: 100%;
+        max-width: 100vw;
+        box-sizing: border-box;
+        overflow: hidden; 
+        /* 增加一點高度緩衝以免捲軸遮到文字 */
+        padding-bottom: 2px; 
+    }
+
+    /* 1. 確保 Brand 永遠顯示，不會被壓縮 */
+    .brand {
+        flex-shrink: 0; 
+        display: flex;
+        align-items: center;
+        margin-right: 12px;
+        /* 確保標題不換行 */
+        white-space: nowrap; 
+    }
+
+    .nav-links {
+        flex-shrink: 1;
+        overflow: hidden; 
+    }
+
+    /* 2. Actions 工具列：使用 flex-grow 佔滿剩餘空間，並允許內部捲動 */
+    .actions {
+        display: flex;
+        align-items: center;
+        gap: 8px; 
+        
+        /* 關鍵：允許橫向捲動 */
+        overflow-x: auto;       
+        white-space: nowrap;    
+        
+        /* 關鍵：佔據剩餘空間，但 min-width: 0 防止把父層撐爆 (導致 Brand 消失的主因) */
+        flex-grow: 1;           
+        min-width: 0;
+
+        /* 預設靠右對齊 (大螢幕) */
+        justify-content: flex-end; 
+        
+        padding: 4px 0; /* 上下留一點空間給陰影或選取框 */
+    }
+
+    /* === 3. 自定義橫向捲軸樣式 (讓它出現但不要太醜) === */
+    .actions::-webkit-scrollbar {
+        height: 6px; /* 捲軸高度 */
+    }
+    .actions::-webkit-scrollbar-track {
+        background: transparent; 
+    }
+    .actions::-webkit-scrollbar-thumb {
+        background-color: var(--line); /* 使用變數配合深淺模式 */
+        border-radius: 10px;
+    }
+    .actions::-webkit-scrollbar-thumb:hover {
+        background-color: var(--ink);
+    }
+
+    /* 防止內部按鈕變形 */
+    .actions .btn, 
+    .actions .theme-btn, 
+    .actions > div,
+    .actions button {
+        flex-shrink: 0; 
+    }
+
+    /* 手機與平板調整 */
+    @media (max-width: 1024px) {
+        /* 隱藏中間選單，讓空間給按鈕 */
+        .nav-links { display: none; }
+        
+        .actions {
+            /* 手機版靠左對齊，方便從 Logo 旁開始滑動 */
+            justify-content: flex-start;
+        }
+    }
   </style>
 </head>
 <body data-page="calculator"> 
@@ -228,7 +164,6 @@
       <span class="site-title" id="siteTitle" data-sync-title>額度計算機</span>
     </div>
     
-    <!-- 主選單：橫向卷軸容器 -->
     <nav class="nav-links" aria-label="主選單">
       <a href="calculator.html">額度計算機</a>
       <a href="payroll.html">薪資計算機</a>
@@ -239,14 +174,14 @@
       <a href="about.html">關於我們</a>
     </nav>
     
-    <!-- 右側工具列：整合所有功能按鈕 -->
+    <!-- 右側按鈕區：包含深色模式與功能按鈕 -->
     <div class="actions">
-      <!-- 1. 深色模式切換 (仿圖二樣式) -->
+      <!-- 深色模式切換按鈕 -->
       <button id="darkToggle" class="theme-btn">
           <span class="icon">🌙</span> <span class="txt">深色</span>
       </button>
 
-      <!-- 2. 計算機專用按鈕 -->
+      <!-- 計算機專用功能按鈕 -->
       <button class="btn pill btn-orange" id="btnUnitToggle" type="button" data-unit="B">B單位</button>
       <button class="btn pill btn-green" id="btnReset" type="button">重置</button>
       <button class="btn pill btn-gray" id="btnPrint" type="button" onclick="window.print()">列印</button>
@@ -254,18 +189,15 @@
       <!-- 分隔線 -->
       <div style="width: 1px; height: 20px; background: var(--line); margin: 0 4px;"></div>
       
-      <!-- 3. 會員登入/狀態區 -->
+      <!-- 登入與會員區 -->
       <button class="btn pill" style="background:#4285F4; color:white;" id="btnLogin" type="button">Google 登入</button>
       
-      <div id="member-area" style="display:none; align-items: center; gap:6px;">
-          <!-- 使用者名稱 -->
-          <span id="userDisplay" style="font-size: 14px; font-weight: bold; color: var(--ink);">hori</span>
-          
-          <!-- 按鈕群組 (仿圖二配色) -->
-          <a href="admin.html" id="btnAdminLink" class="btn pill" style="display:none; background:#673AB7; color:white; font-size:13px; padding:6px 12px; text-decoration:none;">管理後台</a>
-          <button class="btn pill" style="background:#6B7280; color:white; font-size:13px; padding:6px 12px;" id="btnEditProfile" type="button">修改資料</button>
-          <button class="btn pill" style="background:#34A853; color:white;" id="btnSaveCloud" type="button">儲存</button>
-          <button class="btn pill" style="background:#EF4444; color:white; font-size:13px; padding:6px 12px;" id="btnLogout" type="button">登出</button>
+      <div id="member-area" style="display:none; align-items: center; gap:5px;">
+          <span id="userDisplay" style="font-size: 13px; font-weight: bold; color: var(--ink); margin-right: 4px;"></span>
+          <a href="admin.html" id="btnAdminLink" class="btn pill" style="display:none;background:#673AB7;color:white;font-size:12px;padding:4px 10px;text-decoration:none">後台</a>
+          <button class="btn pill" style="background:#777; color:white; font-size:12px; padding:4px 10px;" id="btnEditProfile" type="button">修改</button>
+          <button class="btn pill" style="background:#34A853; color:white; font-size:12px; padding:4px 10px;" id="btnSaveCloud" type="button">儲存</button>
+          <button class="btn pill" style="background:#EA4335; color:white;" id="btnLogout" type="button">登出</button>
       </div>
     </div>
   </header>
@@ -368,11 +300,11 @@
       <h3>歡迎加入！請完善資料</h3>
       <div style="text-align:left; margin-bottom:12px;">
         <label style="font-weight:700; font-size:15px;">姓名 / 稱呼</label>
-        <input id="pf-name">
+        <input id="pf-name" placeholder="例如：王小明">
       </div>
       <div style="text-align:left; margin-bottom:12px;">
         <label style="font-weight:700; font-size:15px;">使用者年齡</label>
-        <input id="pf-age" type="number">
+        <input id="pf-age" type="number" placeholder="例如：65">
       </div>
       <div class="modal-actions">
         <button id="btn-save-profile" class="btn pill btn-green" style="width:100%">儲存並開始使用</button>
@@ -406,16 +338,17 @@
         darkToggle: document.getElementById('darkToggle')
     };
 
+    // --- 深色模式功能 ---
     if (dom.darkToggle) {
         const icon = dom.darkToggle.querySelector('.icon');
         const txt = dom.darkToggle.querySelector('.txt');
         const updateBtnUI = (theme) => {
-            if(theme === 'dark') {
+            if(theme === 'dark'){
                 icon.textContent = '☀️';
-                if(txt) txt.textContent = '淺色';
+                txt.textContent = '淺色';
             } else {
                 icon.textContent = '🌙';
-                if(txt) txt.textContent = '深色';
+                txt.textContent = '深色';
             }
         };
         updateBtnUI(document.documentElement.getAttribute('data-theme'));
@@ -428,22 +361,29 @@
         });
     }
 
-    if(dom.login) dom.login.onclick = () => signInWithPopup(auth,provider);
+    // --- Firebase 登入與資料邏輯 ---
+    if(dom.login) dom.login.onclick = () => signInWithPopup(auth,provider).catch(e=>alert(e.message));
     if(dom.logout) dom.logout.onclick = () => signOut(auth).then(()=>location.reload());
     
     onAuthStateChanged(auth, async u=>{
       if(u){
         dom.login.style.display='none'; dom.member.style.display='flex'; dom.user.textContent=u.displayName||u.email;
-        const s=await getDoc(doc(db,"users",u.uid));
-        if(s.exists()){ if(s.data().name) dom.user.textContent=s.data().name; }
-        else{ dom.modal.style.display='flex'; }
-        const a=await getDoc(doc(db,"admins",u.email)); if(a.exists()) dom.admin.style.display='inline-block';
-      }else{ dom.login.style.display='block'; dom.member.style.display='none'; }
+        try {
+            const s=await getDoc(doc(db,"users",u.uid));
+            if(s.exists()){ 
+                if(s.data().name) dom.user.textContent=s.data().name; 
+            } else { 
+                dom.name.value = u.displayName || "";
+                dom.modal.style.display='flex'; 
+            }
+            const a=await getDoc(doc(db,"admins",u.email)); if(a.exists() && dom.admin) dom.admin.style.display='inline-block';
+        } catch(e) { console.error(e); }
+      }else{ dom.login.style.display='block'; dom.member.style.display='none'; if(dom.admin) dom.admin.style.display='none'; }
     });
 
     if(dom.edit) dom.edit.onclick = async () => {
       const s = await getDoc(doc(db, "users", auth.currentUser.uid));
-      if(s.exists()){ const d = s.data(); dom.name.value = d.name; dom.age.value = d.age; dom.modal.style.display = 'flex'; }
+      if(s.exists()){ const d = s.data(); dom.name.value = d.name || ""; dom.age.value = d.age || ""; dom.title.textContent="修改個人資料"; dom.modal.style.display = 'flex'; }
     };
     
     if(dom.save) dom.save.onclick = async () => {
@@ -454,9 +394,17 @@
 
     if(dom.cloud) dom.cloud.onclick = async () => {
        const cms=document.querySelector('input[name="cms"]:checked'), total=document.getElementById('sumGrand');
-       await addDoc(collection(db,"care_records"),{uid:auth.currentUser.uid,memberName:dom.user.textContent,email:auth.currentUser.email,cmsLevel:cms?cms.value:"0",grandTotal:total?total.textContent:"0",createdAt:serverTimestamp()});
-       alert("備份成功");
+       try {
+           await addDoc(collection(db,"care_records"),{uid:auth.currentUser.uid,memberName:dom.user.textContent,email:auth.currentUser.email,cmsLevel:cms?cms.value:"0",grandTotal:total?total.textContent:"0",createdAt:serverTimestamp()});
+           alert("備份成功");
+       } catch(e) { alert("儲存失敗: " + e.message); }
     };
+
+    if(dom.modal) dom.modal.addEventListener('click', (e) => {
+      if (e.target === dom.modal && auth.currentUser && dom.user.textContent && dom.user.textContent !== auth.currentUser.email) {
+          dom.modal.style.display = 'none';
+      }
+    });
   </script>
 </body>
 </html>
