@@ -20,7 +20,7 @@
   <script src="script.js" defer></script>
 
   <style>
-    /* 原版排版：保留 grid-2 與寬度微調 */
+    /* 計算機專用排版：保留 grid-2 與寬度微調 */
     .grid-2{
       display: grid;
       grid-template-columns: 2.2fr 1.3fr;
@@ -32,14 +32,17 @@
     
     #addonPlaceholders{ display:none; }
 
-    /* 會員彈窗樣式 */
+    /* 彈窗樣式 - 引用變數支援深色模式 (與參考頁面一致) */
     .modal-overlay { 
-        position: fixed; top: 0; left: 0; 
+        position: fixed; 
+        top: 0; left: 0; 
         width: 100%; height: 100%; 
         background: rgba(47,47,32,0.6); 
         backdrop-filter: blur(3px); 
         z-index: 2000; 
-        display: flex; justify-content: center; align-items: center; 
+        display: flex; 
+        justify-content: center; 
+        align-items: center; 
         padding: 20px; 
     }
     .modal-content { 
@@ -47,146 +50,25 @@
         border: 1px solid var(--line); 
         border-radius: 12px; 
         padding: 24px; 
-        width: 100%; max-width: 420px; 
+        width: 100%; 
+        max-width: 420px; 
         box-shadow: 0 10px 25px rgba(0,0,0,0.15); 
-        text-align: center; color: var(--ink);
+        text-align: center; 
+        color: var(--ink);
     }
     .modal-content h3 { color: var(--green); margin-top: 0; }
     .modal-content input { 
-        width: 100%; padding: 10px; 
+        width: 100%; 
+        padding: 10px; 
         border: 1px solid var(--line); 
         background: var(--input-bg); 
         color: var(--ink);
-        border-radius: 8px; font-size: 16px; 
-        margin-top: 4px; box-sizing: border-box; 
+        border-radius: 8px; 
+        font-size: 16px; 
+        margin-top: 4px; 
+        box-sizing: border-box; 
     }
     .modal-actions { margin-top: 20px; }
-
-    /* ============================================================
-       [修正 v3] 
-       1. 解決重疊：使用 flex-wrap: wrap
-       2. 模仿截圖：小螢幕時分行顯示，並顯示捲軸
-       3. 縮小間距：gap: 4px
-       ============================================================ */
-    
-    .topbar {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        /* 關鍵：允許換行，防止主選單與按鈕重疊 */
-        flex-wrap: wrap; 
-        width: 100%;
-        max-width: 100vw;
-        box-sizing: border-box;
-        padding: 8px 10px; /* 增加一點內距 */
-        gap: 10px; /* 元素之間的間隔 */
-    }
-
-    /* Logo 區域 */
-    .brand {
-        flex-shrink: 0; 
-        display: flex;
-        align-items: center;
-        margin-right: auto; /* 在大螢幕時將其他元素推到右邊 */
-        white-space: nowrap; 
-    }
-
-    /* 中間導覽列 */
-    .nav-links {
-        display: flex;
-        gap: 15px;
-        flex-shrink: 1; /* 允許縮小 */
-        white-space: nowrap;
-        overflow-x: auto; /* 允許橫向捲動 */
-        
-        /* 捲軸樣式設定 */
-        scrollbar-width: thin;
-        scrollbar-color: #888 transparent;
-        padding-bottom: 4px; /* 預留捲軸空間 */
-    }
-
-    /* 右側按鈕區 */
-    .actions {
-        display: flex;
-        align-items: center;
-        
-        /* 縮小間距至 4px (依照要求) */
-        gap: 4px; 
-        
-        overflow-x: auto;       
-        white-space: nowrap;    
-        flex-shrink: 0; /* 防止按鈕被壓縮 */
-        
-        /* 捲軸樣式設定 */
-        scrollbar-width: thin;
-        scrollbar-color: #888 transparent;
-        padding-bottom: 4px; 
-    }
-
-    /* 按鈕微調：縮小 padding 以適應窄間距 */
-    .actions .btn.pill, 
-    .actions .theme-btn {
-        padding: 4px 10px; /* 稍微縮小內距 */
-        font-size: 13px;
-        flex-shrink: 0;
-    }
-
-    /* === 通用捲軸樣式 (Chrome/Safari/Edge) === */
-    .nav-links::-webkit-scrollbar,
-    .actions::-webkit-scrollbar {
-        height: 8px; /* 明顯的捲軸高度 */
-        display: block; /* 強制顯示 */
-    }
-    .nav-links::-webkit-scrollbar-track,
-    .actions::-webkit-scrollbar-track {
-        background: rgba(0,0,0,0.05); 
-        border-radius: 4px;
-    }
-    .nav-links::-webkit-scrollbar-thumb,
-    .actions::-webkit-scrollbar-thumb {
-        background-color: #888; /* 灰色捲軸 (如截圖) */
-        border-radius: 4px;
-        border: 2px solid transparent; /* 讓捲軸看起來圓潤一點 */
-        background-clip: content-box;
-    }
-    .nav-links::-webkit-scrollbar-thumb:hover,
-    .actions::-webkit-scrollbar-thumb:hover {
-        background-color: #555;
-    }
-
-    /* === RWD 斷點設定：模擬截圖效果 === */
-    /* 當螢幕寬度不足以容納所有內容時 (例如平板或手機) */
-    @media (max-width: 1200px) {
-        .topbar {
-            /* 改為垂直排列，不再嘗試塞在同一行 */
-            flex-direction: column; 
-            align-items: flex-start; /* 靠左對齊 */
-            gap: 5px;
-        }
-
-        .brand {
-            margin-bottom: 5px;
-        }
-
-        .nav-links {
-            /* 讓導覽列佔滿寬度，形成獨立的一行 (截圖中的上方區塊) */
-            width: 100%;
-            justify-content: flex-start;
-            order: 2; /* 順序：Brand -> Nav -> Actions */
-            margin-bottom: 5px;
-            border-bottom: 1px solid var(--line); /* 加上分隔線更像截圖 */
-            padding-bottom: 8px; /* 讓捲軸與線條有距離 */
-        }
-
-        .actions {
-            /* 讓按鈕區佔滿寬度，形成獨立的一行 (截圖中的下方區塊) */
-            width: 100%;
-            justify-content: flex-start;
-            order: 3;
-            /* 確保不會重疊到選單 */
-            margin-top: 2px;
-        }
-    }
   </style>
 </head>
 <body data-page="calculator"> 
@@ -215,31 +97,33 @@
       <a href="about.html">關於我們</a>
     </nav>
     
-    <!-- 右側按鈕區 -->
-    <div class="actions">
-      <!-- 深色模式切換按鈕 -->
-      <button id="darkToggle" class="theme-btn">
-          <span class="icon">🌙</span> <span class="txt">深色</span>
-      </button>
+    <!-- 右側按鈕區：結構與參考頁面完全一致，僅增加計算機按鈕 -->
+    <div class="actions" style="align-items: center; gap: 8px;">
+        <!-- 深色模式切換按鈕 -->
+        <button id="darkToggle" class="theme-btn">
+            <span class="icon">🌙</span> <span class="txt">深色</span>
+        </button>
 
-      <!-- 計算機專用功能按鈕 -->
-      <button class="btn pill btn-orange" id="btnUnitToggle" type="button" data-unit="B">B單位</button>
-      <button class="btn pill btn-green" id="btnReset" type="button">重置</button>
-      <button class="btn pill btn-gray" id="btnPrint" type="button" onclick="window.print()">列印</button>
-      
-      <!-- 分隔線 -->
-      <div style="width: 1px; height: 20px; background: var(--line); margin: 0 2px;"></div>
-      
-      <!-- 登入與會員區 -->
-      <button class="btn pill" style="background:#4285F4; color:white;" id="btnLogin" type="button">Google 登入</button>
-      
-      <div id="member-area" style="display:none; align-items: center; gap:4px;">
-          <span id="userDisplay" style="font-size: 13px; font-weight: bold; color: var(--ink); margin-right: 4px;"></span>
-          <a href="admin.html" id="btnAdminLink" class="btn pill" style="display:none;background:#673AB7;color:white;font-size:12px;padding:4px 10px;text-decoration:none">後台</a>
-          <button class="btn pill" style="background:#777; color:white; font-size:12px; padding:4px 10px;" id="btnEditProfile" type="button">修改</button>
-          <button class="btn pill" style="background:#34A853; color:white; font-size:12px; padding:4px 10px;" id="btnSaveCloud" type="button">儲存</button>
-          <button class="btn pill" style="background:#EA4335; color:white;" id="btnLogout" type="button">登出</button>
-      </div>
+        <!-- [計算機專用] 功能按鈕區 -->
+        <button class="btn pill btn-orange" id="btnUnitToggle" type="button" data-unit="B">B單位</button>
+        <button class="btn pill btn-green" id="btnReset" type="button">重置</button>
+        <button class="btn pill btn-gray" id="btnPrint" type="button" onclick="window.print()">列印</button>
+
+        <!-- 分隔線 -->
+        <div style="width: 1px; height: 20px; background: var(--line); margin: 0 2px;"></div>
+
+        <!-- 登入按鈕 -->
+        <button class="btn pill" style="background:#4285F4; color:white;" id="btnLogin" type="button">Google 登入</button>
+        
+        <!-- 會員區塊 -->
+        <div id="member-area" style="display:none; align-items: center; gap:5px;">
+            <span id="userDisplay" style="font-size: 13px; font-weight: bold; color: var(--ink); margin-right: 4px;"></span>
+            <a href="admin.html" id="btnAdminLink" class="btn pill" style="background:#673AB7; color:white; font-size:12px; padding:4px 10px; text-decoration:none; display:none;">管理後台</a>
+            <button class="btn pill" style="background:#777; color:white; font-size:12px; padding:4px 10px;" id="btnEditProfile" type="button">修改資料</button>
+            <!-- [計算機專用] 儲存按鈕 -->
+            <button class="btn pill" style="background:#34A853; color:white; font-size:12px; padding:4px 10px;" id="btnSaveCloud" type="button">儲存</button>
+            <button class="btn pill" style="background:#EA4335; color:white;" id="btnLogout" type="button">登出</button>
+        </div>
     </div>
   </header>
   <div class="divider"></div>
@@ -433,6 +317,7 @@
       dom.modal.style.display='none'; dom.user.textContent=n;
     };
 
+    // 計算機特有的：儲存計算結果到雲端
     if(dom.cloud) dom.cloud.onclick = async () => {
        const cms=document.querySelector('input[name="cms"]:checked'), total=document.getElementById('sumGrand');
        try {
