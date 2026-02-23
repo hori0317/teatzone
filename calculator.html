@@ -62,80 +62,38 @@
     .modal-actions { margin-top: 20px; }
 
     /* ============================================================
-       Header 佈局修正：
+       工具列按鈕微調：
+       將主選單完全交由 style.css 控制以保證全站 100% 一致。
+       這裡僅縮小右側工具列按鈕與間距，避免壓到主選單。
        ============================================================ */
-    
     .actions {
         display: flex;
         align-items: center;
-        /* 縮小工具列按鈕間的距離 */
         gap: 5px; 
-        
         overflow-x: auto;       
         white-space: nowrap;    
         min-width: 0;
         scrollbar-width: thin;
-        padding-bottom: 4px; 
     }
 
-    /* === 關鍵修正：強制縮小工具列內的所有按鈕，避免壓迫主選單 === */
+    /* 縮小按鈕本體 */
     .actions .btn, 
     .actions .theme-btn {
-        padding: 4px 10px !important; /* 縮小按鈕內距 */
-        font-size: 13px !important;   /* 縮小按鈕文字 */
+        padding: 4px 10px !important; 
+        font-size: 13px !important;   
         flex-shrink: 0; 
         line-height: 1.2;
     }
     
-    /* 針對登入後的會員區塊再次微調間距與字體 */
-    #member-area {
-        gap: 4px !important; 
-    }
-    #userDisplay {
-        font-size: 12px !important; 
-        margin-right: 2px !important;
-    }
+    /* 縮小登入後會員區的間距 */
+    #member-area { gap: 4px !important; }
+    #userDisplay { font-size: 12px !important; margin-right: 2px !important; }
 
-    /* 隱藏/美化橫向捲軸 */
+    /* 工具列捲軸樣式 */
     .actions::-webkit-scrollbar { height: 6px; }
     .actions::-webkit-scrollbar-track { background: transparent; }
-    .actions::-webkit-scrollbar-thumb { 
-        background-color: var(--line); 
-        border-radius: 10px; 
-    }
-    .actions::-webkit-scrollbar-thumb:hover { 
-        background-color: var(--ink); 
-    }
-
-    /* RWD: 小螢幕 (<1200px) 時強制分三行 */
-    @media (max-width: 1200px) {
-        header.topbar { 
-            flex-direction: column; 
-            align-items: flex-start; 
-            gap: 5px; 
-            height: auto;
-            padding: 8px 10px;
-        }
-        .brand { margin-bottom: 5px; margin-right: 0; }
-        
-        /* 選單獨立一行 */
-        .nav-links { 
-            width: 100%; 
-            order: 2; 
-            margin-bottom: 5px; 
-            padding-bottom: 8px;
-            border-bottom: 1px solid var(--line); 
-            overflow-x: auto;
-            white-space: nowrap;
-        }
-        
-        /* 工具列獨立一行 */
-        .actions { 
-            width: 100%; 
-            order: 3; 
-            justify-content: flex-start; 
-        }
-    }
+    .actions::-webkit-scrollbar-thumb { background-color: var(--line); border-radius: 10px; }
+    .actions::-webkit-scrollbar-thumb:hover { background-color: var(--ink); }
   </style>
 </head>
 <body data-page="calculator"> 
