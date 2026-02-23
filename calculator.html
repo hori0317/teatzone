@@ -62,7 +62,9 @@
     .modal-actions { margin-top: 20px; }
 
     /* ============================================================
-       [修正] Header 樣式：符合圖一 (選單) 與 圖二 (工具列)
+       Header 樣式修正
+       1. 主選單：寬鬆間距 (依照關於我們頁面)
+       2. 工具列：緊湊間距 (依照計算機需求)
        ============================================================ */
     
     .topbar {
@@ -85,13 +87,15 @@
         white-space: nowrap; 
     }
 
-    /* 圖一：主選單樣式 (維持原狀，不壓縮) */
+    /* 【主選單樣式】依照一般頁面標準 */
     .nav-links {
         display: flex;
-        gap: 20px; /* 維持較寬間距 */
+        /* 使用較大的間距，與「關於我們」頁面一致 */
+        gap: 20px; 
+        
         flex-shrink: 1;
-        white-space: nowrap; /* 禁止文字換行 */
-        font-weight: bold;   /* 符合圖一 */
+        white-space: nowrap; 
+        font-weight: bold;
         
         overflow-x: auto;
         scrollbar-width: thin;
@@ -99,12 +103,12 @@
         padding-bottom: 4px;
     }
 
-    /* 圖二：工具列樣式 (縮窄但文字不壓縮) */
+    /* 【工具列樣式】緊湊版 */
     .actions {
         display: flex;
         align-items: center;
         
-        /* 縮窄間距至 4px，符合圖二 */
+        /* 緊湊間距 */
         gap: 4px; 
         
         overflow-x: auto;       
@@ -116,16 +120,12 @@
         padding-bottom: 4px; 
     }
 
-    /* 工具列按鈕樣式調整 */
+    /* 工具列按鈕樣式 (緊湊) */
     .actions .btn.pill, 
     .actions .theme-btn {
-        /* 適度縮小內距，但保留足夠空間顯示文字 */
         padding: 4px 10px; 
         font-size: 13px;
-        
-        /* 關鍵：防止按鈕被壓縮導致文字消失或變形 */
         flex-shrink: 0; 
-        
         white-space: nowrap;
         display: inline-flex;
         align-items: center;
@@ -141,25 +141,25 @@
         flex-shrink: 0;
     }
 
-    /* 捲軸樣式 (Chrome/Safari) */
+    /* 捲軸樣式 */
     .nav-links::-webkit-scrollbar, .actions::-webkit-scrollbar { height: 8px; display: block; }
     .nav-links::-webkit-scrollbar-track, .actions::-webkit-scrollbar-track { background: rgba(0,0,0,0.05); border-radius: 4px; }
     .nav-links::-webkit-scrollbar-thumb, .actions::-webkit-scrollbar-thumb { background-color: #999; border-radius: 4px; border: 2px solid transparent; background-clip: content-box; }
 
-    /* RWD: 小螢幕 (<1200px) 時強制分行，模擬截圖效果 */
+    /* RWD: 小螢幕 (<1200px) 時強制分行 */
     @media (max-width: 1200px) {
         .topbar { flex-direction: column; align-items: flex-start; gap: 5px; }
         .brand { margin-bottom: 5px; }
         
-        /* 選單獨立一行，可滑動 */
+        /* 選單獨立一行 */
         .nav-links { 
             width: 100%; 
             order: 2; 
             margin-bottom: 5px; 
-            border-bottom: 1px solid var(--line); /* 分隔線 */
+            border-bottom: 1px solid var(--line); 
         }
         
-        /* 工具列獨立一行，可滑動 */
+        /* 工具列獨立一行 */
         .actions { 
             width: 100%; 
             order: 3; 
@@ -194,27 +194,25 @@
       <a href="about.html">關於我們</a>
     </nav>
     
-    <!-- 右側工具列 -->
+    <!-- 右側工具列 (緊湊版) -->
     <div class="actions">
       <button id="darkToggle" class="theme-btn">
           <span class="icon">🌙</span><span class="txt">深色</span>
       </button>
 
-      <button class="btn pill btn-orange" id="btnUnitToggle" type="button" data-unit="B">A單位</button> <!-- 依圖示改為A單位 -->
+      <button class="btn pill btn-orange" id="btnUnitToggle" type="button" data-unit="B">A單位</button>
       <button class="btn pill btn-green" id="btnReset" type="button">重置</button>
       <button class="btn pill btn-gray" id="btnPrint" type="button" onclick="window.print()">列印</button>
 
       <div class="divider-v"></div>
-      <span style="font-weight:bold; font-size:13px; color:var(--ink); margin-right:2px;">hori</span> <!-- 依圖示加入名稱 -->
+      <span style="font-weight:bold; font-size:13px; color:var(--ink); margin-right:2px;">hori</span>
 
       <a href="admin.html" id="btnAdminLink" class="btn pill" style="background:#673AB7; color:white; text-decoration:none;">後台</a>
       <button class="btn pill" style="background:#777; color:white;" id="btnEditProfile" type="button">修改</button>
       <button class="btn pill" style="background:#34A853; color:white;" id="btnSaveCloud" type="button">儲存</button>
       <button class="btn pill" style="background:#EA4335; color:white;" id="btnLogout" type="button">登出</button>
       
-      <!-- 隱藏區塊：登入按鈕 (登入後通常隱藏) -->
       <button class="btn pill" style="background:#4285F4; color:white; display:none;" id="btnLogin" type="button">Google 登入</button>
-      <!-- 隱藏的會員容器 (保留邏輯相容性) -->
       <div id="member-area" style="display:none;"></div> 
     </div>
   </header>
@@ -342,8 +340,8 @@
     const dom={ 
         login:document.getElementById('btnLogin'), 
         logout:document.getElementById('btnLogout'), 
-        member:document.getElementById('member-area'), // 保留參考用
-        user:document.getElementById('userDisplay'), // 如果找不到會為 null，注意處理
+        member:document.getElementById('member-area'),
+        user:document.getElementById('userDisplay'), 
         admin:document.getElementById('btnAdminLink'), 
         edit:document.getElementById('btnEditProfile'), 
         modal:document.getElementById('profile-modal'), 
@@ -355,7 +353,6 @@
         darkToggle: document.getElementById('darkToggle')
     };
 
-    // --- 深色模式功能 ---
     if (dom.darkToggle) {
         const icon = dom.darkToggle.querySelector('.icon');
         const txt = dom.darkToggle.querySelector('.txt');
@@ -378,13 +375,10 @@
         });
     }
 
-    // --- Firebase 登入與資料邏輯 ---
     if(dom.login) dom.login.onclick = () => signInWithPopup(auth,provider).catch(e=>alert(e.message));
     if(dom.logout) dom.logout.onclick = () => signOut(auth).then(()=>location.reload());
     
-    // 簡單的顯示切換邏輯
     function toggleMemberUI(isLoggedIn) {
-        // 這裡將原本的 member-area 拆散到工具列中了，所以我們針對個別按鈕控制
         const ids = ['btnAdminLink', 'btnEditProfile', 'btnSaveCloud', 'btnLogout'];
         ids.forEach(id => {
             const el = document.getElementById(id);
@@ -396,7 +390,6 @@
     onAuthStateChanged(auth, async u=>{
       if(u){
         toggleMemberUI(true);
-        // 若有顯示名稱的區塊
         const displayEl = document.querySelector('.actions span[style*="font-weight:bold"]');
         if(displayEl) displayEl.textContent = u.displayName || u.email;
 
@@ -408,7 +401,6 @@
                 dom.name.value = u.displayName || "";
                 dom.modal.style.display='flex'; 
             }
-            // 檢查管理員權限
             const a=await getDoc(doc(db,"admins",u.email)); 
             const adminBtn = document.getElementById('btnAdminLink');
             if(adminBtn) adminBtn.style.display = a.exists() ? 'inline-flex' : 'none';
@@ -428,7 +420,6 @@
       const n=dom.name.value, a=dom.age.value; if(!n||!a) return alert("請填寫完整");
       await setDoc(doc(db,"users",auth.currentUser.uid),{name:n,age:a,email:auth.currentUser.email,lastUpdated:serverTimestamp()},{merge:true});
       dom.modal.style.display='none'; 
-      // 更新顯示名稱
       const displayEl = document.querySelector('.actions span[style*="font-weight:bold"]');
       if(displayEl) displayEl.textContent = n;
     };
@@ -442,7 +433,6 @@
     };
 
     if(dom.modal) dom.modal.addEventListener('click', (e) => {
-      // 簡單判斷：有登入才允許點背景關閉
       if (e.target === dom.modal && auth.currentUser) {
           dom.modal.style.display = 'none';
       }
