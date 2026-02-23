@@ -9,7 +9,7 @@
   <link rel="stylesheet" href="style.css" />
   
   <script>
-    /* 立即檢查主題設定，防止頁面閃爍 */
+    /* 立即檢查主題設定 */
     (function() {
         const savedTheme = localStorage.getItem('theme') || 'light';
         document.documentElement.setAttribute('data-theme', savedTheme);
@@ -21,54 +21,142 @@
 
   <style>
     /* ============================================================
-       導航欄與工具列優化 (響應式橫向捲軸)
+       導航欄與工具列優化 (仿圖二樣式)
        ============================================================ */
+    
+    /* 導航列整體容器 */
     .topbar {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      /* 確保內容不換行，讓子元素決定寬度 */
-      flex-wrap: nowrap; 
-      overflow: visible;
+      flex-wrap: nowrap;
+      padding: 10px 20px;
+      gap: 15px;
     }
 
-    /* 主選單：橫向捲軸設定 */
+    /* 品牌 Logo */
+    .brand {
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    /* 主選單：基本樣式 */
     .nav-links {
       display: flex;
       align-items: center;
-      gap: 20px; /* 保持舒適間距 */
-      overflow-x: auto; /* 內容過多時顯示橫向捲軸 */
-      white-space: nowrap; /* 強制不換行 */
+      gap: 20px;
       flex-grow: 1;
-      margin: 0 15px;
-      padding-bottom: 2px; /* 預留捲軸空間或避免裁切 */
-      
-      /* 隱藏捲軸但保留功能 (Chrome/Safari) */
-      scrollbar-width: none; /* Firefox */
-      -ms-overflow-style: none; /* IE/Edge */
-    }
-    .nav-links::-webkit-scrollbar { 
-      display: none; 
+      white-space: nowrap;
     }
 
-    /* 工具列：間距縮小但文字不壓縮 */
+    /* 主選單連結樣式 (仿圖二：預設黑字，選中橘字橘底線) */
+    .nav-links a {
+      text-decoration: none;
+      color: var(--ink); /* 深色模式自動變色 */
+      font-weight: bold;
+      font-size: 16px;
+      padding: 8px 0;
+      border-bottom: 3px solid transparent;
+      transition: all 0.2s;
+    }
+
+    .nav-links a:hover,
+    .nav-links a.active,
+    body[data-page="calculator"] .nav-links a[href="calculator.html"] {
+      color: #F59E0B; /* 橘色文字 */
+      border-bottom-color: #F59E0B; /* 橘色底線 */
+    }
+
+    /* 工具列 (右側按鈕區) */
     .actions {
       display: flex;
       align-items: center;
-      gap: 6px; /* 縮小間距 */
-      flex-shrink: 0; /* 禁止被壓縮 */
+      gap: 6px; /* 緊湊間距 */
+      flex-shrink: 0;
     }
 
-    /* 按鈕文字強制不換行 */
-    .actions .btn, 
-    .theme-btn {
+    /* 按鈕文字不換行 */
+    .actions .btn, .theme-btn {
       white-space: nowrap;
     }
-    
-    /* 針對特小螢幕優化按鈕內距，但不隱藏文字 */
-    @media (max-width: 600px) {
-        .actions .btn.pill { padding: 6px 8px; font-size: 13px; }
-        .nav-links { gap: 15px; }
+
+    /* 深色模式切換鈕 (仿圖二：圓角框線) */
+    .theme-btn {
+      background: transparent;
+      border: 1px solid var(--line);
+      color: var(--ink);
+      border-radius: 20px;
+      padding: 5px 12px;
+      font-size: 14px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .theme-btn:hover { background: var(--table-stripe); }
+
+    /* ============================================================
+       響應式設計 (手機/平板) - 模擬圖二結構
+       ============================================================ */
+    @media (max-width: 1100px) {
+        .topbar {
+            flex-direction: column; /* 垂直排列 */
+            align-items: stretch; /* 寬度佔滿 */
+            padding: 10px;
+            gap: 10px;
+        }
+
+        /* 品牌置中或靠左 */
+        .brand {
+            justify-content: center;
+            margin-bottom: 5px;
+        }
+
+        /* 主選單：橫向捲軸模式 */
+        .nav-links {
+            width: 100%;
+            overflow-x: auto; /* 開啟捲軸 */
+            justify-content: flex-start;
+            gap: 25px; /* 增加間距讓手指好點 */
+            padding-bottom: 8px; /* 留位置給捲軸 */
+            border-bottom: 1px solid var(--line); /* 分隔線 */
+            
+            /* 平滑滾動 */
+            -webkit-overflow-scrolling: touch; 
+        }
+
+        /* 自訂捲軸樣式 (仿圖二：灰色圓角) */
+        .nav-links::-webkit-scrollbar {
+            height: 6px;
+        }
+        .nav-links::-webkit-scrollbar-track {
+            background: #f1f1f1; /* 淺灰軌道 */
+            border-radius: 3px;
+        }
+        .nav-links::-webkit-scrollbar-thumb {
+            background: #888; /* 深灰拉桿 */
+            border-radius: 3px;
+        }
+        /* 深色模式下的捲軸適配 */
+        [data-theme="dark"] .nav-links::-webkit-scrollbar-track { background: #333; }
+        [data-theme="dark"] .nav-links::-webkit-scrollbar-thumb { background: #666; }
+
+        /* 工具列：自動換行，置中排列 */
+        .actions {
+            width: 100%;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 5px;
+        }
+        
+        /* 手機版按鈕微調 */
+        .actions .btn.pill, .theme-btn {
+            font-size: 13px;
+            padding: 6px 10px;
+        }
     }
 
     /* ============================================================
@@ -140,7 +228,7 @@
       <span class="site-title" id="siteTitle" data-sync-title>額度計算機</span>
     </div>
     
-    <!-- 主選單：完全依照指定格式，並支援橫向捲軸 -->
+    <!-- 主選單：橫向卷軸容器 -->
     <nav class="nav-links" aria-label="主選單">
       <a href="calculator.html">額度計算機</a>
       <a href="payroll.html">薪資計算機</a>
@@ -151,29 +239,33 @@
       <a href="about.html">關於我們</a>
     </nav>
     
-    <!-- 右側工具列：整合了計算機功能鈕與會員鈕，間距縮小但文字完整 -->
+    <!-- 右側工具列：整合所有功能按鈕 -->
     <div class="actions">
-      <!-- 深色模式切換 -->
+      <!-- 1. 深色模式切換 (仿圖二樣式) -->
       <button id="darkToggle" class="theme-btn">
           <span class="icon">🌙</span> <span class="txt">深色</span>
       </button>
 
-      <!-- 計算機功能區 -->
+      <!-- 2. 計算機專用按鈕 -->
       <button class="btn pill btn-orange" id="btnUnitToggle" type="button" data-unit="B">B單位</button>
       <button class="btn pill btn-green" id="btnReset" type="button">重置</button>
       <button class="btn pill btn-gray" id="btnPrint" type="button" onclick="window.print()">列印</button>
       
-      <div style="width: 1px; height: 20px; background: var(--line); margin: 0 2px;"></div>
+      <!-- 分隔線 -->
+      <div style="width: 1px; height: 20px; background: var(--line); margin: 0 4px;"></div>
       
-      <!-- 會員登入區 -->
+      <!-- 3. 會員登入/狀態區 -->
       <button class="btn pill" style="background:#4285F4; color:white;" id="btnLogin" type="button">Google 登入</button>
       
-      <div id="member-area" style="display:none; align-items: center; gap:5px;">
-          <span id="userDisplay" style="font-size: 13px; font-weight: bold; color: var(--ink); margin-right: 4px;"></span>
-          <a href="admin.html" id="btnAdminLink" class="btn pill" style="display:none;background:#673AB7;color:white;font-size:12px;padding:4px 10px;text-decoration:none">後台</a>
-          <button class="btn pill" style="background:#777; color:white; font-size:12px; padding:4px 10px;" id="btnEditProfile" type="button">修改</button>
+      <div id="member-area" style="display:none; align-items: center; gap:6px;">
+          <!-- 使用者名稱 -->
+          <span id="userDisplay" style="font-size: 14px; font-weight: bold; color: var(--ink);">hori</span>
+          
+          <!-- 按鈕群組 (仿圖二配色) -->
+          <a href="admin.html" id="btnAdminLink" class="btn pill" style="display:none; background:#673AB7; color:white; font-size:13px; padding:6px 12px; text-decoration:none;">管理後台</a>
+          <button class="btn pill" style="background:#6B7280; color:white; font-size:13px; padding:6px 12px;" id="btnEditProfile" type="button">修改資料</button>
           <button class="btn pill" style="background:#34A853; color:white;" id="btnSaveCloud" type="button">儲存</button>
-          <button class="btn pill" style="background:#EA4335; color:white;" id="btnLogout" type="button">登出</button>
+          <button class="btn pill" style="background:#EF4444; color:white; font-size:13px; padding:6px 12px;" id="btnLogout" type="button">登出</button>
       </div>
     </div>
   </header>
