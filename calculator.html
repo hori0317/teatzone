@@ -15,9 +15,65 @@
         document.documentElement.setAttribute('data-theme', savedTheme);
     })();
   </script>
+  
+  <script src="nav.js" defer></script>
+  <script src="script.js" defer></script>
 
   <style>
-    /* === 計算機專用排版 (保留原功能) === */
+    /* ============================================================
+       導航欄與工具列優化 (響應式橫向捲軸)
+       ============================================================ */
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      /* 確保內容不換行，讓子元素決定寬度 */
+      flex-wrap: nowrap; 
+      overflow: visible;
+    }
+
+    /* 主選單：橫向捲軸設定 */
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 20px; /* 保持舒適間距 */
+      overflow-x: auto; /* 內容過多時顯示橫向捲軸 */
+      white-space: nowrap; /* 強制不換行 */
+      flex-grow: 1;
+      margin: 0 15px;
+      padding-bottom: 2px; /* 預留捲軸空間或避免裁切 */
+      
+      /* 隱藏捲軸但保留功能 (Chrome/Safari) */
+      scrollbar-width: none; /* Firefox */
+      -ms-overflow-style: none; /* IE/Edge */
+    }
+    .nav-links::-webkit-scrollbar { 
+      display: none; 
+    }
+
+    /* 工具列：間距縮小但文字不壓縮 */
+    .actions {
+      display: flex;
+      align-items: center;
+      gap: 6px; /* 縮小間距 */
+      flex-shrink: 0; /* 禁止被壓縮 */
+    }
+
+    /* 按鈕文字強制不換行 */
+    .actions .btn, 
+    .theme-btn {
+      white-space: nowrap;
+    }
+    
+    /* 針對特小螢幕優化按鈕內距，但不隱藏文字 */
+    @media (max-width: 600px) {
+        .actions .btn.pill { padding: 6px 8px; font-size: 13px; }
+        .nav-links { gap: 15px; }
+    }
+
+    /* ============================================================
+       計算機專用樣式
+       ============================================================ */
     .grid-2{
       display: grid;
       grid-template-columns: 2.2fr 1.3fr;
@@ -29,7 +85,7 @@
     
     #addonPlaceholders{ display:none; }
 
-    /* === 彈窗樣式 (參照範本) === */
+    /* 會員彈窗樣式 */
     .modal-overlay { 
         position: fixed; 
         top: 0; left: 0; 
@@ -67,9 +123,6 @@
     }
     .modal-actions { margin-top: 20px; }
   </style>
-
-  <script src="nav.js" defer></script>
-  <script src="script.js" defer></script>
 </head>
 <body data-page="calculator"> 
   
@@ -87,6 +140,7 @@
       <span class="site-title" id="siteTitle" data-sync-title>額度計算機</span>
     </div>
     
+    <!-- 主選單：完全依照指定格式，並支援橫向捲軸 -->
     <nav class="nav-links" aria-label="主選單">
       <a href="calculator.html">額度計算機</a>
       <a href="payroll.html">薪資計算機</a>
@@ -97,31 +151,30 @@
       <a href="about.html">關於我們</a>
     </nav>
     
-    <!-- 右側工具列：結構參照範本，並加入計算機按鈕 -->
-    <div class="actions" style="align-items: center; gap: 8px;">
-        <!-- 深色模式切換按鈕 -->
-        <button id="darkToggle" class="theme-btn">
-            <span class="icon">🌙</span> <span class="txt">深色</span>
-        </button>
+    <!-- 右側工具列：整合了計算機功能鈕與會員鈕，間距縮小但文字完整 -->
+    <div class="actions">
+      <!-- 深色模式切換 -->
+      <button id="darkToggle" class="theme-btn">
+          <span class="icon">🌙</span> <span class="txt">深色</span>
+      </button>
 
-        <!-- [計算機專用] 功能按鈕 -->
-        <button class="btn pill btn-orange" id="btnUnitToggle" type="button" data-unit="B">B單位</button>
-        <button class="btn pill btn-green" id="btnReset" type="button">重置</button>
-        <button class="btn pill btn-gray" id="btnPrint" type="button" onclick="window.print()">列印</button>
-        
-        <!-- 分隔線 -->
-        <div style="width: 1px; height: 20px; background: var(--line); margin: 0 2px;"></div>
-
-        <button class="btn pill" style="background:#4285F4; color:white;" id="btnLogin" type="button">Google 登入</button>
-        
-        <div id="member-area" style="display:none; align-items: center; gap:5px;">
-            <span id="userDisplay" style="font-size: 13px; font-weight: bold; color: var(--ink); margin-right: 4px;"></span>
-            <a href="admin.html" id="btnAdminLink" class="btn pill" style="background:#673AB7; color:white; font-size:12px; padding:4px 10px; text-decoration:none; display:none;">管理後台</a>
-            <button class="btn pill" style="background:#777; color:white; font-size:12px; padding:4px 10px;" id="btnEditProfile" type="button">修改資料</button>
-            <!-- [計算機專用] 儲存按鈕 -->
-            <button class="btn pill" style="background:#34A853; color:white; font-size:12px; padding:4px 10px;" id="btnSaveCloud" type="button">儲存</button>
-            <button class="btn pill" style="background:#EA4335; color:white;" id="btnLogout" type="button">登出</button>
-        </div>
+      <!-- 計算機功能區 -->
+      <button class="btn pill btn-orange" id="btnUnitToggle" type="button" data-unit="B">B單位</button>
+      <button class="btn pill btn-green" id="btnReset" type="button">重置</button>
+      <button class="btn pill btn-gray" id="btnPrint" type="button" onclick="window.print()">列印</button>
+      
+      <div style="width: 1px; height: 20px; background: var(--line); margin: 0 2px;"></div>
+      
+      <!-- 會員登入區 -->
+      <button class="btn pill" style="background:#4285F4; color:white;" id="btnLogin" type="button">Google 登入</button>
+      
+      <div id="member-area" style="display:none; align-items: center; gap:5px;">
+          <span id="userDisplay" style="font-size: 13px; font-weight: bold; color: var(--ink); margin-right: 4px;"></span>
+          <a href="admin.html" id="btnAdminLink" class="btn pill" style="display:none;background:#673AB7;color:white;font-size:12px;padding:4px 10px;text-decoration:none">後台</a>
+          <button class="btn pill" style="background:#777; color:white; font-size:12px; padding:4px 10px;" id="btnEditProfile" type="button">修改</button>
+          <button class="btn pill" style="background:#34A853; color:white;" id="btnSaveCloud" type="button">儲存</button>
+          <button class="btn pill" style="background:#EA4335; color:white;" id="btnLogout" type="button">登出</button>
+      </div>
     </div>
   </header>
   <div class="divider"></div>
@@ -223,11 +276,11 @@
       <h3>歡迎加入！請完善資料</h3>
       <div style="text-align:left; margin-bottom:12px;">
         <label style="font-weight:700; font-size:15px;">姓名 / 稱呼</label>
-        <input id="pf-name" placeholder="例如：王小明">
+        <input id="pf-name">
       </div>
       <div style="text-align:left; margin-bottom:12px;">
         <label style="font-weight:700; font-size:15px;">使用者年齡</label>
-        <input id="pf-age" type="number" placeholder="例如：65">
+        <input id="pf-age" type="number">
       </div>
       <div class="modal-actions">
         <button id="btn-save-profile" class="btn pill btn-green" style="width:100%">儲存並開始使用</button>
@@ -261,17 +314,16 @@
         darkToggle: document.getElementById('darkToggle')
     };
 
-    // --- 深色模式功能 ---
     if (dom.darkToggle) {
         const icon = dom.darkToggle.querySelector('.icon');
         const txt = dom.darkToggle.querySelector('.txt');
         const updateBtnUI = (theme) => {
-            if(theme === 'dark'){
+            if(theme === 'dark') {
                 icon.textContent = '☀️';
-                txt.textContent = '淺色';
+                if(txt) txt.textContent = '淺色';
             } else {
                 icon.textContent = '🌙';
-                txt.textContent = '深色';
+                if(txt) txt.textContent = '深色';
             }
         };
         updateBtnUI(document.documentElement.getAttribute('data-theme'));
@@ -284,29 +336,22 @@
         });
     }
 
-    // --- Firebase 登入與資料邏輯 ---
-    if(dom.login) dom.login.onclick = () => signInWithPopup(auth,provider).catch(e=>alert(e.message));
+    if(dom.login) dom.login.onclick = () => signInWithPopup(auth,provider);
     if(dom.logout) dom.logout.onclick = () => signOut(auth).then(()=>location.reload());
     
     onAuthStateChanged(auth, async u=>{
       if(u){
         dom.login.style.display='none'; dom.member.style.display='flex'; dom.user.textContent=u.displayName||u.email;
-        try {
-            const s=await getDoc(doc(db,"users",u.uid));
-            if(s.exists()){ 
-                if(s.data().name) dom.user.textContent=s.data().name; 
-            } else { 
-                dom.name.value = u.displayName || "";
-                dom.modal.style.display='flex'; 
-            }
-            const a=await getDoc(doc(db,"admins",u.email)); if(a.exists() && dom.admin) dom.admin.style.display='inline-block';
-        } catch(e) { console.error(e); }
-      }else{ dom.login.style.display='block'; dom.member.style.display='none'; if(dom.admin) dom.admin.style.display='none'; }
+        const s=await getDoc(doc(db,"users",u.uid));
+        if(s.exists()){ if(s.data().name) dom.user.textContent=s.data().name; }
+        else{ dom.modal.style.display='flex'; }
+        const a=await getDoc(doc(db,"admins",u.email)); if(a.exists()) dom.admin.style.display='inline-block';
+      }else{ dom.login.style.display='block'; dom.member.style.display='none'; }
     });
 
     if(dom.edit) dom.edit.onclick = async () => {
       const s = await getDoc(doc(db, "users", auth.currentUser.uid));
-      if(s.exists()){ const d = s.data(); dom.name.value = d.name || ""; dom.age.value = d.age || ""; dom.title.textContent="修改個人資料"; dom.modal.style.display = 'flex'; }
+      if(s.exists()){ const d = s.data(); dom.name.value = d.name; dom.age.value = d.age; dom.modal.style.display = 'flex'; }
     };
     
     if(dom.save) dom.save.onclick = async () => {
@@ -315,20 +360,11 @@
       dom.modal.style.display='none'; dom.user.textContent=n;
     };
 
-    // 計算機特有的：儲存計算結果到雲端
     if(dom.cloud) dom.cloud.onclick = async () => {
        const cms=document.querySelector('input[name="cms"]:checked'), total=document.getElementById('sumGrand');
-       try {
-           await addDoc(collection(db,"care_records"),{uid:auth.currentUser.uid,memberName:dom.user.textContent,email:auth.currentUser.email,cmsLevel:cms?cms.value:"0",grandTotal:total?total.textContent:"0",createdAt:serverTimestamp()});
-           alert("備份成功");
-       } catch(e) { alert("儲存失敗: " + e.message); }
+       await addDoc(collection(db,"care_records"),{uid:auth.currentUser.uid,memberName:dom.user.textContent,email:auth.currentUser.email,cmsLevel:cms?cms.value:"0",grandTotal:total?total.textContent:"0",createdAt:serverTimestamp()});
+       alert("備份成功");
     };
-
-    if(dom.modal) dom.modal.addEventListener('click', (e) => {
-      if (e.target === dom.modal && auth.currentUser && dom.user.textContent && dom.user.textContent !== auth.currentUser.email) {
-          dom.modal.style.display = 'none';
-      }
-    });
   </script>
 </body>
 </html>
