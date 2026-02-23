@@ -71,24 +71,21 @@
     .modal-actions { margin-top: 20px; }
 
     /* ============================================================
-       標題欄擠壓優化 (確保與 news.html 結構一致但不會擠到標籤)
+       標題欄擠壓優化 (確保計算機專用按鈕不會破壞版面)
        ============================================================ */
     @media (min-width: 1181px) {
-        /* 當螢幕較窄但還沒變成手機版時，縮小按鈕文字或間距 */
-        .actions { gap: 4px !important; }
-        .actions .btn.pill { padding: 6px 10px; font-size: 13px; }
+        .actions { gap: 6px !important; }
+        .actions .btn.pill { padding: 6px 12px; font-size: 13px; }
         .theme-btn { padding: 6px 8px; font-size: 13px; }
     }
 
     @media (max-width: 1350px) and (min-width: 1181px) {
-        /* 在這個區間內，隱藏「重置」與「列印」的文字，只留圖示或變小，防止擠壓中間 */
-        #btnReset, #btnPrint { width: 40px; overflow: hidden; white-space: nowrap; padding: 0; display: flex; justify-content: center; align-items: center; }
+        /* 在這個區間內，隱藏「重置」與「列印」的文字，只留圖示或變小，防止擠壓 */
+        #btnReset, #btnPrint { width: 36px; overflow: hidden; white-space: nowrap; padding: 0; display: flex; justify-content: center; align-items: center; }
         #btnReset::before { content: "🔄"; }
         #btnPrint::before { content: "🖨️"; }
-        #btnReset span, #btnPrint span { display: none; } /* 如果 HTML 有包 span 的話 */
-        #btnReset, #btnPrint { font-size: 18px; }
-        #btnReset { color: transparent; }
-        #btnPrint { color: transparent; }
+        #btnReset span, #btnPrint span { display: none; } 
+        #btnReset, #btnPrint { font-size: 16px; color: transparent; }
     }
   </style>
 </head>
@@ -118,26 +115,30 @@
       <a href="about.html">關於我們</a>
     </nav>
     
-    <!-- 右側按鈕區：結構與 news.html 保持完全一致 -->
+    <!-- 右側按鈕區：整合了 About 頁面的結構與 Calculator 的功能按鈕 -->
     <div class="actions">
-      <!-- 深色模式切換按鈕 (回到右側) -->
+      <!-- 深色模式切換按鈕 -->
       <button id="darkToggle" class="theme-btn">
           <span class="icon">🌙</span> <span class="txt">深色</span>
       </button>
 
+      <!-- 計算機專用功能按鈕 -->
       <button class="btn pill btn-orange" id="btnUnitToggle" type="button" data-unit="B">B單位</button>
       <button class="btn pill btn-green" id="btnReset" type="button">重置</button>
       <button class="btn pill btn-gray" id="btnPrint" type="button" onclick="window.print()">列印</button>
       
+      <!-- 分隔線 -->
       <div style="width: 1px; height: 20px; background: var(--line); margin: 0 2px;"></div>
       
+      <!-- 登入與會員區 -->
       <button class="btn pill" style="background:#4285F4; color:white;" id="btnLogin" type="button">Google 登入</button>
       
       <div id="member-area" style="display:none; align-items: center; gap:5px;">
           <span id="userDisplay" style="font-size: 13px; font-weight: bold; color: var(--ink); margin-right: 4px;"></span>
           <a href="admin.html" id="btnAdminLink" class="btn pill" style="display:none;background:#673AB7;color:white;font-size:12px;padding:4px 10px;text-decoration:none">後台</a>
           <button class="btn pill" style="background:#777; color:white; font-size:12px; padding:4px 10px;" id="btnEditProfile" type="button">修改</button>
-          <button class="btn pill" style="background:#34A853; color:white;" id="btnSaveCloud" type="button">儲存</button>
+          <!-- 這是計算機特有的儲存功能 -->
+          <button class="btn pill" style="background:#34A853; color:white; font-size:12px; padding:4px 10px;" id="btnSaveCloud" type="button">儲存</button>
           <button class="btn pill" style="background:#EA4335; color:white;" id="btnLogout" type="button">登出</button>
       </div>
     </div>
@@ -241,11 +242,11 @@
       <h3>歡迎加入！請完善資料</h3>
       <div style="text-align:left; margin-bottom:12px;">
         <label style="font-weight:700; font-size:15px;">姓名 / 稱呼</label>
-        <input id="pf-name">
+        <input id="pf-name" placeholder="例如：王小明">
       </div>
       <div style="text-align:left; margin-bottom:12px;">
         <label style="font-weight:700; font-size:15px;">使用者年齡</label>
-        <input id="pf-age" type="number">
+        <input id="pf-age" type="number" placeholder="例如：65">
       </div>
       <div class="modal-actions">
         <button id="btn-save-profile" class="btn pill btn-green" style="width:100%">儲存並開始使用</button>
@@ -279,12 +280,18 @@
         darkToggle: document.getElementById('darkToggle')
     };
 
+    // --- 深色模式功能 ---
     if (dom.darkToggle) {
         const icon = dom.darkToggle.querySelector('.icon');
         const txt = dom.darkToggle.querySelector('.txt');
         const updateBtnUI = (theme) => {
-            icon.textContent = theme === 'dark' ? '☀️' : '🌙';
-            if(txt) txt.textContent = theme === 'dark' ? '淺色' : '深色';
+            if(theme === 'dark'){
+                icon.textContent = '☀️';
+                txt.textContent = '淺色';
+            } else {
+                icon.textContent = '🌙';
+                txt.textContent = '深色';
+            }
         };
         updateBtnUI(document.documentElement.getAttribute('data-theme'));
         dom.darkToggle.addEventListener('click', () => {
@@ -296,22 +303,29 @@
         });
     }
 
-    if(dom.login) dom.login.onclick = () => signInWithPopup(auth,provider);
+    // --- Firebase 登入與資料邏輯 ---
+    if(dom.login) dom.login.onclick = () => signInWithPopup(auth,provider).catch(e=>alert(e.message));
     if(dom.logout) dom.logout.onclick = () => signOut(auth).then(()=>location.reload());
     
     onAuthStateChanged(auth, async u=>{
       if(u){
         dom.login.style.display='none'; dom.member.style.display='flex'; dom.user.textContent=u.displayName||u.email;
-        const s=await getDoc(doc(db,"users",u.uid));
-        if(s.exists()){ if(s.data().name) dom.user.textContent=s.data().name; }
-        else{ dom.modal.style.display='flex'; }
-        const a=await getDoc(doc(db,"admins",u.email)); if(a.exists()) dom.admin.style.display='inline-block';
-      }else{ dom.login.style.display='block'; dom.member.style.display='none'; }
+        try {
+            const s=await getDoc(doc(db,"users",u.uid));
+            if(s.exists()){ 
+                if(s.data().name) dom.user.textContent=s.data().name; 
+            } else { 
+                dom.name.value = u.displayName || "";
+                dom.modal.style.display='flex'; 
+            }
+            const a=await getDoc(doc(db,"admins",u.email)); if(a.exists() && dom.admin) dom.admin.style.display='inline-block';
+        } catch(e) { console.error(e); }
+      }else{ dom.login.style.display='block'; dom.member.style.display='none'; if(dom.admin) dom.admin.style.display='none'; }
     });
 
     if(dom.edit) dom.edit.onclick = async () => {
       const s = await getDoc(doc(db, "users", auth.currentUser.uid));
-      if(s.exists()){ const d = s.data(); dom.name.value = d.name; dom.age.value = d.age; dom.modal.style.display = 'flex'; }
+      if(s.exists()){ const d = s.data(); dom.name.value = d.name || ""; dom.age.value = d.age || ""; dom.title.textContent="修改個人資料"; dom.modal.style.display = 'flex'; }
     };
     
     if(dom.save) dom.save.onclick = async () => {
@@ -320,11 +334,21 @@
       dom.modal.style.display='none'; dom.user.textContent=n;
     };
 
+    // 計算機特有的：儲存計算結果到雲端
     if(dom.cloud) dom.cloud.onclick = async () => {
        const cms=document.querySelector('input[name="cms"]:checked'), total=document.getElementById('sumGrand');
-       await addDoc(collection(db,"care_records"),{uid:auth.currentUser.uid,memberName:dom.user.textContent,email:auth.currentUser.email,cmsLevel:cms?cms.value:"0",grandTotal:total?total.textContent:"0",createdAt:serverTimestamp()});
-       alert("備份成功");
+       try {
+           await addDoc(collection(db,"care_records"),{uid:auth.currentUser.uid,memberName:dom.user.textContent,email:auth.currentUser.email,cmsLevel:cms?cms.value:"0",grandTotal:total?total.textContent:"0",createdAt:serverTimestamp()});
+           alert("備份成功");
+       } catch(e) { alert("儲存失敗: " + e.message); }
     };
+
+    // 點擊背景關閉 Modal (僅限已登入且有名字的使用者)
+    if(dom.modal) dom.modal.addEventListener('click', (e) => {
+      if (e.target === dom.modal && auth.currentUser && dom.user.textContent && dom.user.textContent !== auth.currentUser.email) {
+          dom.modal.style.display = 'none';
+      }
+    });
   </script>
 </body>
 </html>
