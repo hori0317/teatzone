@@ -63,87 +63,128 @@
     .modal-actions { margin-top: 20px; }
 
     /* ============================================================
-       [修正 v2] Header 佈局與捲軸樣式
+       [修正 v3] 
+       1. 解決重疊：使用 flex-wrap: wrap
+       2. 模仿截圖：小螢幕時分行顯示，並顯示捲軸
+       3. 縮小間距：gap: 4px
        ============================================================ */
     
     .topbar {
         display: flex;
         align-items: center;
         justify-content: space-between;
+        /* 關鍵：允許換行，防止主選單與按鈕重疊 */
+        flex-wrap: wrap; 
         width: 100%;
         max-width: 100vw;
         box-sizing: border-box;
-        overflow: hidden; 
-        /* 增加一點高度緩衝以免捲軸遮到文字 */
-        padding-bottom: 2px; 
+        padding: 8px 10px; /* 增加一點內距 */
+        gap: 10px; /* 元素之間的間隔 */
     }
 
-    /* 1. 確保 Brand 永遠顯示，不會被壓縮 */
+    /* Logo 區域 */
     .brand {
         flex-shrink: 0; 
         display: flex;
         align-items: center;
-        margin-right: 12px;
-        /* 確保標題不換行 */
+        margin-right: auto; /* 在大螢幕時將其他元素推到右邊 */
         white-space: nowrap; 
     }
 
+    /* 中間導覽列 */
     .nav-links {
-        flex-shrink: 1;
-        overflow: hidden; 
+        display: flex;
+        gap: 15px;
+        flex-shrink: 1; /* 允許縮小 */
+        white-space: nowrap;
+        overflow-x: auto; /* 允許橫向捲動 */
+        
+        /* 捲軸樣式設定 */
+        scrollbar-width: thin;
+        scrollbar-color: #888 transparent;
+        padding-bottom: 4px; /* 預留捲軸空間 */
     }
 
-    /* 2. Actions 工具列：使用 flex-grow 佔滿剩餘空間，並允許內部捲動 */
+    /* 右側按鈕區 */
     .actions {
         display: flex;
         align-items: center;
-        gap: 8px; 
         
-        /* 關鍵：允許橫向捲動 */
+        /* 縮小間距至 4px (依照要求) */
+        gap: 4px; 
+        
         overflow-x: auto;       
         white-space: nowrap;    
+        flex-shrink: 0; /* 防止按鈕被壓縮 */
         
-        /* 關鍵：佔據剩餘空間，但 min-width: 0 防止把父層撐爆 (導致 Brand 消失的主因) */
-        flex-grow: 1;           
-        min-width: 0;
-
-        /* 預設靠右對齊 (大螢幕) */
-        justify-content: flex-end; 
-        
-        padding: 4px 0; /* 上下留一點空間給陰影或選取框 */
+        /* 捲軸樣式設定 */
+        scrollbar-width: thin;
+        scrollbar-color: #888 transparent;
+        padding-bottom: 4px; 
     }
 
-    /* === 3. 自定義橫向捲軸樣式 (讓它出現但不要太醜) === */
+    /* 按鈕微調：縮小 padding 以適應窄間距 */
+    .actions .btn.pill, 
+    .actions .theme-btn {
+        padding: 4px 10px; /* 稍微縮小內距 */
+        font-size: 13px;
+        flex-shrink: 0;
+    }
+
+    /* === 通用捲軸樣式 (Chrome/Safari/Edge) === */
+    .nav-links::-webkit-scrollbar,
     .actions::-webkit-scrollbar {
-        height: 6px; /* 捲軸高度 */
+        height: 8px; /* 明顯的捲軸高度 */
+        display: block; /* 強制顯示 */
     }
+    .nav-links::-webkit-scrollbar-track,
     .actions::-webkit-scrollbar-track {
-        background: transparent; 
+        background: rgba(0,0,0,0.05); 
+        border-radius: 4px;
     }
+    .nav-links::-webkit-scrollbar-thumb,
     .actions::-webkit-scrollbar-thumb {
-        background-color: var(--line); /* 使用變數配合深淺模式 */
-        border-radius: 10px;
+        background-color: #888; /* 灰色捲軸 (如截圖) */
+        border-radius: 4px;
+        border: 2px solid transparent; /* 讓捲軸看起來圓潤一點 */
+        background-clip: content-box;
     }
+    .nav-links::-webkit-scrollbar-thumb:hover,
     .actions::-webkit-scrollbar-thumb:hover {
-        background-color: var(--ink);
+        background-color: #555;
     }
 
-    /* 防止內部按鈕變形 */
-    .actions .btn, 
-    .actions .theme-btn, 
-    .actions > div,
-    .actions button {
-        flex-shrink: 0; 
-    }
+    /* === RWD 斷點設定：模擬截圖效果 === */
+    /* 當螢幕寬度不足以容納所有內容時 (例如平板或手機) */
+    @media (max-width: 1200px) {
+        .topbar {
+            /* 改為垂直排列，不再嘗試塞在同一行 */
+            flex-direction: column; 
+            align-items: flex-start; /* 靠左對齊 */
+            gap: 5px;
+        }
 
-    /* 手機與平板調整 */
-    @media (max-width: 1024px) {
-        /* 隱藏中間選單，讓空間給按鈕 */
-        .nav-links { display: none; }
-        
-        .actions {
-            /* 手機版靠左對齊，方便從 Logo 旁開始滑動 */
+        .brand {
+            margin-bottom: 5px;
+        }
+
+        .nav-links {
+            /* 讓導覽列佔滿寬度，形成獨立的一行 (截圖中的上方區塊) */
+            width: 100%;
             justify-content: flex-start;
+            order: 2; /* 順序：Brand -> Nav -> Actions */
+            margin-bottom: 5px;
+            border-bottom: 1px solid var(--line); /* 加上分隔線更像截圖 */
+            padding-bottom: 8px; /* 讓捲軸與線條有距離 */
+        }
+
+        .actions {
+            /* 讓按鈕區佔滿寬度，形成獨立的一行 (截圖中的下方區塊) */
+            width: 100%;
+            justify-content: flex-start;
+            order: 3;
+            /* 確保不會重疊到選單 */
+            margin-top: 2px;
         }
     }
   </style>
@@ -174,7 +215,7 @@
       <a href="about.html">關於我們</a>
     </nav>
     
-    <!-- 右側按鈕區：包含深色模式與功能按鈕 -->
+    <!-- 右側按鈕區 -->
     <div class="actions">
       <!-- 深色模式切換按鈕 -->
       <button id="darkToggle" class="theme-btn">
@@ -187,12 +228,12 @@
       <button class="btn pill btn-gray" id="btnPrint" type="button" onclick="window.print()">列印</button>
       
       <!-- 分隔線 -->
-      <div style="width: 1px; height: 20px; background: var(--line); margin: 0 4px;"></div>
+      <div style="width: 1px; height: 20px; background: var(--line); margin: 0 2px;"></div>
       
       <!-- 登入與會員區 -->
       <button class="btn pill" style="background:#4285F4; color:white;" id="btnLogin" type="button">Google 登入</button>
       
-      <div id="member-area" style="display:none; align-items: center; gap:5px;">
+      <div id="member-area" style="display:none; align-items: center; gap:4px;">
           <span id="userDisplay" style="font-size: 13px; font-weight: bold; color: var(--ink); margin-right: 4px;"></span>
           <a href="admin.html" id="btnAdminLink" class="btn pill" style="display:none;background:#673AB7;color:white;font-size:12px;padding:4px 10px;text-decoration:none">後台</a>
           <button class="btn pill" style="background:#777; color:white; font-size:12px; padding:4px 10px;" id="btnEditProfile" type="button">修改</button>
