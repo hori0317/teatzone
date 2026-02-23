@@ -185,6 +185,40 @@
         width: 90px !important;
     }
 
+    /* ============================================================
+       工具列按鈕微調：
+       將主選單完全交由 style.css 控制以保證全站 100% 一致。
+       這裡僅縮小右側工具列按鈕與間距，避免壓到主選單。
+       ============================================================ */
+    .actions {
+        display: flex;
+        align-items: center;
+        gap: 5px; 
+        overflow-x: auto;       
+        white-space: nowrap;    
+        min-width: 0;
+        scrollbar-width: thin;
+    }
+
+    /* 縮小按鈕本體 */
+    .actions .btn, 
+    .actions .theme-btn {
+        padding: 4px 10px !important; 
+        font-size: 13px !important;   
+        flex-shrink: 0; 
+        line-height: 1.2;
+    }
+    
+    /* 縮小登入後會員區的間距 */
+    #member-area { gap: 4px !important; }
+    #userDisplay { font-size: 12px !important; margin-right: 2px !important; }
+
+    /* 工具列捲軸樣式 */
+    .actions::-webkit-scrollbar { height: 6px; }
+    .actions::-webkit-scrollbar-track { background: transparent; }
+    .actions::-webkit-scrollbar-thumb { background-color: var(--line); border-radius: 10px; }
+    .actions::-webkit-scrollbar-thumb:hover { background-color: var(--ink); }
+
     @media (max-width:860px){
       .grid-2{grid-template-columns:1fr;}
       .tbl:not(.insurance-table){display:block; font-size:15px; border:0; background:none; overflow:visible;}
@@ -244,19 +278,18 @@
       <a href="contact.html">聯繫方式</a>
       <a href="about.html">關於我們</a>
     </nav>
-    <div class="actions" style="align-items: center; gap: 8px;">
-      <!-- 深色模式切換按鈕 -->
+    <div class="actions">
       <button id="darkToggle" class="theme-btn">
           <span class="icon">🌙</span> <span class="txt">深色</span>
       </button>
 
       <button class="btn pill btn-gray" id="btnPrint" type="button">列印</button>
       <button class="btn pill btn-green" id="btnResetAll" type="button">全部清空</button>
-      <div style="width: 1px; height: 20px; background: var(--line); margin: 0 4px;"></div>
+      <div style="width: 1px; height: 16px; background: var(--line); margin: 0 2px;"></div>
       <button class="btn pill" style="background:#4285F4; color:white;" id="btnLogin" type="button">Google 登入</button>
       <div id="member-area" style="display:none; align-items: center; gap:5px;">
           <span id="userDisplay" style="font-size: 13px; font-weight: bold; color: var(--ink); margin-right: 4px;"></span>
-          <a href="admin.html" id="btnAdminLink" class="btn pill" style="background:#673AB7; color:white; font-size:12px; padding:4px 10px; text-decoration:none; display:none;">管理後台</a>
+          <a href="admin.html" id="btnAdminLink" class="btn pill" style="display:none;background:#673AB7;color:white;font-size:12px;padding:4px 10px;text-decoration:none">後台</a>
           <button class="btn pill" style="background:#777; color:white; font-size:12px; padding:4px 10px;" id="btnEditProfile" type="button">修改資料</button>
           <button class="btn pill" style="background:#EA4335; color:white;" id="btnLogout" type="button">登出</button>
       </div>
@@ -296,7 +329,6 @@
       </div>
     </section>
 
-    <!-- PDF 解析區塊 -->
     <section class="card ps-card" id="ps-widget">
       <h2 class="card-title">PDF 支數自動統計（帶入表單）</h2>
       <p class="ps-muted">上傳每月 PDF，統計 <span class="ps-pill">BA</span> / <span class="ps-pill">AA</span> / <span class="ps-pill">GA</span> / <span class="ps-pill">SC</span>。AA 以「金額 ÷ 單價」換算。</p>
@@ -447,7 +479,6 @@
           <div class="row-mid" style="margin-bottom:10px;">
             <span class="pill-note">自動依「拆薪後薪資」抓 ≥ 薪資的最大投保級距</span>
           </div>
-          <!-- 投保級距表格 -->
           <table class="tbl insurance-table">
             <colgroup>
                 <col style="width:28%;">
@@ -781,7 +812,6 @@
     })();
   </script>
 
-  <!-- PDF 解析 / OCR 完整邏輯 -->
   <script>
     (() => {
       const $ = s => document.querySelector(s);
@@ -922,7 +952,6 @@
     })();
   </script>
 
-  <!-- Firebase 模組 -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
     import { getAuth, signInWithPopup, GoogleAuthProvider, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
