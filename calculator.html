@@ -62,16 +62,14 @@
     .modal-actions { margin-top: 20px; }
 
     /* ============================================================
-       Header 佈局與捲軸樣式 (完美整合版)
-       - 大螢幕：採用版本2邏輯 (右側延伸靠右、選單顯示)
-       - 小螢幕：採用版本1邏輯 (強制分三行、靠左對齊)
+       Header 佈局與捲軸樣式 
        ============================================================ */
     
     .topbar {
         display: flex;
         align-items: center;
         justify-content: space-between;
-        flex-wrap: wrap; /* 允許小螢幕換行 (版本1) */
+        flex-wrap: wrap; 
         width: 100%;
         max-width: 100vw;
         box-sizing: border-box;
@@ -88,11 +86,14 @@
         white-space: nowrap; 
     }
 
-    /* 2. 主選單 */
+    /* 2. 主選單 (寬敞置中版) */
     .nav-links {
         display: flex;
-        gap: 20px; 
-        flex-shrink: 1;
+        /* 使用 clamp 讓間距在 24px 到 56px 之間彈性變化，達到圖片中的寬度 */
+        gap: clamp(24px, 4vw, 56px); 
+        flex-grow: 1; /* 佔滿中間所有可用空間 */
+        justify-content: center; /* 將選項置中 */
+        min-width: 0; /* 空間不夠時允許縮小產生捲軸 */
         white-space: nowrap; 
         font-weight: bold;
         overflow-x: auto;
@@ -100,7 +101,7 @@
         padding-bottom: 4px;
     }
 
-    /* 3. Actions 工具與會員列 (使用版本2邏輯：flex-grow佔滿剩餘空間並靠右) */
+    /* 3. Actions 工具與會員列 */
     .actions {
         display: flex;
         align-items: center;
@@ -109,10 +110,8 @@
         overflow-x: auto;       
         white-space: nowrap;    
         
-        /* 佔據剩餘空間並靠右 */
-        flex-grow: 1;           
+        flex-shrink: 1;           
         min-width: 0;
-        justify-content: flex-end; 
         
         scrollbar-width: thin;
         padding-bottom: 4px; 
@@ -137,7 +136,7 @@
         background-color: var(--ink); 
     }
 
-    /* RWD: 小螢幕 (<1200px) 時強制分三行 (完全採用版本1邏輯) */
+    /* RWD: 小螢幕 (<1200px) 時強制分三行 (採用版本1邏輯，手機版不變) */
     @media (max-width: 1200px) {
         .topbar { 
             flex-direction: column; 
@@ -146,12 +145,14 @@
         }
         .brand { margin-bottom: 5px; margin-right: 0; }
         
-        /* 選單獨立一行 */
+        /* 選單獨立一行，並改為靠左對齊方便滑動 */
         .nav-links { 
             width: 100%; 
             order: 2; 
             margin-bottom: 5px; 
             border-bottom: 1px solid var(--line); 
+            justify-content: flex-start; /* 小螢幕改回靠左 */
+            gap: 20px; /* 小螢幕縮小間距 */
         }
         
         /* 工具列獨立一行，並改為靠左對齊 */
@@ -348,7 +349,6 @@
         darkToggle: document.getElementById('darkToggle')
     };
 
-    // --- 深色模式功能 ---
     if (dom.darkToggle) {
         const icon = dom.darkToggle.querySelector('.icon');
         const txt = dom.darkToggle.querySelector('.txt');
@@ -371,7 +371,6 @@
         });
     }
 
-    // --- Firebase 登入與資料邏輯 (採用版本2較為穩定的實作方式) ---
     if(dom.login) dom.login.onclick = () => signInWithPopup(auth,provider).catch(e=>alert(e.message));
     if(dom.logout) dom.logout.onclick = () => signOut(auth).then(()=>location.reload());
     
