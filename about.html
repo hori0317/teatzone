@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>關於我們｜長照工具</title>
-  <meta name="description" content="機構簡介、服務理念與團隊成員。" />
+  <title>首頁｜長照工具平台</title>
+  <meta name="description" content="長照服務工具平台，提供額度試算、薪資計算。">
   <link rel="icon" type="image/x-icon" href="YORU.ico" />
   <link rel="stylesheet" href="style.css" />
   
@@ -18,8 +18,9 @@
 
   <style>
     /* ============================================================
-       Header 佈局修正：
-       確保與其他頁面 (Calculator, Payroll) 的工具列樣式完全一致
+       工具列按鈕微調：
+       將主選單完全交由 style.css 控制以保證全站 100% 一致。
+       這裡僅縮小右側工具列按鈕與間距，避免壓到主選單。
        ============================================================ */
     .actions {
         display: flex;
@@ -79,21 +80,14 @@
         }
     }
   </style>
-
   <script src="nav.js" defer></script>
-  <script src="script.js" defer></script>
 </head>
-<body data-page="about">
-    <span class="wm-item" style="top:5%; left:5%;  --dur:9s;">@hori版權所有</span>
-    <span class="wm-item" style="top:50%; left:50%; --dur:10s;">@hori版權所有</span>
-    <span class="wm-item" style="top:5%; left:65%; --dur:10s;">@hori版權所有</span>
-    <span class="wm-item" style="top:25%; left:10%; --dur:13s;">@hori版權所有</span>
-    <span class="wm-item" style="top:75%; left:70%; --dur:14s;">@hori版權所有</span>
-  
+<body data-page="home">
+
   <header class="topbar">
     <div class="brand">
       <a href="index.html" class="logo-link"><img src="org-logo.png" alt="logo" onerror="this.style.opacity=0.2" /></a>
-      <span class="site-title" data-sync-title>關於我們</span>
+      <span class="site-title" data-sync-title>長照工具平台</span>
     </div>
     
     <nav class="nav-links" aria-label="主選單">
@@ -114,32 +108,51 @@
         <button class="btn pill" style="background:#4285F4; color:white;" id="btnLogin" type="button">Google 登入</button>
         <div id="member-area" style="display:none; align-items: center; gap:5px;">
             <span id="userDisplay" style="font-size: 13px; font-weight: bold; color: var(--ink); margin-right: 4px;"></span>
-            <a href="admin.html" id="btnAdminLink" class="btn pill" style="display:none;background:#673AB7;color:white;font-size:12px;padding:4px 10px;text-decoration:none">後台</a>
+            <a href="admin.html" id="btnAdminLink" class="btn pill" style="display:none;background:#673AB7;color:white;font-size:12px;padding:4px 10px;text-decoration:none">管理後台</a>
             <a href="profile.html" class="btn pill" style="background:#777; color:white; font-size:12px; padding:4px 10px; text-decoration:none;">會員資料</a>
             <button class="btn pill" style="background:#EA4335; color:white;" id="btnLogout" type="button">登出</button>
         </div>
     </div>
   </header>
-  <div class="divider"></div>
 
-  <main class="container">
-    <section class="card">
-      <h1 class="card-title">關於我們</h1>
-      <p class="hint">機構簡介與團隊介紹。</p>
-      
-      <div style="line-height:1.8; color: var(--ink);">
-        <p>
-          長照工具平台致力於開發最便捷的線上輔助工具，
-          協助居家服務單位、居服員以及個案家屬能夠快速、準確地了解長照補助內容與薪資計算。
-        </p>
-        <p>
-          我們的使命是透過數位化工具降低長照法規的理解門檻，讓資源媒合更有效率。
-        </p>
-      </div>
-    </section>
-  </main>
+  <section class="hero-section">
+    <div class="hero-content">
+      <h1 class="hero-title">測試頁面</h1>
+      <p class="hero-desc">
+        測試中。<br>
+        致力於提供簡單易懂的長照資訊，<br>
+        部分功能仍在測試中
+      </p>
+      <a href="calculator.html" class="btn pill btn-green" style="padding:12px 30px; font-size:1.1rem; text-decoration:none; box-shadow: 0 4px 15px rgba(46,125,50,0.4);">立即試算額度</a>
+    </div>
+  </section>
 
-  <footer id="bottomDock" class="footerbar">
+  <section class="features-section">
+    <div class="features-grid">
+      <a href="calculator.html" class="feature-card">
+        <div class="feature-icon">🧮</div>
+        <h3 class="feature-title">額度計算機</h3>
+        <p class="feature-text">輸入 CMS 等級，一鍵試算政府補助額度與自付金額，精準規劃每月預算。</p>
+      </a>
+      <a href="payroll.html" class="feature-card">
+        <div class="feature-icon">💰</div>
+        <h3 class="feature-title">薪資計算機</h3>
+        <p class="feature-text">專為機構與居服員設計，支援拆帳比例設定與勞健保扣款試算。</p>
+      </a>
+      <a href="video.html" class="feature-card">
+        <div class="feature-icon">🎥</div>
+        <h3 class="feature-title">影音專區</h3>
+        <p class="feature-text">會員限定！觀看專業長照教學影片，自動記錄學習時數與進度。</p>
+      </a>
+      <a href="care-info.html" class="feature-card">
+        <div class="feature-icon">ℹ️</div>
+        <h3 class="feature-title">長照資訊</h3>
+        <p class="feature-text">查詢最新長照法規、BA 碼別定義與補助細則，資訊透明公開。</p>
+      </a>
+    </div>
+  </section>
+
+  <footer id="bottomDock" class="footerbar" style="text-align:center;">
     <div class="foot"><span class="ok">© hori 長照工具平台</span></div>
   </footer>
 
@@ -201,12 +214,12 @@
         });
     }
 
-    // --- 登入與會員邏輯 ---
+    // --- 登入邏輯 ---
     if(dom.login) {
         dom.login.addEventListener('click', () => {
           signInWithPopup(auth, provider).catch(error => {
               if (error.code === 'auth/popup-blocked') {
-                  alert("⚠️ 登入視窗被攔截！請使用 Safari/Chrome 等瀏覽器開啟。");
+                  alert("⚠️ 登入視窗被攔截！\n請使用 Safari/Chrome 等瀏覽器開啟。\n不要使用 LINE 或 FB 內建瀏覽器。");
               } else {
                   alert("登入失敗：" + error.message);
               }
@@ -214,22 +227,34 @@
         });
     }
 
-    if(dom.logout) dom.logout.addEventListener('click', () => signOut(auth).then(() => { alert("已登出"); location.reload(); }));
+    // --- 登出邏輯 ---
+    if(dom.logout) {
+        dom.logout.addEventListener('click', () => signOut(auth).then(() => { alert("已登出"); location.reload(); }));
+    }
 
+    // --- 監聽登入狀態 & 強制導向邏輯 ---
     onAuthStateChanged(auth, async (user) => {
       if (user) {
         if(dom.login) dom.login.style.display = 'none';
         if(dom.member) dom.member.style.display = 'flex';
         if(dom.user) dom.user.textContent = user.displayName || user.email;
 
+        // ★ 核心檢查邏輯：驗證是否為新會員或資料未齊全
         try {
-          // 僅讀取資料以顯示名稱，不需要彈窗
           const docSnap = await getDoc(doc(db, "users", user.uid));
-          if (docSnap.exists() && docSnap.data().name) {
-             dom.user.textContent = docSnap.data().name;
+          const isComplete = docSnap.exists() && docSnap.data().name && docSnap.data().idNumber && docSnap.data().phone;
+          
+          if (!isComplete) {
+             alert("⚠️ 系統偵測到您尚未完成會員資料！\n請先完成基本資料填寫，以解鎖完整功能。");
+             window.location.href = "profile.html"; // 強制跳轉至會員資料頁
+             return; // 停止執行後續代碼
+          } else {
+             // 資料完整，正常顯示姓名
+             if(dom.user) dom.user.textContent = docSnap.data().name;
           }
-        } catch(e) {}
+        } catch(e) { console.error("讀取會員資料失敗", e); }
 
+        // 檢查管理員權限
         try {
           const adminSnap = await getDoc(doc(db, "admins", user.email));
           if (adminSnap.exists() && dom.admin) dom.admin.style.display = 'inline-block';
