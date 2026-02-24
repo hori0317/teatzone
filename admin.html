@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>管理後台 | 長照工具平台</title>
-    <!-- 引用外部樣式，但稍後會用內嵌樣式強制覆蓋它的防拷設定 -->
     <link rel="stylesheet" href="style.css"> 
     <style>
         /* 針對後台頁面的顏色變數對接 */
@@ -33,7 +32,7 @@
 
         body { 
             padding: 20px; 
-            max-width: 1200px; 
+            max-width: 1400px; /* 加寬一點以容納更多欄位 */
             margin: 0 auto; 
             background-color: var(--bg-color); 
             color: var(--text-main);
@@ -69,27 +68,20 @@
             border-collapse: collapse; 
             margin-top: 0; 
             background-color: var(--card-bg); 
-            table-layout: fixed; 
+            table-layout: auto; /* 改為 auto 讓內容決定欄寬，適合欄位多的情況 */
         }
         
         th, td { 
             padding: 12px 10px; 
             text-align: left; 
             border-bottom: 1px solid var(--border-color); 
-            font-size: 15px; 
+            font-size: 14px; /* 稍微縮小字體以容納資料 */
             vertical-align: middle; 
             word-wrap: break-word; 
         }
         
         th { background-color: var(--table-th-bg); color: var(--table-th-text); font-weight: bold; white-space: nowrap; }
         tr:hover { background-color: var(--table-hover); }
-
-        /* --- 各欄位寬度控制 --- */
-        .col-time { width: 140px; }
-        .col-name { width: 100px; }
-        .col-phone { width: 120px; }
-        .col-action { width: 110px; text-align: center; }
-        .col-feedback { width: auto; }
 
         /* 回饋內容捲軸樣式 */
         .feedback-wrapper {
@@ -122,7 +114,7 @@
         .badge-self { background: #e6fffa; color: #00a080; padding: 2px 8px; border-radius: 10px; font-size: 12px; border: 1px solid #b2f5ea; margin-left: 5px;}
         [data-theme="dark"] .badge-self { background: #1e3a3a; color: #4fd1c5; border-color: #285e5e; }
 
-        .watch-time-cell { font-family: "Courier New", monospace; color: var(--green, #2e7d32); font-weight: bold; font-size: 14px; }
+        .watch-time-cell { font-family: "Courier New", monospace; color: var(--green, #2e7d32); font-weight: bold; font-size: 13px; }
         .raw-seconds { font-size: 11px; color: var(--text-sub); margin-left: 5px; font-weight: normal; }
 
         .theme-toggle {
@@ -143,6 +135,8 @@
         .theme-toggle:hover { background-color: var(--table-th-bg); }
 
         .hint { color: var(--text-sub); font-size: 13px; margin-bottom: 10px; }
+        
+        .score-info { font-size: 12px; color: var(--muted); }
     </style>
     <script>
         (function() {
@@ -170,7 +164,6 @@
 
 <div id="dashboard" style="display: none;">
     
-    <!-- 加入/聯繫留單管理 -->
     <div class="section-card">
         <h2>📋 加入我們 / 聯繫留單</h2>
         <div class="btn-group">
@@ -180,21 +173,19 @@
             <table id="recruitTable">
                 <thead>
                     <tr>
-                        <th class="col-time">留單時間</th>
-                        <th class="col-name">姓名</th>
-                        <th class="col-phone">聯絡電話</th>
-                        <th class="col-feedback">其他回饋</th> 
-                        <th class="col-action">操作</th>
+                        <th style="width: 140px;">留單時間</th>
+                        <th style="width: 100px;">姓名</th>
+                        <th style="width: 120px;">聯絡電話</th>
+                        <th>其他回饋</th> 
+                        <th style="width: 110px; text-align: center;">操作</th>
                     </tr>
                 </thead>
                 <tbody>
-                    <!-- JS 動態填入 -->
-                </tbody>
+                    </tbody>
             </table>
         </div>
     </div>
 
-    <!-- 會員列表 -->
     <div class="section-card">
         <h2>👥 會員資料列表</h2>
         <div class="btn-group">
@@ -206,20 +197,23 @@
                 <thead>
                     <tr>
                         <th>姓名</th>
+                        <th>身分證</th>
+                        <th>生日</th>
                         <th>年齡</th>
+                        <th>電話</th>
                         <th>Email</th>
                         <th>註冊時間</th>
+                        <th>長照積分<br><span style="font-size:11px; font-weight:normal;">(總計 / 必修)</span></th>
                         <th>總觀看學習時長</th>
+                        <th>地址</th>
                     </tr>
                 </thead>
                 <tbody>
-                    <!-- 資料將由 JS 動態填入 -->
-                </tbody>
+                    </tbody>
             </table>
         </div>
     </div>
 
-    <!-- 管理員權限管理 -->
     <div class="section-card" id="superAdminSection">
         <h2>🔑 管理員權限設定</h2>
         <p class="hint">輸入對方的 Google Email 來賦予管理權限。受邀者登入後即可進入此頁面。</p>
@@ -229,8 +223,7 @@
         </div>
         <h3 style="font-size: 16px; margin-top: 25px; color: var(--text-main);">目前管理員名單：</h3>
         <ul id="adminList" style="list-style: none; padding: 0;">
-            <!-- 名單由 JS 填入 -->
-        </ul>
+            </ul>
     </div>
 </div>
 
@@ -297,7 +290,7 @@
     // 防止 HTML Injection
     function escapeHtml(text) {
         if (!text) return text;
-        return text
+        return text.toString()
             .replace(/&/g, "&amp;")
             .replace(/</g, "&lt;")
             .replace(/>/g, "&gt;")
@@ -367,8 +360,8 @@
                             <td>${timeStr}</td>
                             <td style="font-weight:bold;">${escapeHtml(data.name) || '未填寫'}</td>
                             <td>${escapeHtml(data.phone) || '未填寫'}</td>
-                            <td class="col-feedback">${feedbackHtml}</td>
-                            <td class="col-action">
+                            <td>${feedbackHtml}</td>
+                            <td style="text-align: center;">
                                 <button class="btn pill btn-gray" style="font-size:12px; padding:6px 12px; white-space:nowrap;" 
                                         onclick="deleteRecruit('${id}', '${escapeHtml(data.name)}')">刪除/已處理</button>
                             </td>
@@ -396,13 +389,13 @@
     };
 
 
-    // 載入會員資料
+    // 載入會員資料 (更新版，加入新欄位)
     async function loadUsers() {
         const tbody = document.querySelector('#usersTable tbody');
         const btn = document.getElementById('btnRefreshUsers');
         btn.disabled = true;
         btn.textContent = "讀取中...";
-        tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; padding:30px;">正在讀取資料...</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="10" style="text-align:center; padding:30px;">正在讀取資料...</td></tr>';
         
         try {
             const querySnapshot = await getDocs(collection(db, "users"));
@@ -419,7 +412,7 @@
             allUsersData = []; 
 
             if (rawDataList.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;">目前無會員資料</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="10" style="text-align:center;">目前無會員資料</td></tr>';
                 return;
             }
 
@@ -434,26 +427,52 @@
                 const name = data.name || '(未填寫)';
                 const email = data.email || '無 Email';
                 const age = data.age || '-';
+                const idNum = data.idNumber || '-';
+                const dob = data.dob || '-';
+                const phone = data.phone || '-';
+                const address = data.address || '-';
+                
+                // 處理學分資料
+                let creditTotal = 0, creditReq = 0;
+                if (data.credits) {
+                    const c = data.credits;
+                    creditReq = (c.qual || 0) + (c.eth || 0) + (c.law || 0);
+                    creditTotal = (c.pro || 0) + creditReq;
+                }
                 
                 const totalSec = data.totalWatchTime || 0;
                 const formattedTime = formatTime(totalSec);
 
-                allUsersData.push({ name, age, email, date: dateStr, watchTime: formattedTime, rawSeconds: totalSec });
+                allUsersData.push({ 
+                    name, idNum, dob, age, phone, address, email, 
+                    date: dateStr, 
+                    creditTotal, creditReq,
+                    watchTime: formattedTime, 
+                    rawSeconds: totalSec 
+                });
 
                 tbody.innerHTML += `<tr>
-                    <td>${escapeHtml(name)}</td>
+                    <td style="font-weight:bold;">${escapeHtml(name)}</td>
+                    <td style="font-family: monospace;">${escapeHtml(idNum)}</td>
+                    <td>${escapeHtml(dob)}</td>
                     <td>${escapeHtml(age)}</td>
+                    <td>${escapeHtml(phone)}</td>
                     <td>${escapeHtml(email)}</td>
                     <td>${dateStr}</td>
+                    <td>
+                        <span style="font-weight:bold; color:var(--green);">${creditTotal.toFixed(1)}</span>
+                        <span class="score-info"> / ${creditReq.toFixed(1)}</span>
+                    </td>
                     <td class="watch-time-cell">
                         ${formattedTime}
                         <span class="raw-seconds">(${totalSec}s)</span>
                     </td>
+                    <td style="font-size: 13px;">${escapeHtml(address)}</td>
                 </tr>`;
             });
         } catch (e) { 
             console.error(e);
-            tbody.innerHTML = `<tr><td colspan="5" style="color:red; text-align:center;">讀取失敗</td></tr>`; 
+            tbody.innerHTML = `<tr><td colspan="10" style="color:red; text-align:center;">讀取失敗</td></tr>`; 
         } finally { 
             btn.disabled = false; 
             btn.textContent = "🔄 重新整理列表"; 
@@ -507,21 +526,23 @@
         } catch(e) { alert("失敗：權限不足"); }
     };
 
-    // CSV 匯出
+    // CSV 匯出 (包含新欄位)
     document.getElementById('btnExportExcel').addEventListener('click', () => {
         if (allUsersData.length === 0) return alert("無資料可供匯出");
         
-        let csvContent = "\uFEFF姓名,年齡,Email,註冊時間,總觀看時長,原始秒數\n";
+        let csvContent = "\uFEFF姓名,身分證,生日,年齡,電話,Email,地址,註冊時間,總積分,必修積分,總觀看時長,原始秒數\n";
         allUsersData.forEach(u => { 
             const safeName = (u.name || "").replace(/"/g, '""');
             const safeEmail = (u.email || "").replace(/"/g, '""');
-            csvContent += `"${safeName}","${u.age}","${safeEmail}","${u.date}","${u.watchTime}","${u.rawSeconds}"\n`; 
+            const safeAddress = (u.address || "").replace(/"/g, '""');
+            
+            csvContent += `"${safeName}","${u.idNum}","${u.dob}","${u.age}","${u.phone}","${safeEmail}","${safeAddress}","${u.date}","${u.creditTotal}","${u.creditReq}","${u.watchTime}","${u.rawSeconds}"\n`; 
         });
         
         const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
         const url = URL.createObjectURL(blob);
         const link = document.createElement("a");
-        const fileName = `會員學習進度_${new Date().toISOString().split('T')[0]}.csv`;
+        const fileName = `會員資料報表_${new Date().toISOString().split('T')[0]}.csv`;
         
         link.setAttribute("href", url);
         link.setAttribute("download", fileName);
