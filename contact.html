@@ -17,44 +17,6 @@
   </script>
 
   <style>
-    /* 彈窗樣式 - 已改為引用變數以支援深色模式 */
-    .modal-overlay { 
-        position: fixed; 
-        top: 0; left: 0; 
-        width: 100%; height: 100%; 
-        background: rgba(47,47,32,0.6); 
-        backdrop-filter: blur(3px); 
-        z-index: 2000; 
-        display: flex; 
-        justify-content: center; 
-        align-items: center; 
-        padding: 20px; 
-    }
-    .modal-content { 
-        background: var(--card); 
-        border: 1px solid var(--line); 
-        border-radius: 12px; 
-        padding: 24px; 
-        width: 100%; 
-        max-width: 420px; 
-        box-shadow: 0 10px 25px rgba(0,0,0,0.15); 
-        text-align: center; 
-        color: var(--ink);
-    }
-    .modal-content h3 { color: var(--green); margin-top: 0; }
-    .modal-content input { 
-        width: 100%; 
-        padding: 10px; 
-        border: 1px solid var(--line); 
-        background: var(--input-bg); 
-        color: var(--ink);
-        border-radius: 8px; 
-        font-size: 16px; 
-        margin-top: 4px; 
-        box-sizing: border-box; 
-    }
-    .modal-actions { margin-top: 20px; }
-
     /* 聯繫內容樣式修正 */
     .contact-info {
         margin-top: 20px; 
@@ -106,13 +68,71 @@
         outline: 2px solid var(--green);
         border-color: transparent;
     }
+
+    /* ============================================================
+       工具列按鈕微調：
+       將主選單完全交由 style.css 控制以保證全站 100% 一致。
+       這裡僅縮小右側工具列按鈕與間距，避免壓到主選單。
+       ============================================================ */
+    .actions {
+        display: flex;
+        align-items: center;
+        gap: 5px; 
+        overflow-x: auto;       
+        white-space: nowrap;    
+        min-width: 0;
+        scrollbar-width: thin;
+    }
+
+    /* 縮小按鈕本體 */
+    .actions .btn, 
+    .actions .theme-btn {
+        padding: 4px 10px !important; 
+        font-size: 13px !important;   
+        flex-shrink: 0; 
+        line-height: 1.2;
+    }
+    
+    /* 縮小登入後會員區的間距 */
+    #member-area { gap: 4px !important; }
+    #userDisplay { font-size: 12px !important; margin-right: 2px !important; }
+
+    /* 工具列捲軸樣式 */
+    .actions::-webkit-scrollbar { height: 6px; }
+    .actions::-webkit-scrollbar-track { background: transparent; }
+    .actions::-webkit-scrollbar-thumb { background-color: var(--line); border-radius: 10px; }
+    .actions::-webkit-scrollbar-thumb:hover { background-color: var(--ink); }
+
+    @media (max-width: 1200px) {
+        header.topbar { 
+            flex-direction: column; 
+            align-items: flex-start; 
+            gap: 5px; 
+            height: auto;
+            padding: 8px 10px;
+        }
+        .brand { margin-bottom: 5px; margin-right: 0; }
+        
+        /* 選單獨立一行 */
+        .nav-links { 
+            width: 100%; 
+            order: 2; 
+            margin-bottom: 5px; 
+            padding-bottom: 8px;
+            border-bottom: 1px solid var(--line); 
+            overflow-x: auto;
+            white-space: nowrap;
+        }
+        
+        /* 工具列獨立一行 */
+        .actions { 
+            width: 100%; 
+            order: 3; 
+            justify-content: flex-start; 
+        }
+    }
   </style>
   <script src="nav.js" defer></script>
-  <script src="script.js" defer></script>
-</head>
-<body data-page="contact">
-  </style>
-  
 </head>
 <body data-page="contact">
   <div class="watermark" aria-hidden="true">
@@ -139,8 +159,7 @@
       <a href="about.html">關於我們</a>
     </nav>
     
-    <div class="actions" style="align-items: center; gap: 8px;">
-        <!-- 深色模式切換按鈕 -->
+    <div class="actions">
         <button id="darkToggle" class="theme-btn">
             <span class="icon">🌙</span> <span class="txt">深色</span>
         </button>
@@ -148,8 +167,8 @@
         <button class="btn pill" style="background:#4285F4; color:white;" id="btnLogin" type="button">Google 登入</button>
         <div id="member-area" style="display:none; align-items: center; gap:5px;">
             <span id="userDisplay" style="font-size: 13px; font-weight: bold; color: var(--ink); margin-right: 4px;"></span>
-            <a href="admin.html" id="btnAdminLink" class="btn pill" style="background:#673AB7; color:white; font-size:12px; padding:4px 10px; text-decoration:none; display:none;">管理後台</a>
-            <button class="btn pill" style="background:#777; color:white; font-size:12px; padding:4px 10px;" id="btnEditProfile" type="button">修改資料</button>
+            <a href="admin.html" id="btnAdminLink" class="btn pill" style="display:none;background:#673AB7;color:white;font-size:12px;padding:4px 10px;text-decoration:none">管理後台</a>
+            <a href="profile.html" class="btn pill" style="background:#777; color:white; font-size:12px; padding:4px 10px; text-decoration:none;">會員資料</a>
             <button class="btn pill" style="background:#EA4335; color:white;" id="btnLogout" type="button">登出</button>
         </div>
     </div>
@@ -161,14 +180,12 @@
       <h1 class="card-title">聯繫方式</h1>
       <p class="hint">單位的各式聯繫方法</p>
       
-      <!-- 內容範例 -->
       <div class="contact-info">
           <p><b>電話：</b> 02-1234-5678</p>
           <p><b>地址：</b> 新北市</p>
           <p><b>Email：</b> shenghanfootorthoses@gmail.com</p>
       </div>
 
-      <!-- 加入我們 / 留單區塊 -->
       <div class="join-form">
           <div class="join-title">👋 加入我們 / 留下聯絡資訊</div>
           <p class="hint" style="margin-bottom:15px;">若您想加入我們，或有其他合作需求，請留下資料，我們會盡快聯繫您。</p>
@@ -183,7 +200,6 @@
               <input type="tel" id="recruitPhone" class="form-input" placeholder="例如：0912-345-678">
           </div>
 
-          <!-- 新增：其他回饋欄位 -->
           <div class="form-group">
               <label class="form-label">其他回饋 / 備註事項</label>
               <textarea id="recruitFeedback" class="form-input" rows="3" placeholder="如果您有任何建議或想說的話，歡迎在此留言..."></textarea>
@@ -191,7 +207,6 @@
 
           <button id="btnSubmitRecruit" class="btn pill btn-green" style="width:100%; font-size:1.1rem; padding:10px;">送出資料</button>
       </div>
-
     </section>
   </main>
 
@@ -199,31 +214,11 @@
     <div class="foot"><span class="ok">© hori 長照工具平台</span></div>
   </footer>
 
-  <div id="profile-modal" class="modal-overlay" style="display:none;">
-    <div class="modal-content">
-      <h3>歡迎加入！請完善資料</h3>
-      <p>填寫您的基本資訊。</p>
-      <div style="text-align:left; margin-bottom:12px;">
-        <label style="font-weight:700; color:var(--ink); font-size:15px;">姓名 / 稱呼</label>
-        <input type="text" id="pf-name" placeholder="例如：王小明">
-      </div>
-      <div style="text-align:left; margin-bottom:12px;">
-        <label style="font-weight:700; color:var(--ink); font-size:15px;">使用者年齡</label>
-        <input type="number" id="pf-age" placeholder="例如：65">
-      </div>
-      <div class="modal-actions">
-        <button id="btn-save-profile" class="btn pill btn-green" style="width:100%; font-size:16px; padding:10px;">
-          儲存並開始使用
-        </button>
-      </div>
-    </div>
-  </div>
-
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
     import { getAuth, signInWithPopup, GoogleAuthProvider, signOut, onAuthStateChanged } 
       from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-    import { getFirestore, doc, getDoc, setDoc, addDoc, collection, serverTimestamp } 
+    import { getFirestore, doc, getDoc, addDoc, collection, serverTimestamp } 
       from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
     // Firebase 配置
@@ -247,17 +242,11 @@
         member: document.getElementById('member-area'),
         user: document.getElementById('userDisplay'),
         admin: document.getElementById('btnAdminLink'),
-        edit: document.getElementById('btnEditProfile'),
-        modal: document.getElementById('profile-modal'),
-        save: document.getElementById('btn-save-profile'),
-        name: document.getElementById('pf-name'),
-        age: document.getElementById('pf-age'),
-        title: document.querySelector('#profile-modal h3'),
         darkToggle: document.getElementById('darkToggle'),
         // 留單相關 DOM
         recruitName: document.getElementById('recruitName'),
         recruitPhone: document.getElementById('recruitPhone'),
-        recruitFeedback: document.getElementById('recruitFeedback'), // 新增回饋欄位
+        recruitFeedback: document.getElementById('recruitFeedback'),
         btnRecruit: document.getElementById('btnSubmitRecruit')
     };
 
@@ -302,7 +291,7 @@
 
     if(dom.logout) dom.logout.addEventListener('click', () => signOut(auth).then(() => { alert("已登出"); location.reload(); }));
 
-    // --- 監聽登入狀態 ---
+    // --- 監聽登入狀態 & 強制導向邏輯 ---
     onAuthStateChanged(auth, async (user) => {
       if (user) {
         if(dom.login) dom.login.style.display = 'none';
@@ -311,14 +300,16 @@
 
         try {
           const docSnap = await getDoc(doc(db, "users", user.uid));
-          if (docSnap.exists()) {
-             if(dom.user && docSnap.data().name) dom.user.textContent = docSnap.data().name;
+          const isComplete = docSnap.exists() && docSnap.data().name && docSnap.data().idNumber && docSnap.data().phone;
+          
+          if (!isComplete) {
+             alert("⚠️ 系統偵測到您尚未完成會員資料！\n請先完成基本資料填寫，以解鎖完整功能。");
+             window.location.href = "profile.html"; // 強制跳轉至會員資料頁
+             return; 
           } else {
-             if(dom.title) dom.title.textContent = "歡迎加入！請完善資料";
-             if(dom.name) dom.name.value = user.displayName || "";
-             if(dom.modal) dom.modal.style.display = 'flex';
+             if(dom.user) dom.user.textContent = docSnap.data().name;
           }
-        } catch(e) {}
+        } catch(e) { console.error("讀取會員資料失敗", e); }
 
         try {
           const adminSnap = await getDoc(doc(db, "admins", user.email));
@@ -331,39 +322,7 @@
       }
     });
 
-    // --- 修改個人資料 ---
-    if(dom.edit) dom.edit.addEventListener('click', async () => {
-      const s = await getDoc(doc(db, "users", auth.currentUser.uid));
-      if(s.exists()){ const d = s.data(); dom.title.textContent = "修改個人資料"; dom.name.value = d.name || ""; dom.age.value = d.age || ""; dom.modal.style.display = 'flex'; }
-    });
-
-    // --- 儲存資料邏輯 ---
-    if(dom.save) dom.save.addEventListener('click', async () => {
-      const name = dom.name.value.trim();
-      const age = dom.age.value.trim();
-      if(!name || !age) return alert("請填寫完整");
-      
-      const userRef = doc(db, "users", auth.currentUser.uid);
-      try {
-          const docSnap = await getDoc(userRef);
-          let data = { name, age, email: auth.currentUser.email, lastUpdated: serverTimestamp() };
-          if (!docSnap.exists() || !docSnap.data().createdAt) {
-              data.createdAt = serverTimestamp();
-          }
-          await setDoc(userRef, data, { merge: true });
-          alert("儲存成功");
-          dom.modal.style.display = 'none';
-          dom.user.textContent = name;
-      } catch (e) { alert("儲存失敗：" + e.message); }
-    });
-
-    if(dom.modal) dom.modal.addEventListener('click', (e) => {
-      if (e.target === dom.modal && auth.currentUser && dom.user.textContent !== "" && dom.user.textContent !== auth.currentUser.email) {
-          dom.modal.style.display = 'none';
-      }
-    });
-
-    // --- 留單提交邏輯 (已包含權限檢查) ---
+    // --- 留單提交邏輯 ---
     if (dom.btnRecruit) {
         dom.btnRecruit.addEventListener('click', async () => {
             
@@ -378,7 +337,7 @@
 
             const name = dom.recruitName.value.trim();
             const phone = dom.recruitPhone.value.trim();
-            const feedback = dom.recruitFeedback.value.trim(); // 獲取回饋內容
+            const feedback = dom.recruitFeedback.value.trim(); 
             
             if (!name || !phone) {
                 return alert("請至少填寫「姓名」與「聯絡電話」！");
@@ -392,7 +351,7 @@
                 await addDoc(collection(db, "recruitment"), {
                     name: name,
                     phone: phone,
-                    feedback: feedback, // 存入回饋
+                    feedback: feedback, 
                     submittedBy: auth.currentUser.uid,
                     submittedEmail: auth.currentUser.email,
                     createdAt: serverTimestamp(),
