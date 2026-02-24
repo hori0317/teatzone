@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>會員資料｜長照工具</title>
+  <meta name="description" content="管理您的會員基本資料與長照積分紀錄。" />
+  <link rel="icon" type="image/x-icon" href="YORU.ico" />
+  <link rel="stylesheet" href="style.css" />
+  
+  <script>
+    /* 立即檢查主題設定，防止頁面閃爍 */
+    (function() {
+        const savedTheme = localStorage.getItem('theme') || 'light';
+        document.documentElement.setAttribute('data-theme', savedTheme);
+    })();
+  </script>
+
+  <style>
+    /* 表單與卡片專屬樣式 */
+    .form-group { text-align: left; margin-bottom: 16px; }
+    .form-group label { display: block; font-weight: 700; color: var(--ink); margin-bottom: 6px; font-size: 15px; }
+    .form-group input { 
+        width: 100%; padding: 10px; border: 1px solid var(--line); 
+        background: var(--input-bg); color: var(--ink); 
+        border-radius: 8px; font-size: 16px; box-sizing: border-box; 
+    }
+    .form-group input:read-only { opacity: 0.6; cursor: not-allowed; }
+    
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    @media (max-width: 600px) { .grid-2 { grid-template-columns: 1fr; } }
+    
+    /* KPI 積分面板樣式 */
+    .kpi-container { display: flex; gap: 16px; flex-wrap: wrap; margin-top: 16px; }
+    .kpi-container .kpi-box { 
+        flex: 1 1 150px; background: var(--table-stripe); 
+        border: 1px solid var(--line); border-radius: 12px; 
+        padding: 16px; text-align: center; 
+    }
+    .kpi-container .lbl { font-size: 14px; font-weight: 700; color: var(--muted); margin-bottom: 8px; }
+    .kpi-container .num { font-size: 28px; font-weight: 900; color: var(--green); }
+    .kpi-container .num.warn { color: #EA4335; } /* 尚缺積分顯示紅色 */
+
+    /* 登入提示區塊 */
+    #login-prompt { text-align: center; padding: 60px 20px; color: var(--ink); }
+    #login-prompt h2 { color: var(--green); margin-bottom: 10px; }
+  </style>
+
+  <script src="nav.js" defer></script>
+  <script src="script.js" defer></script>
+</head>
+<body data-page="profile">
+    <span class="wm-item" style="top:5%; left:5%;  --dur:9s;">@hori版權所有</span>
+    <span class="wm-item" style="top:50%; left:50%; --dur:10s;">@hori版權所有</span>
+    <span class="wm-item" style="top:5%; left:65%; --dur:10s;">@hori版權所有</span>
+    <span class="wm-item" style="top:25%; left:10%; --dur:13s;">@hori版權所有</span>
+    <span class="wm-item" style="top:75%; left:70%; --dur:14s;">@hori版權所有</span>
+  
+  <header class="topbar">
+    <div class="brand">
+      <a href="index.html" class="logo-link"><img src="org-logo.png" alt="logo" onerror="this.style.opacity=0.2" /></a>
+      <span class="site-title" data-sync-title>會員資料</span>
+    </div>
+    
+    <nav class="nav-links" aria-label="主選單">
+      <a href="calculator.html">額度計算機</a>
+      <a href="payroll.html">薪資計算機</a>
+      <a href="video.html">影音專區</a>
+      <a href="care-info.html">長照資訊</a>
+      <a href="news.html">最新公告</a>
+      <a href="contact.html">聯繫方式</a>
+      <a href="about.html">關於我們</a>
+    </nav>
+    
+    <div class="actions" style="align-items: center; gap: 8px;">
+        <button id="darkToggle" class="theme-btn">
+            <span class="icon">🌙</span> <span class="txt">深色</span>
+        </button>
+
+        <button class="btn pill" style="background:#4285F4; color:white;" id="btnLogin" type="button">Google 登入</button>
+        <div id="member-area" style="display:none; align-items: center; gap:5px;">
+            <span id="userDisplay" style="font-size: 13px; font-weight: bold; color: var(--ink); margin-right: 4px;"></span>
+            <a href="admin.html" id="btnAdminLink" class="btn pill" style="background:#673AB7; color:white; font-size:12px; padding:4px 10px; text-decoration:none; display:none;">管理後台</a>
+            <a href="profile.html" class="btn pill" style="background:#777; color:white; font-size:12px; padding:4px 10px; text-decoration:none;">會員資料</a>
+            <button class="btn pill" style="background:#EA4335; color:white;" id="btnLogout" type="button">登出</button>
+        </div>
+    </div>
+  </header>
+  <div class="divider"></div>
+
+  <main class="container">
+    <section id="login-prompt" class="card" style="display: block;">
+        <h2>請先登入系統</h2>
+        <p class="hint">您需要登入 Google 帳號才能查看與編輯專屬的會員資料與長照積分。</p>
+        <button class="btn pill btn-green" style="margin-top: 16px; font-size: 16px; padding: 8px 20px;" onclick="document.getElementById('btnLogin').click()">立即登入</button>
+    </section>
+
+    <div id="profile-content" style="display: none;">
+        
+        <section class="card" style="margin-bottom: 16px;">
+          <h1 class="card-title">個人基本資料</h1>
+          <p class="hint">更新您的稱呼與年齡，以獲得更精準的服務。</p>
+          
+          <div class="grid-2" style="margin-top: 16px;">
+              <div class="form-group">
+                  <label>姓名 / 稱呼</label>
+                  <input type="text" id="pf-name" placeholder="例如：王小明">
+              </div>
+              <div class="form-group">
+                  <label>使用者年齡</label>
+                  <input type="number" id="pf-age" placeholder="例如：65">
+              </div>
+              <div class="form-group">
+                  <label>電子信箱 (無法修改)</label>
+                  <input type="email" id="pf-email" readonly>
+              </div>
+          </div>
+          <button id="btn-save-profile" class="btn pill btn-green" style="width: 100%; max-width: 200px; padding: 10px;">儲存基本資料</button>
+        </section>
+
+        <section class="card">
+            <h1 class="card-title">長照積分管理 (六年120點)</h1>
+            <p class="hint">輸入您目前已取得的積分，系統會自動幫您計算尚缺點數。（註：專業品質、專業倫理、專業法規合計至少需達 24 點）</p>
+
+            <div class="grid-2" style="margin-top: 16px;">
+                <div class="form-group">
+                    <label>專業課程 (點)</label>
+                    <input type="number" class="cred-input" id="cred-pro" value="0" min="0" step="0.1">
+                </div>
+                <div class="form-group">
+                    <label>專業品質 (點)</label>
+                    <input type="number" class="cred-input" id="cred-qual" value="0" min="0" step="0.1">
+                </div>
+                <div class="form-group">
+                    <label>專業倫理 (點)</label>
+                    <input type="number" class="cred-input" id="cred-eth" value="0" min="0" step="0.1">
+                </div>
+                <div class="form-group">
+                    <label>專業法規 (點)</label>
+                    <input type="number" class="cred-input" id="cred-law" value="0" min="0" step="0.1">
+                </div>
+            </div>
+
+            <hr style="border: 0; border-top: 1px dashed var(--line); margin: 16px 0;">
+
+            <h2 style="font-size: 16px; margin-bottom: 8px; color: var(--ink);">即時計算結果</h2>
+            <div class="kpi-container">
+               <div class="kpi-box">
+                 <div class="lbl">目前總積分</div>
+                 <div class="num" id="calc-total">0.0</div>
+               </div>
+               <div class="kpi-box">
+                 <div class="lbl">尚缺總積分</div>
+                 <div class="num warn" id="calc-missing-total">120.0</div>
+               </div>
+               <div class="kpi-box">
+                 <div class="lbl">尚缺必修 (品質/倫理/法規)</div>
+                 <div class="num warn" id="calc-missing-req">24.0</div>
+               </div>
+            </div>
+
+            <button id="btn-save-credits" class="btn pill btn-orange" style="width: 100%; max-width: 200px; padding: 10px; margin-top: 20px;">儲存積分紀錄</button>
+        </section>
+    </div>
+  </main>
+
+  <footer id="bottomDock" class="footerbar">
+    <div class="foot"><span class="ok">© hori 長照工具平台</span></div>
+  </footer>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+    import { getAuth, signInWithPopup, GoogleAuthProvider, signOut, onAuthStateChanged } 
+      from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+    import { getFirestore, doc, getDoc, setDoc, serverTimestamp } 
+      from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+    // Firebase 配置
+    const config = {
+      apiKey: "AIzaSyCZMhdUI0HeIoj5masuRh00pzP3SMbF6Yc",
+      authDomain: "hori-test-1b93c.firebaseapp.com",
+      projectId: "hori-test-1b93c",
+      storageBucket: "hori-test-1b93c.firebasestorage.app",
+      messagingSenderId: "549583061796",
+      appId: "1:549583061796:web:ad58b8bf80c2b6b71c29b1"
+    };
+
+    const app = initializeApp(config);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+    const provider = new GoogleAuthProvider();
+
+    const dom = {
+        login: document.getElementById('btnLogin'),
+        logout: document.getElementById('btnLogout'),
+        memberArea: document.getElementById('member-area'),
+        userDisplay: document.getElementById('userDisplay'),
+        adminLink: document.getElementById('btnAdminLink'),
+        
+        loginPrompt: document.getElementById('login-prompt'),
+        profileContent: document.getElementById('profile-content'),
+        
+        btnSaveProfile: document.getElementById('btn-save-profile'),
+        btnSaveCredits: document.getElementById('btn-save-credits'),
+        
+        name: document.getElementById('pf-name'),
+        age: document.getElementById('pf-age'),
+        email: document.getElementById('pf-email'),
+        
+        credPro: document.getElementById('cred-pro'),
+        credQual: document.getElementById('cred-qual'),
+        credEth: document.getElementById('cred-eth'),
+        credLaw: document.getElementById('cred-law'),
+        
+        darkToggle: document.getElementById('darkToggle')
+    };
+
+    // --- 深色模式切換邏輯 ---
+    if (dom.darkToggle) {
+        const icon = dom.darkToggle.querySelector('.icon');
+        const txt = dom.darkToggle.querySelector('.txt');
+
+        const updateBtnUI = (theme) => {
+            if (theme === 'dark') {
+                icon.textContent = '☀️';
+                txt.textContent = '淺色';
+            } else {
+                icon.textContent = '🌙';
+                txt.textContent = '深色';
+            }
+        };
+        updateBtnUI(document.documentElement.getAttribute('data-theme'));
+        dom.darkToggle.addEventListener('click', () => {
+            const currentTheme = document.documentElement.getAttribute('data-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            document.documentElement.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+            updateBtnUI(newTheme);
+        });
+    }
+
+    // --- 積分計算邏輯 ---
+    function calculateCredits() {
+        const pro = parseFloat(dom.credPro.value) || 0;
+        const qual = parseFloat(dom.credQual.value) || 0;
+        const eth = parseFloat(dom.credEth.value) || 0;
+        const law = parseFloat(dom.credLaw.value) || 0;
+
+        const total = pro + qual + eth + law;
+        const requiredTotal = qual + eth + law; // 品質+倫理+法規
+
+        const missingTotal = Math.max(0, 120 - total);
+        const missingReq = Math.max(0, 24 - requiredTotal);
+
+        document.getElementById('calc-total').textContent = total.toFixed(1);
+        
+        const elTotal = document.getElementById('calc-missing-total');
+        elTotal.textContent = missingTotal.toFixed(1);
+        elTotal.className = missingTotal > 0 ? 'num warn' : 'num';
+
+        const elReq = document.getElementById('calc-missing-req');
+        elReq.textContent = missingReq.toFixed(1);
+        elReq.className = missingReq > 0 ? 'num warn' : 'num';
+    }
+
+    // 綁定輸入事件，即時計算
+    document.querySelectorAll('.cred-input').forEach(inp => {
+        inp.addEventListener('input', calculateCredits);
+    });
+
+    // --- 登入與資料抓取邏輯 ---
+    if(dom.login) {
+        dom.login.addEventListener('click', () => {
+          signInWithPopup(auth, provider).catch(error => {
+              if (error.code === 'auth/popup-blocked') {
+                  alert("⚠️ 登入視窗被攔截！請使用 Safari/Chrome 等瀏覽器開啟。");
+              } else {
+                  alert("登入失敗：" + error.message);
+              }
+          });
+        });
+    }
+
+    if(dom.logout) dom.logout.addEventListener('click', () => signOut(auth).then(() => { alert("已登出"); location.reload(); }));
+
+    onAuthStateChanged(auth, async (user) => {
+      if (user) {
+        // UI 切換：隱藏登入提示，顯示內容
+        dom.login.style.display = 'none';
+        dom.memberArea.style.display = 'flex';
+        dom.loginPrompt.style.display = 'none';
+        dom.profileContent.style.display = 'block';
+        
+        dom.userDisplay.textContent = user.displayName || user.email;
+        dom.email.value = user.email;
+
+        try {
+          // 抓取會員資料與學分
+          const docSnap = await getDoc(doc(db, "users", user.uid));
+          if (docSnap.exists()) {
+             const data = docSnap.data();
+             if(data.name) {
+                 dom.userDisplay.textContent = data.name;
+                 dom.name.value = data.name;
+             }
+             if(data.age) dom.age.value = data.age;
+             
+             // 載入學分資料
+             if(data.credits) {
+                 dom.credPro.value = data.credits.pro || 0;
+                 dom.credQual.value = data.credits.qual || 0;
+                 dom.credEth.value = data.credits.eth || 0;
+                 dom.credLaw.value = data.credits.law || 0;
+             }
+             // 載入完畢後觸發一次計算
+             calculateCredits();
+          } else {
+             dom.name.value = user.displayName || "";
+          }
+        } catch(e) { console.error("讀取資料失敗", e); }
+
+        // 檢查管理員權限
+        try {
+          const adminSnap = await getDoc(doc(db, "admins", user.email));
+          if (adminSnap.exists() && dom.adminLink) dom.adminLink.style.display = 'inline-block';
+        } catch(e) {}
+        
+      } else {
+        // 未登入狀態
+        dom.login.style.display = 'block';
+        dom.memberArea.style.display = 'none';
+        dom.loginPrompt.style.display = 'block';
+        dom.profileContent.style.display = 'none';
+      }
+    });
+
+    // --- 儲存個人基本資料 ---
+    dom.btnSaveProfile.addEventListener('click', async () => {
+      const name = dom.name.value.trim();
+      const age = dom.age.value.trim();
+      if(!name || !age) return alert("請填寫姓名與年齡");
+      
+      const userRef = doc(db, "users", auth.currentUser.uid);
+      try {
+          const docSnap = await getDoc(userRef);
+          let data = { name, age, email: auth.currentUser.email, lastUpdated: serverTimestamp() };
+          if (!docSnap.exists() || !docSnap.data().createdAt) {
+              data.createdAt = serverTimestamp();
+          }
+          await setDoc(userRef, data, { merge: true });
+          alert("基本資料儲存成功！");
+          dom.userDisplay.textContent = name;
+      } catch (e) { alert("儲存失敗：" + e.message); }
+    });
+
+    // --- 儲存長照積分紀錄 ---
+    dom.btnSaveCredits.addEventListener('click', async () => {
+      const credits = {
+          pro: parseFloat(dom.credPro.value) || 0,
+          qual: parseFloat(dom.credQual.value) || 0,
+          eth: parseFloat(dom.credEth.value) || 0,
+          law: parseFloat(dom.credLaw.value) || 0
+      };
+      
+      const userRef = doc(db, "users", auth.currentUser.uid);
+      try {
+          await setDoc(userRef, { credits, lastUpdated: serverTimestamp() }, { merge: true });
+          alert("積分紀錄儲存成功！");
+      } catch (e) { alert("積分儲存失敗：" + e.message); }
+    });
+
+  </script>
+</body>
+</html>
