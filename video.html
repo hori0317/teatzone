@@ -272,18 +272,40 @@
     dom.login.addEventListener('click',()=>signInWithPopup(auth,provider));
     dom.logout.addEventListener('click',()=>signOut(auth).then(()=>location.reload()));
 
-    onAuthStateChanged(auth, async u=>{
-      if(u){
-        currentUser=u; dom.login.style.display='none'; dom.warn.style.display='none'; dom.video.style.display='block'; dom.member.style.display='flex'; dom.user.textContent=u.displayName||u.email; 
-        await loadHist(u); // 先讀取歷史時數
-        try{ 
-            const s=await getDoc(doc(db,"users",u.uid)); 
-            if(s.exists() && s.data().name) {
-                dom.user.textContent=s.data().name;
+    // --- 監聽登入狀態 & 強制導向邏輯 ---
+    onAuthStateChanged(auth, async (user) => {
+      if (user) {
+        currentUser = user; 
+        if(dom.login) dom.login.style.display = 'none'; 
+        if(dom.warn) dom.warn.style.display = 'none'; 
+        if(dom.member) dom.member.style.display = 'flex'; 
+        if(dom.user) dom.user.textContent = user.displayName || user.email; 
+        
+        // ★ 核心檢查邏輯：驗證是否為新會員或資料未齊全
+        try { 
+            const docSnap = await getDoc(doc(db, "users", user.uid)); 
+            const isComplete = docSnap.exists() && docSnap.data().name && docSnap.data().idNumber && docSnap.data().phone;
+
+            if (!isComplete) {
+                alert("⚠️ 您必須先完成會員資料填寫，才能觀看影片並累積時數！");
+                window.location.href = "profile.html"; // 強制跳轉
+                return;
+            } else {
+                if(dom.user) dom.user.textContent = docSnap.data().name;
+                // 資料完整才顯示影片並讀取時數
+                if(dom.video) dom.video.style.display = 'block'; 
+                await loadHist(user); 
             }
-            const a=await getDoc(doc(db,"admins",u.email)); if(a.exists()) dom.admin.style.display='inline-block';
-        }catch(e){}
-      }else{ dom.login.style.display='block'; dom.member.style.display='none'; dom.warn.style.display='block'; dom.video.style.display='none'; }
+
+            const adminSnap = await getDoc(doc(db, "admins", user.email)); 
+            if (adminSnap.exists() && dom.admin) dom.admin.style.display = 'inline-block';
+        } catch(e) { console.error("驗證失敗", e); }
+      } else { 
+        if(dom.login) dom.login.style.display = 'block'; 
+        if(dom.member) dom.member.style.display = 'none'; 
+        if(dom.warn) dom.warn.style.display = 'block'; 
+        if(dom.video) dom.video.style.display = 'none'; 
+      }
     });
   </script>
 </body>
