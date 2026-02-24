@@ -25,11 +25,26 @@
         background: var(--input-bg); color: var(--ink); 
         border-radius: 8px; font-size: 16px; box-sizing: border-box; 
     }
-    .form-group input:read-only { opacity: 0.6; cursor: not-allowed; }
+    /* 唯讀狀態特別標示 */
+    .form-group input[readonly] { 
+        background: var(--table-stripe); 
+        opacity: 0.8; 
+        cursor: not-allowed; 
+    }
     
     .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
     @media (max-width: 600px) { .grid-2 { grid-template-columns: 1fr; } }
     
+    /* 錯誤提示文字 */
+    .error-text {
+        color: #EA4335;
+        font-size: 13px;
+        font-weight: bold;
+        margin-top: 6px;
+        display: none;
+    }
+    .input-error { border-color: #EA4335 !important; background: #ffebee !important; }
+
     /* KPI 積分面板樣式 */
     .kpi-container { display: flex; gap: 16px; flex-wrap: wrap; margin-top: 16px; }
     .kpi-container .kpi-box { 
@@ -99,18 +114,35 @@
         
         <section class="card" style="margin-bottom: 16px;">
           <h1 class="card-title">個人基本資料</h1>
-          <p class="hint">更新您的稱呼與年齡，以獲得更精準的服務。</p>
+          <p class="hint">完善您的資料以獲得更精準的服務。請確保身分證字號格式正確。</p>
           
           <div class="grid-2" style="margin-top: 16px;">
               <div class="form-group">
-                  <label>姓名 / 稱呼</label>
+                  <label>姓名 / 稱呼 <span style="color:#EA4335">*</span></label>
                   <input type="text" id="pf-name" placeholder="例如：王小明">
               </div>
               <div class="form-group">
-                  <label>使用者年齡</label>
-                  <input type="number" id="pf-age" placeholder="例如：65">
+                  <label>身分證字號 <span style="color:#EA4335">*</span></label>
+                  <input type="text" id="pf-id" placeholder="例如：A123456789" maxlength="10" style="text-transform: uppercase;">
+                  <span id="id-error" class="error-text">⚠️ 身分證格式錯誤，請重新輸入</span>
               </div>
               <div class="form-group">
+                  <label>出生年月日 <span style="color:#EA4335">*</span></label>
+                  <input type="date" id="pf-dob">
+              </div>
+              <div class="form-group">
+                  <label>年齡 (自動計算)</label>
+                  <input type="text" id="pf-calc-age" readonly placeholder="由系統自動計算">
+              </div>
+              <div class="form-group">
+                  <label>連絡電話 <span style="color:#EA4335">*</span></label>
+                  <input type="tel" id="pf-phone" placeholder="例如：0912345678">
+              </div>
+              <div class="form-group">
+                  <label>聯絡地址 (選填)</label>
+                  <input type="text" id="pf-address" placeholder="例如：新北市板橋區...">
+              </div>
+              <div class="form-group" style="grid-column: 1 / -1;">
                   <label>電子信箱 (無法修改)</label>
                   <input type="email" id="pf-email" readonly>
               </div>
@@ -204,7 +236,12 @@
         btnSaveCredits: document.getElementById('btn-save-credits'),
         
         name: document.getElementById('pf-name'),
-        age: document.getElementById('pf-age'),
+        idNumber: document.getElementById('pf-id'),
+        idError: document.getElementById('id-error'),
+        dob: document.getElementById('pf-dob'),
+        calcAge: document.getElementById('pf-calc-age'),
+        phone: document.getElementById('pf-phone'),
+        address: document.getElementById('pf-address'),
         email: document.getElementById('pf-email'),
         
         credPro: document.getElementById('cred-pro'),
@@ -239,6 +276,70 @@
         });
     }
 
+    // --- 身分證驗證邏輯 ---
+    function isValidTaiwanID(id) {
+        if (!id) return false;
+        id = id.toUpperCase();
+        // 基本正則表達式：首字大寫英文，第二字為 1/2/8/9，後面接8個數字
+        if (!/^[A-Z][1289]\d{8}$/.test(id)) return false;
+        
+        // 轉換首字英文字母為對應數字
+        const letters = 'ABCDEFGHJKLMNPQRSTUVXYWZIO';
+        const letterValue = letters.indexOf(id[0]) + 10;
+        const n1 = Math.floor(letterValue / 10);
+        const n2 = letterValue % 10;
+        
+        // 權重計算
+        const weights = [1, 9, 8, 7, 6, 5, 4, 3, 2, 1, 1];
+        const digits = [n1, n2, ...id.slice(1).split('').map(Number)];
+        
+        let sum = 0;
+        for (let i = 0; i < weights.length; i++) {
+            sum += digits[i] * weights[i];
+        }
+        return sum % 10 === 0;
+    }
+
+    dom.idNumber.addEventListener('input', function() {
+        const val = this.value.toUpperCase();
+        this.value = val; // 強制轉大寫
+        
+        if (val === '') {
+            dom.idError.style.display = 'none';
+            this.classList.remove('input-error');
+            return;
+        }
+
+        if (val.length === 10 && isValidTaiwanID(val)) {
+            dom.idError.style.display = 'none';
+            this.classList.remove('input-error');
+        } else if (val.length >= 10) {
+            dom.idError.style.display = 'block';
+            this.classList.add('input-error');
+        } else {
+            dom.idError.style.display = 'none';
+            this.classList.remove('input-error');
+        }
+    });
+
+    // --- 年齡計算邏輯 ---
+    function calculateAge(dobString) {
+        if (!dobString) return '';
+        const dobDate = new Date(dobString);
+        const today = new Date();
+        let age = today.getFullYear() - dobDate.getFullYear();
+        const m = today.getMonth() - dobDate.getMonth();
+        if (m < 0 || (m === 0 && today.getDate() < dobDate.getDate())) {
+            age--;
+        }
+        return age >= 0 ? age : 0;
+    }
+
+    dom.dob.addEventListener('change', function() {
+        const age = calculateAge(this.value);
+        dom.calcAge.value = age !== '' ? age + ' 歲' : '';
+    });
+
     // --- 積分計算邏輯 ---
     function calculateCredits() {
         const pro = parseFloat(dom.credPro.value) || 0;
@@ -247,7 +348,7 @@
         const law = parseFloat(dom.credLaw.value) || 0;
 
         const total = pro + qual + eth + law;
-        const requiredTotal = qual + eth + law; // 品質+倫理+法規
+        const requiredTotal = qual + eth + law;
 
         const missingTotal = Math.max(0, 120 - total);
         const missingReq = Math.max(0, 24 - requiredTotal);
@@ -263,7 +364,6 @@
         elReq.className = missingReq > 0 ? 'num warn' : 'num';
     }
 
-    // 綁定輸入事件，即時計算
     document.querySelectorAll('.cred-input').forEach(inp => {
         inp.addEventListener('input', calculateCredits);
     });
@@ -285,7 +385,6 @@
 
     onAuthStateChanged(auth, async (user) => {
       if (user) {
-        // UI 切換：隱藏登入提示，顯示內容
         dom.login.style.display = 'none';
         dom.memberArea.style.display = 'flex';
         dom.loginPrompt.style.display = 'none';
@@ -295,15 +394,22 @@
         dom.email.value = user.email;
 
         try {
-          // 抓取會員資料與學分
           const docSnap = await getDoc(doc(db, "users", user.uid));
           if (docSnap.exists()) {
              const data = docSnap.data();
+             
+             // 寫入基本資料
              if(data.name) {
                  dom.userDisplay.textContent = data.name;
                  dom.name.value = data.name;
              }
-             if(data.age) dom.age.value = data.age;
+             if(data.idNumber) dom.idNumber.value = data.idNumber;
+             if(data.dob) {
+                 dom.dob.value = data.dob;
+                 dom.calcAge.value = calculateAge(data.dob) + ' 歲';
+             }
+             if(data.phone) dom.phone.value = data.phone;
+             if(data.address) dom.address.value = data.address;
              
              // 載入學分資料
              if(data.credits) {
@@ -312,21 +418,18 @@
                  dom.credEth.value = data.credits.eth || 0;
                  dom.credLaw.value = data.credits.law || 0;
              }
-             // 載入完畢後觸發一次計算
              calculateCredits();
           } else {
              dom.name.value = user.displayName || "";
           }
         } catch(e) { console.error("讀取資料失敗", e); }
 
-        // 檢查管理員權限
         try {
           const adminSnap = await getDoc(doc(db, "admins", user.email));
           if (adminSnap.exists() && dom.adminLink) dom.adminLink.style.display = 'inline-block';
         } catch(e) {}
         
       } else {
-        // 未登入狀態
         dom.login.style.display = 'block';
         dom.memberArea.style.display = 'none';
         dom.loginPrompt.style.display = 'block';
@@ -337,13 +440,40 @@
     // --- 儲存個人基本資料 ---
     dom.btnSaveProfile.addEventListener('click', async () => {
       const name = dom.name.value.trim();
-      const age = dom.age.value.trim();
-      if(!name || !age) return alert("請填寫姓名與年齡");
+      const idNumber = dom.idNumber.value.trim().toUpperCase();
+      const dob = dom.dob.value;
+      const phone = dom.phone.value.trim();
+      const address = dom.address.value.trim();
+      
+      // 驗證必填
+      if(!name || !idNumber || !dob || !phone) {
+          return alert("請填寫所有必填欄位 (*)。");
+      }
+      
+      // 驗證身分證字號
+      if(!isValidTaiwanID(idNumber)) {
+          dom.idError.style.display = 'block';
+          dom.idNumber.classList.add('input-error');
+          dom.idNumber.focus();
+          return alert("身分證字號格式錯誤，請修正後再儲存。");
+      }
+
+      // 從日期計算年齡以便存入後台 (避免依賴純前端計算)
+      const age = calculateAge(dob);
       
       const userRef = doc(db, "users", auth.currentUser.uid);
       try {
           const docSnap = await getDoc(userRef);
-          let data = { name, age, email: auth.currentUser.email, lastUpdated: serverTimestamp() };
+          let data = { 
+              name, 
+              idNumber, 
+              dob, 
+              age, 
+              phone, 
+              address, 
+              email: auth.currentUser.email, 
+              lastUpdated: serverTimestamp() 
+          };
           if (!docSnap.exists() || !docSnap.data().createdAt) {
               data.createdAt = serverTimestamp();
           }
