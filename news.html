@@ -224,6 +224,7 @@
 
     if(dom.logout) dom.logout.addEventListener('click', () => signOut(auth).then(() => { alert("已登出"); location.reload(); }));
 
+    // --- 監聽登入狀態 & 強制導向邏輯 ---
     onAuthStateChanged(auth, async (user) => {
       if (user) {
         if(dom.login) dom.login.style.display = 'none';
@@ -232,10 +233,16 @@
 
         try {
           const docSnap = await getDoc(doc(db, "users", user.uid));
-          if (docSnap.exists() && docSnap.data().name) {
-             dom.user.textContent = docSnap.data().name;
+          const isComplete = docSnap.exists() && docSnap.data().name && docSnap.data().idNumber && docSnap.data().phone;
+          
+          if (!isComplete) {
+             alert("⚠️ 系統偵測到您尚未完成會員資料！\n請先完成基本資料填寫，以解鎖完整功能。");
+             window.location.href = "profile.html"; // 強制跳轉至會員資料頁
+             return; 
+          } else {
+             if(dom.user) dom.user.textContent = docSnap.data().name;
           }
-        } catch(e) {}
+        } catch(e) { console.error("讀取會員資料失敗", e); }
 
         try {
           const adminSnap = await getDoc(doc(db, "admins", user.email));
