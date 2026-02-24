@@ -20,24 +20,6 @@
        Payroll 頁面專屬修正樣式
        ======================================= */
     
-    /* 彈窗樣式 */
-    .modal-overlay { 
-        position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
-        background: rgba(47,47,32,0.6); backdrop-filter: blur(3px); 
-        z-index: 2000; display: flex; justify-content: center; align-items: center; padding: 20px; 
-    }
-    .modal-content { 
-        background: var(--card); border: 1px solid var(--line); border-radius: 12px; 
-        padding: 24px; width: 100%; max-width: 420px; box-shadow: 0 10px 25px rgba(0,0,0,0.15); text-align: center; 
-        color: var(--ink);
-    }
-    .modal-content h3 { color: var(--green); margin-top: 0; }
-    .modal-content input { 
-        width: 100%; padding: 10px; border: 1px solid var(--line); background: var(--input-bg); 
-        color: var(--ink); border-radius: 8px; font-size: 16px; margin-top: 4px; box-sizing: border-box; 
-    }
-    .modal-actions { margin-top: 20px; }
-
     /* PDF 區塊樣式 */
     .ps-muted{color: var(--muted)}.ps-small{font-size:.86rem}.ps-mono{font-family:ui-monospace,Menlo,Consolas,monospace}
     .ps-pill{display:inline-block;padding:0 6px;border:1px solid var(--line);background:var(--table-head);border-radius:999px; color: var(--ink);}
@@ -135,7 +117,6 @@
 
     /* ============================================================
        【重點修改 1：保險表格強制置中】
-       針對 .insurance-table 強制將所有欄位完全置中。
        ============================================================ */
     .tbl.insurance-table th,
     .tbl.insurance-table td {
@@ -144,13 +125,11 @@
         padding-right: 8px !important;
         vertical-align: middle !important;
     }
-    /* 第一欄(投保級距)維持靠左閱讀體驗 */
     .tbl.insurance-table th:first-child,
     .tbl.insurance-table td:first-child {
         text-align: left !important;
         padding-left: 15px !important;
     }
-    /* 強制輸入框置中 */
     .tbl.insurance-table tbody td input {
         display: block;
         margin: 0 auto !important;
@@ -180,7 +159,6 @@
         padding-right: 20px !important;
     }
 
-    /* Payroll 表格內的 input 寬度 */
     body[data-page="payroll"] .tbl:not(.insurance-table) input[type="number"] {
         width: 90px !important;
     }
@@ -218,6 +196,38 @@
     .actions::-webkit-scrollbar-track { background: transparent; }
     .actions::-webkit-scrollbar-thumb { background-color: var(--line); border-radius: 10px; }
     .actions::-webkit-scrollbar-thumb:hover { background-color: var(--ink); }
+
+    /* ============================================================
+       補回手機版折行設定：確保小螢幕時工具列靠左，深色按鈕不被隱藏
+       ============================================================ */
+    @media (max-width: 1200px) {
+        header.topbar { 
+            flex-direction: column; 
+            align-items: flex-start; 
+            gap: 5px; 
+            height: auto;
+            padding: 8px 10px;
+        }
+        .brand { margin-bottom: 5px; margin-right: 0; }
+        
+        /* 選單獨立一行 */
+        .nav-links { 
+            width: 100%; 
+            order: 2; 
+            margin-bottom: 5px; 
+            padding-bottom: 8px;
+            border-bottom: 1px solid var(--line); 
+            overflow-x: auto;
+            white-space: nowrap;
+        }
+        
+        /* 工具列獨立一行，強制靠左 */
+        .actions { 
+            width: 100%; 
+            order: 3; 
+            justify-content: flex-start; 
+        }
+    }
 
     @media (max-width:860px){
       .grid-2{grid-template-columns:1fr;}
@@ -290,7 +300,7 @@
       <div id="member-area" style="display:none; align-items: center; gap:5px;">
           <span id="userDisplay" style="font-size: 13px; font-weight: bold; color: var(--ink); margin-right: 4px;"></span>
           <a href="admin.html" id="btnAdminLink" class="btn pill" style="display:none;background:#673AB7;color:white;font-size:12px;padding:4px 10px;text-decoration:none">後台</a>
-          <button class="btn pill" style="background:#777; color:white; font-size:12px; padding:4px 10px;" id="btnEditProfile" type="button">修改資料</button>
+          <a href="profile.html" class="btn pill" style="background:#777; color:white; font-size:12px; padding:4px 10px; text-decoration:none;">會員資料</a>
           <button class="btn pill" style="background:#EA4335; color:white;" id="btnLogout" type="button">登出</button>
       </div>
     </div>
@@ -521,26 +531,6 @@
       <span class="ok">※ 每年 <b>2 月</b> 和 <b>8 月</b> 調整投保級距，並於次月 <b>1 號</b> 生效。</span>
     </div>
   </footer>
-
-  <div id="profile-modal" class="modal-overlay" style="display:none;">
-    <div class="modal-content">
-      <h3>歡迎加入！請完善資料</h3>
-      <p>填寫您的基本資訊，讓我們為您記錄試算結果。</p>
-      <div style="text-align:left; margin-bottom:12px;">
-        <label style="font-weight:700; color:var(--ink); font-size:15px;">姓名 / 稱呼</label>
-        <input type="text" id="pf-name" placeholder="例如：王小明">
-      </div>
-      <div style="text-align:left; margin-bottom:12px;">
-        <label style="font-weight:700; color:var(--ink); font-size:15px;">使用者年齡</label>
-        <input type="number" id="pf-age" placeholder="例如：65">
-      </div>
-      <div class="modal-actions">
-        <button id="btn-save-profile" class="btn pill btn-green" style="width:100%; font-size:16px; padding:10px;">
-          儲存並開始使用
-        </button>
-      </div>
-    </div>
-  </div>
 
   <script>
     /* 深色模式切換邏輯 (JavaScript) */
@@ -955,7 +945,7 @@
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
     import { getAuth, signInWithPopup, GoogleAuthProvider, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-    import { getFirestore, doc, getDoc, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+    import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
     const config={
       apiKey: "AIzaSyCZMhdUI0HeIoj5masuRh00pzP3SMbF6Yc",
@@ -970,26 +960,20 @@
     const dom={
       login:document.getElementById('btnLogin'), logout:document.getElementById('btnLogout'),
       member:document.getElementById('member-area'), user:document.getElementById('userDisplay'),
-      admin:document.getElementById('btnAdminLink'), edit:document.getElementById('btnEditProfile'),
-      modal:document.getElementById('profile-modal'), save:document.getElementById('btn-save-profile'),
-      name:document.getElementById('pf-name'), age:document.getElementById('pf-age')
+      admin:document.getElementById('btnAdminLink')
     };
 
     onAuthStateChanged(auth, async u=>{
       if(u){
         dom.login.style.display='none'; dom.member.style.display='flex'; dom.user.textContent=u.displayName||u.email;
         const s=await getDoc(doc(db,"users",u.uid));
-        if(!s.exists()){ dom.modal.style.display='flex'; } else if(s.data().name) dom.user.textContent=s.data().name;
+        if(s.exists() && s.data().name){ dom.user.textContent=s.data().name; }
         const a=await getDoc(doc(db,"admins",u.email)); if(a.exists()) dom.admin.style.display='inline-block';
       } else { dom.login.style.display='block'; dom.member.style.display='none'; }
     });
 
     dom.login.onclick=()=>signInWithPopup(auth,provider);
     dom.logout.onclick=()=>signOut(auth).then(()=>location.reload());
-    dom.save.onclick=async()=>{
-        await setDoc(doc(db,"users",auth.currentUser.uid),{name:dom.name.value,age:dom.age.value,email:auth.currentUser.email,lastUpdated:serverTimestamp()},{merge:true});
-        dom.modal.style.display='none'; location.reload();
-    };
   </script>
 </body>
 </html>
