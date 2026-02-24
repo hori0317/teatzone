@@ -32,35 +32,6 @@
     
     #addonPlaceholders { display:none; }
 
-    /* 彈窗樣式 */
-    .modal-overlay { 
-        position: fixed; top: 0; left: 0; 
-        width: 100%; height: 100%; 
-        background: rgba(47,47,32,0.6); 
-        backdrop-filter: blur(3px); 
-        z-index: 2000; 
-        display: flex; justify-content: center; align-items: center; 
-        padding: 20px; 
-    }
-    .modal-content { 
-        background: var(--card); 
-        border: 1px solid var(--line); 
-        border-radius: 12px; 
-        padding: 24px; 
-        width: 100%; max-width: 420px; 
-        box-shadow: 0 10px 25px rgba(0,0,0,0.15); 
-        text-align: center; color: var(--ink);
-    }
-    .modal-content h3 { color: var(--green); margin-top: 0; }
-    .modal-content input { 
-        width: 100%; padding: 10px; 
-        border: 1px solid var(--line); 
-        background: var(--input-bg); color: var(--ink);
-        border-radius: 8px; font-size: 16px; 
-        margin-top: 4px; box-sizing: border-box; 
-    }
-    .modal-actions { margin-top: 20px; }
-
     /* ============================================================
        工具列按鈕微調：
        將主選單完全交由 style.css 控制以保證全站 100% 一致。
@@ -138,7 +109,7 @@
       <div id="member-area" style="display:none; align-items: center; gap:5px;">
           <span id="userDisplay" style="font-size: 13px; font-weight: bold; color: var(--ink); margin-right: 4px;"></span>
           <a href="admin.html" id="btnAdminLink" class="btn pill" style="display:none;background:#673AB7;color:white;text-decoration:none">後台</a>
-          <button class="btn pill" style="background:#777; color:white;" id="btnEditProfile" type="button">修改</button>
+          <a href="profile.html" class="btn pill" style="background:#777; color:white; text-decoration:none;">會員資料</a>
           <button class="btn pill" style="background:#34A853; color:white;" id="btnSaveCloud" type="button">儲存</button>
           <button class="btn pill" style="background:#EA4335; color:white;" id="btnLogout" type="button">登出</button>
       </div>
@@ -238,28 +209,11 @@
     </div>
   </footer>
 
-  <div id="profile-modal" class="modal-overlay" style="display:none;">
-    <div class="modal-content">
-      <h3>歡迎加入！請完善資料</h3>
-      <div style="text-align:left; margin-bottom:12px;">
-        <label style="font-weight:700; font-size:15px;">姓名 / 稱呼</label>
-        <input id="pf-name" placeholder="例如：王小明">
-      </div>
-      <div style="text-align:left; margin-bottom:12px;">
-        <label style="font-weight:700; font-size:15px;">使用者年齡</label>
-        <input id="pf-age" type="number" placeholder="例如：65">
-      </div>
-      <div class="modal-actions">
-        <button id="btn-save-profile" class="btn pill btn-green" style="width:100%">儲存並開始使用</button>
-      </div>
-    </div>
-  </div>
-
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
     import { getAuth, signInWithPopup, GoogleAuthProvider, signOut, onAuthStateChanged } 
       from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-    import { getFirestore, collection, addDoc, serverTimestamp, doc, getDoc, setDoc } 
+    import { getFirestore, collection, addDoc, serverTimestamp, doc, getDoc } 
       from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
     const config={ apiKey: "AIzaSyCZMhdUI0HeIoj5masuRh00pzP3SMbF6Yc", authDomain: "hori-test-1b93c.firebaseapp.com", projectId: "hori-test-1b93c", storageBucket: "hori-test-1b93c.firebasestorage.app", messagingSenderId: "549583061796", appId: "1:549583061796:web:ad58b8bf80c2b6b71c29b1" };
@@ -271,13 +225,7 @@
         member:document.getElementById('member-area'), 
         user:document.getElementById('userDisplay'), 
         admin:document.getElementById('btnAdminLink'), 
-        edit:document.getElementById('btnEditProfile'), 
-        modal:document.getElementById('profile-modal'), 
-        save:document.getElementById('btn-save-profile'), 
         cloud:document.getElementById('btnSaveCloud'), 
-        name:document.getElementById('pf-name'), 
-        age:document.getElementById('pf-age'), 
-        title:document.querySelector('#profile-modal h3'),
         darkToggle: document.getElementById('darkToggle')
     };
 
@@ -311,27 +259,13 @@
         dom.login.style.display='none'; dom.member.style.display='flex'; dom.user.textContent=u.displayName||u.email;
         try {
             const s=await getDoc(doc(db,"users",u.uid));
-            if(s.exists()){ 
-                if(s.data().name) dom.user.textContent=s.data().name; 
-            } else { 
-                dom.name.value = u.displayName || "";
-                dom.modal.style.display='flex'; 
+            if(s.exists() && s.data().name){ 
+                dom.user.textContent=s.data().name; 
             }
             const a=await getDoc(doc(db,"admins",u.email)); if(a.exists() && dom.admin) dom.admin.style.display='inline-block';
         } catch(e) { console.error(e); }
       }else{ dom.login.style.display='block'; dom.member.style.display='none'; if(dom.admin) dom.admin.style.display='none'; }
     });
-
-    if(dom.edit) dom.edit.onclick = async () => {
-      const s = await getDoc(doc(db, "users", auth.currentUser.uid));
-      if(s.exists()){ const d = s.data(); dom.name.value = d.name || ""; dom.age.value = d.age || ""; dom.title.textContent="修改個人資料"; dom.modal.style.display = 'flex'; }
-    };
-    
-    if(dom.save) dom.save.onclick = async () => {
-      const n=dom.name.value, a=dom.age.value; if(!n||!a) return alert("請填寫完整");
-      await setDoc(doc(db,"users",auth.currentUser.uid),{name:n,age:a,email:auth.currentUser.email,lastUpdated:serverTimestamp()},{merge:true});
-      dom.modal.style.display='none'; dom.user.textContent=n;
-    };
 
     if(dom.cloud) dom.cloud.onclick = async () => {
        const cms=document.querySelector('input[name="cms"]:checked'), total=document.getElementById('sumGrand');
@@ -340,12 +274,6 @@
            alert("備份成功");
        } catch(e) { alert("儲存失敗: " + e.message); }
     };
-
-    if(dom.modal) dom.modal.addEventListener('click', (e) => {
-      if (e.target === dom.modal && auth.currentUser && dom.user.textContent && dom.user.textContent !== auth.currentUser.email) {
-          dom.modal.style.display = 'none';
-      }
-    });
   </script>
 </body>
 </html>
