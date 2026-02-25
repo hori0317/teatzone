@@ -160,4 +160,95 @@
       projectId: "hori-test-1b93c",
       storageBucket: "hori-test-1b93c.firebasestorage.app",
       messagingSenderId: "549583061796",
-      appId: "1:54958306
+      appId: "1:549583061796:web:ad58b8bf80c2b6b71c29b1"
+    };
+
+    const app = initializeApp(config);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+    const provider = new GoogleAuthProvider();
+
+    const dom = {
+        login: document.getElementById('btnLogin'),
+        logout: document.getElementById('btnLogout'),
+        member: document.getElementById('member-area'),
+        user: document.getElementById('userDisplay'),
+        admin: document.getElementById('btnAdminLink'),
+        darkToggle: document.getElementById('darkToggle')
+    };
+
+    // --- 深色模式切換邏輯 ---
+    if (dom.darkToggle) {
+        const icon = dom.darkToggle.querySelector('.icon');
+        const txt = dom.darkToggle.querySelector('.txt');
+
+        const updateBtnUI = (theme) => {
+            if (theme === 'dark') {
+                icon.textContent = '☀️';
+                txt.textContent = '淺色';
+            } else {
+                icon.textContent = '🌙';
+                txt.textContent = '深色';
+            }
+        };
+
+        // 初始化按鈕
+        updateBtnUI(document.documentElement.getAttribute('data-theme'));
+
+        dom.darkToggle.addEventListener('click', () => {
+            const currentTheme = document.documentElement.getAttribute('data-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            document.documentElement.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+            updateBtnUI(newTheme);
+        });
+    }
+
+    // --- 登入與會員邏輯 ---
+    if(dom.login) {
+        dom.login.addEventListener('click', () => {
+          signInWithPopup(auth, provider).catch(error => {
+              if (error.code === 'auth/popup-blocked') {
+                  alert("⚠️ 登入視窗被攔截！請使用 Safari/Chrome 等瀏覽器開啟。");
+              } else {
+                  alert("登入失敗：" + error.message);
+              }
+          });
+        });
+    }
+
+    if(dom.logout) dom.logout.addEventListener('click', () => signOut(auth).then(() => { alert("已登出"); location.reload(); }));
+
+    // --- 監聽登入狀態 & 強制導向邏輯 ---
+    onAuthStateChanged(auth, async (user) => {
+      if (user) {
+        if(dom.login) dom.login.style.display = 'none';
+        if(dom.member) dom.member.style.display = 'flex';
+        if(dom.user) dom.user.textContent = user.displayName || user.email;
+
+        try {
+          const docSnap = await getDoc(doc(db, "users", user.uid));
+          const isComplete = docSnap.exists() && docSnap.data().name && docSnap.data().idNumber && docSnap.data().phone;
+          
+          if (!isComplete) {
+             alert("⚠️ 系統偵測到您尚未完成會員資料！\n請先完成基本資料填寫，以解鎖完整功能。");
+             window.location.href = "profile.html"; // 強制跳轉至會員資料頁
+             return; 
+          } else {
+             if(dom.user) dom.user.textContent = docSnap.data().name;
+          }
+        } catch(e) { console.error("讀取會員資料失敗", e); }
+
+        try {
+          const adminSnap = await getDoc(doc(db, "admins", user.email));
+          if (adminSnap.exists() && dom.admin) dom.admin.style.display = 'inline-block';
+        } catch(e) {}
+      } else {
+        if(dom.login) dom.login.style.display = 'block';
+        if(dom.member) dom.member.style.display = 'none';
+        if(dom.admin) dom.admin.style.display = 'none';
+      }
+    });
+  </script>
+</body>
+</html>
