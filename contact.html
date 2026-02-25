@@ -19,7 +19,7 @@
   <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
   <script type="text/javascript">
     (function() {
-        // ★★★ 請將下方的 "你的_Public_Key" 替換為你在 EmailJS 拿到的 Public Key ★★★
+        // 你的 EmailJS Public Key
         emailjs.init("kAwxHMzfmCI0-D7H8");
     })();
   </script>
@@ -364,10 +364,10 @@
                     status: 'new'
                 });
 
-                // ★★★ 觸發 EmailJS 寄信通知管理員 ★★★
-                // 請將下方的 "你的_Service_ID" 和 "你的_Template_ID" 替換成你在 EmailJS 建立好的設定
-                // 在 EmailJS 的 Template 裡面，你可以使用 {{contact_name}}, {{contact_phone}}, {{contact_feedback}}, {{contact_email}} 作為變數
+                // ★★★ 觸發 EmailJS 寄信通知超級管理員 ★★★
+                // 請記得將 "你的_Service_ID" 和 "你的_Template_ID" 換成真實的 ID！
                 emailjs.send("你的_Service_ID", "你的_Template_ID", {
+                    to_admin_email: "shenghanfootorthoses@gmail.com", // ★ 指定寄給超級管理員
                     contact_name: name,
                     contact_phone: phone,
                     contact_feedback: feedback || "無",
@@ -394,3 +394,6 @@
             }
         });
     }
+  </script>
+</body>
+</html>
