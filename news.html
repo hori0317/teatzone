@@ -28,10 +28,28 @@
         margin-bottom: 10px;
     }
 
+    /* 管理員新增公告表單樣式 */
+    .admin-news-form {
+        display: none; /* 預設隱藏，驗證為管理員後才顯示 */
+        margin-bottom: 20px;
+        padding: 16px;
+        border: 2px dashed var(--green);
+        border-radius: 12px;
+        background: var(--table-stripe);
+    }
+    .admin-news-form h3 { margin-top: 0; color: var(--green); margin-bottom: 12px; font-size: 16px; }
+    .form-row-inline { display: flex; gap: 10px; flex-wrap: wrap; }
+    .form-row-inline input {
+        padding: 8px 12px;
+        border: 1px solid var(--line);
+        background: var(--input-bg);
+        color: var(--ink);
+        border-radius: 8px;
+        font-size: 15px;
+    }
+
     /* ============================================================
        工具列按鈕微調：
-       將主選單完全交由 style.css 控制以保證全站 100% 一致。
-       這裡僅縮小右側工具列按鈕與間距，避免壓到主選單。
        ============================================================ */
     .actions {
         display: flex;
@@ -43,7 +61,6 @@
         scrollbar-width: thin;
     }
 
-    /* 縮小按鈕本體 */
     .actions .btn, 
     .actions .theme-btn {
         padding: 4px 10px !important; 
@@ -52,11 +69,9 @@
         line-height: 1.2;
     }
     
-    /* 縮小登入後會員區的間距 */
     #member-area { gap: 4px !important; }
     #userDisplay { font-size: 12px !important; margin-right: 2px !important; }
 
-    /* 工具列捲軸樣式 */
     .actions::-webkit-scrollbar { height: 6px; }
     .actions::-webkit-scrollbar-track { background: transparent; }
     .actions::-webkit-scrollbar-thumb { background-color: var(--line); border-radius: 10px; }
@@ -71,8 +86,6 @@
             padding: 8px 10px;
         }
         .brand { margin-bottom: 5px; margin-right: 0; }
-        
-        /* 選單獨立一行 */
         .nav-links { 
             width: 100%; 
             order: 2; 
@@ -82,8 +95,6 @@
             overflow-x: auto;
             white-space: nowrap;
         }
-        
-        /* 工具列獨立一行 */
         .actions { 
             width: 100%; 
             order: 3; 
@@ -137,12 +148,18 @@
     <section class="card">
       <h1 class="card-title">最新公告</h1>
       <p class="hint">系統最新更新與公告事項。</p>
+
+      <div id="adminNewsForm" class="admin-news-form">
+          <h3>➕ 新增公告 (僅管理員可見)</h3>
+          <div class="form-row-inline">
+              <input type="date" id="newsDate">
+              <input type="text" id="newsContent" placeholder="輸入公告內容..." style="flex: 1; min-width: 200px;">
+              <button id="btnSubmitNews" class="btn pill btn-green">發佈公告</button>
+          </div>
+      </div>
       
-      <ul class="news-list">
-        <li><strong>2025-07-31：</strong> 網站系統上線。</li>
-        <li><strong>2025-12-21：</strong> 新增會員功能。</li>
-        <li><strong>2025-12-24：</strong> 改善手機版面，修正部分導覽列問題。</li>
-        <li><strong>2025-12-30：</strong> 全站深色模式上線。</li>
+      <ul class="news-list" id="newsList">
+        <li>載入中...</li>
       </ul>
     </section>
   </main>
@@ -155,7 +172,7 @@
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
     import { getAuth, signInWithPopup, GoogleAuthProvider, signOut, onAuthStateChanged } 
       from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-    import { getFirestore, doc, getDoc } 
+    import { getFirestore, doc, getDoc, collection, addDoc, getDocs, query, orderBy, serverTimestamp, deleteDoc } 
       from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
     // Firebase 配置
@@ -179,8 +196,113 @@
         member: document.getElementById('member-area'),
         user: document.getElementById('userDisplay'),
         admin: document.getElementById('btnAdminLink'),
-        darkToggle: document.getElementById('darkToggle')
+        darkToggle: document.getElementById('darkToggle'),
+        
+        // 公告相關 DOM
+        adminNewsForm: document.getElementById('adminNewsForm'),
+        newsDate: document.getElementById('newsDate'),
+        newsContent: document.getElementById('newsContent'),
+        btnSubmitNews: document.getElementById('btnSubmitNews'),
+        newsList: document.getElementById('newsList')
     };
+
+    let isAdmin = false; // 紀錄目前登入者是否為管理員
+
+    // --- 防止 XSS 攻擊的字元轉義 ---
+    function escapeHtml(text) {
+        if (!text) return text;
+        return text.toString()
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;")
+            .replace(/'/g, "&#039;");
+    }
+
+    // --- 載入公告列表邏輯 ---
+    async function loadNews() {
+        try {
+            // 按照日期降冪排列 (新到舊)
+            const q = query(collection(db, "news"), orderBy("date", "desc"), orderBy("createdAt", "desc"));
+            const querySnapshot = await getDocs(q);
+            
+            dom.newsList.innerHTML = ''; // 清空列表
+            
+            if (querySnapshot.empty) {
+                dom.newsList.innerHTML = '<li>目前沒有最新公告。</li>';
+                return;
+            }
+
+            querySnapshot.forEach((docSnap) => {
+                const data = docSnap.data();
+                const li = document.createElement('li');
+                
+                let html = `<strong>${escapeHtml(data.date)}：</strong> ${escapeHtml(data.content)}`;
+                
+                // 如果是管理員，在旁邊加上「刪除」按鈕
+                if (isAdmin) {
+                    html += ` <button class="btn pill btn-gray" style="font-size:11px; padding:2px 8px; margin-left:10px;" onclick="deleteNews('${docSnap.id}')">刪除</button>`;
+                }
+                
+                li.innerHTML = html;
+                dom.newsList.appendChild(li);
+            });
+        } catch (e) {
+            console.error("載入公告失敗", e);
+            dom.newsList.innerHTML = '<li style="color:red;">載入公告失敗，請檢查網路連線。</li>';
+        }
+    }
+
+    // 暴露刪除函數給全域 (因為按鈕是動態生成的 onclick)
+    window.deleteNews = async (id) => {
+        if (!confirm("確定要刪除這則公告嗎？")) return;
+        try {
+            await deleteDoc(doc(db, "news", id));
+            loadNews(); // 重新載入列表
+        } catch(e) {
+            alert("刪除失敗：" + e.message);
+        }
+    };
+
+    // --- 發佈公告邏輯 ---
+    if (dom.btnSubmitNews) {
+        // 設定發布日期的預設值為今天
+        const today = new Date().toISOString().split('T')[0];
+        dom.newsDate.value = today;
+
+        dom.btnSubmitNews.addEventListener('click', async () => {
+            const dateVal = dom.newsDate.value;
+            const contentVal = dom.newsContent.value.trim();
+            
+            if (!dateVal || !contentVal) {
+                return alert("請填寫日期與公告內容！");
+            }
+
+            dom.btnSubmitNews.disabled = true;
+            dom.btnSubmitNews.textContent = "發佈中...";
+
+            try {
+                // 將公告寫入 Firestore
+                await addDoc(collection(db, "news"), {
+                    date: dateVal,
+                    content: contentVal,
+                    createdAt: serverTimestamp(),
+                    author: auth.currentUser.email
+                });
+                alert("公告發佈成功！");
+                dom.newsContent.value = ""; // 清空輸入框
+                loadNews(); // 重新載入列表
+            } catch(e) {
+                alert("發佈失敗：" + e.message);
+            } finally {
+                dom.btnSubmitNews.disabled = false;
+                dom.btnSubmitNews.textContent = "發佈公告";
+            }
+        });
+    }
+
+    // 頁面初次載入時先抓一次公告 (這時尚未驗證身分，所以不會有刪除按鈕)
+    loadNews();
 
     // --- 深色模式切換邏輯 ---
     if (dom.darkToggle) {
@@ -197,7 +319,6 @@
             }
         };
 
-        // 初始化按鈕
         updateBtnUI(document.documentElement.getAttribute('data-theme'));
 
         dom.darkToggle.addEventListener('click', () => {
@@ -231,27 +352,36 @@
         if(dom.member) dom.member.style.display = 'flex';
         if(dom.user) dom.user.textContent = user.displayName || user.email;
 
+        // 檢查會員資料是否齊全
         try {
           const docSnap = await getDoc(doc(db, "users", user.uid));
           const isComplete = docSnap.exists() && docSnap.data().name && docSnap.data().idNumber && docSnap.data().phone;
           
           if (!isComplete) {
              alert("⚠️ 系統偵測到您尚未完成會員資料！\n請先完成基本資料填寫，以解鎖完整功能。");
-             window.location.href = "profile.html"; // 強制跳轉至會員資料頁
+             window.location.href = "profile.html"; 
              return; 
           } else {
              if(dom.user) dom.user.textContent = docSnap.data().name;
           }
         } catch(e) { console.error("讀取會員資料失敗", e); }
 
+        // 檢查管理員權限
         try {
           const adminSnap = await getDoc(doc(db, "admins", user.email));
-          if (adminSnap.exists() && dom.admin) dom.admin.style.display = 'inline-block';
+          if (adminSnap.exists()) {
+             isAdmin = true; // 設為管理員
+             if (dom.admin) dom.admin.style.display = 'inline-block';
+             if (dom.adminNewsForm) dom.adminNewsForm.style.display = 'block'; // 顯示發布表單
+             loadNews(); // 重新載入公告，讓管理員看到「刪除」按鈕
+          }
         } catch(e) {}
       } else {
+        isAdmin = false;
         if(dom.login) dom.login.style.display = 'block';
         if(dom.member) dom.member.style.display = 'none';
         if(dom.admin) dom.admin.style.display = 'none';
+        if(dom.adminNewsForm) dom.adminNewsForm.style.display = 'none';
       }
     });
   </script>
