@@ -106,11 +106,13 @@
   <script src="nav.js" defer></script>
 </head>
 <body data-page="news">
+  <div class="watermark" aria-hidden="true">
     <span class="wm-item" style="top:5%; left:5%;  --dur:9s;">@hori版權所有</span>
     <span class="wm-item" style="top:50%; left:50%; --dur:10s;">@hori版權所有</span>
     <span class="wm-item" style="top:5%; left:65%; --dur:10s;">@hori版權所有</span>
     <span class="wm-item" style="top:25%; left:10%; --dur:13s;">@hori版權所有</span>
     <span class="wm-item" style="top:75%; left:70%; --dur:14s;">@hori版權所有</span>
+  </div>
   
   <header class="topbar">
     <div class="brand">
@@ -206,7 +208,7 @@
         newsList: document.getElementById('newsList')
     };
 
-    let isAdmin = false; // 紀錄目前登入者是否為管理員
+    let isAdmin = false; 
 
     // --- 防止 XSS 攻擊的字元轉義 ---
     function escapeHtml(text) {
@@ -219,11 +221,11 @@
             .replace(/'/g, "&#039;");
     }
 
-    // --- 載入公告列表邏輯 ---
+    // --- 載入公告列表邏輯 (已修正複合索引問題) ---
     async function loadNews() {
         try {
-            // 按照日期降冪排列 (新到舊)
-            const q = query(collection(db, "news"), orderBy("date", "desc"), orderBy("createdAt", "desc"));
+            // ★ 修正重點：改為單一欄位排序，避免 Firebase 要求建立複合索引
+            const q = query(collection(db, "news"), orderBy("createdAt", "desc"));
             const querySnapshot = await getDocs(q);
             
             dom.newsList.innerHTML = ''; // 清空列表
@@ -253,7 +255,7 @@
         }
     }
 
-    // 暴露刪除函數給全域 (因為按鈕是動態生成的 onclick)
+    // 暴露刪除函數給全域
     window.deleteNews = async (id) => {
         if (!confirm("確定要刪除這則公告嗎？")) return;
         try {
@@ -266,7 +268,6 @@
 
     // --- 發佈公告邏輯 ---
     if (dom.btnSubmitNews) {
-        // 設定發布日期的預設值為今天
         const today = new Date().toISOString().split('T')[0];
         dom.newsDate.value = today;
 
@@ -290,7 +291,7 @@
                     author: auth.currentUser.email
                 });
                 alert("公告發佈成功！");
-                dom.newsContent.value = ""; // 清空輸入框
+                dom.newsContent.value = ""; 
                 loadNews(); // 重新載入列表
             } catch(e) {
                 alert("發佈失敗：" + e.message);
@@ -301,7 +302,7 @@
         });
     }
 
-    // 頁面初次載入時先抓一次公告 (這時尚未驗證身分，所以不會有刪除按鈕)
+    // 頁面初次載入時先抓一次公告
     loadNews();
 
     // --- 深色模式切換邏輯 ---
@@ -352,7 +353,6 @@
         if(dom.member) dom.member.style.display = 'flex';
         if(dom.user) dom.user.textContent = user.displayName || user.email;
 
-        // 檢查會員資料是否齊全
         try {
           const docSnap = await getDoc(doc(db, "users", user.uid));
           const isComplete = docSnap.exists() && docSnap.data().name && docSnap.data().idNumber && docSnap.data().phone;
@@ -366,14 +366,13 @@
           }
         } catch(e) { console.error("讀取會員資料失敗", e); }
 
-        // 檢查管理員權限
         try {
           const adminSnap = await getDoc(doc(db, "admins", user.email));
           if (adminSnap.exists()) {
-             isAdmin = true; // 設為管理員
+             isAdmin = true; 
              if (dom.admin) dom.admin.style.display = 'inline-block';
-             if (dom.adminNewsForm) dom.adminNewsForm.style.display = 'block'; // 顯示發布表單
-             loadNews(); // 重新載入公告，讓管理員看到「刪除」按鈕
+             if (dom.adminNewsForm) dom.adminNewsForm.style.display = 'block'; 
+             loadNews(); // 身分驗證為管理員後，重新載入讓「刪除」按鈕出現
           }
         } catch(e) {}
       } else {
