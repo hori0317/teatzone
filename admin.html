@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>管理後台 | 長照工具平台</title>
+    <link rel="icon" type="image/x-icon" href="YORU.ico" />
     <link rel="stylesheet" href="style.css"> 
     <style>
         /* 針對後台頁面的顏色變數對接 */
@@ -85,7 +86,7 @@
 
         /* 回饋內容捲軸樣式 */
         .feedback-wrapper {
-            max-height: 100px;       
+            max-height: 100px;        
             overflow-y: auto;        
             white-space: pre-wrap;   
             word-break: break-word;  
@@ -388,8 +389,7 @@
         }
     };
 
-
-    // 載入會員資料 (更新版，加入新欄位)
+    // 載入會員資料
     async function loadUsers() {
         const tbody = document.querySelector('#usersTable tbody');
         const btn = document.getElementById('btnRefreshUsers');
@@ -432,7 +432,6 @@
                 const phone = data.phone || '-';
                 const address = data.address || '-';
                 
-                // 處理學分資料
                 let creditTotal = 0, creditReq = 0;
                 if (data.credits) {
                     const c = data.credits;
@@ -526,7 +525,7 @@
         } catch(e) { alert("失敗：權限不足"); }
     };
 
-    // CSV 匯出 (包含新欄位)
+    // CSV 匯出
     document.getElementById('btnExportExcel').addEventListener('click', () => {
         if (allUsersData.length === 0) return alert("無資料可供匯出");
         
