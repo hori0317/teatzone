@@ -140,9 +140,8 @@
       
       <div id="member-area" style="display:none; align-items: center; gap:5px;">
           <span id="userDisplay" style="font-size: 13px; font-weight: bold; color: var(--ink); margin-right: 4px;"></span>
-          <a href="admin.html" id="btnAdminLink" class="btn pill" style="display:none;background:#673AB7;color:white;text-decoration:none">後台</a>
+          <a href="admin.html" id="btnAdminLink" class="btn pill" style="display:none;background:#673AB7;color:white;text-decoration:none">管理後台</a>
           <a href="profile.html" class="btn pill" style="background:#777; color:white; text-decoration:none;">會員資料</a>
-          <button class="btn pill" style="background:#34A853; color:white;" id="btnSaveCloud" type="button">儲存</button>
           <button class="btn pill" style="background:#EA4335; color:white;" id="btnLogout" type="button">登出</button>
       </div>
     </div>
@@ -245,7 +244,7 @@
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
     import { getAuth, signInWithPopup, GoogleAuthProvider, signOut, onAuthStateChanged } 
       from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-    import { getFirestore, collection, addDoc, serverTimestamp, doc, getDoc } 
+    import { getFirestore, doc, getDoc } 
       from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
     const config={ apiKey: "AIzaSyCZMhdUI0HeIoj5masuRh00pzP3SMbF6Yc", authDomain: "hori-test-1b93c.firebaseapp.com", projectId: "hori-test-1b93c", storageBucket: "hori-test-1b93c.firebasestorage.app", messagingSenderId: "549583061796", appId: "1:549583061796:web:ad58b8bf80c2b6b71c29b1" };
@@ -257,7 +256,6 @@
         member:document.getElementById('member-area'), 
         user:document.getElementById('userDisplay'), 
         admin:document.getElementById('btnAdminLink'), 
-        cloud:document.getElementById('btnSaveCloud'), 
         darkToggle: document.getElementById('darkToggle')
     };
 
@@ -309,13 +307,6 @@
       }else{ dom.login.style.display='block'; dom.member.style.display='none'; if(dom.admin) dom.admin.style.display='none'; }
     });
 
-    if(dom.cloud) dom.cloud.onclick = async () => {
-       const cms=document.querySelector('input[name="cms"]:checked'), total=document.getElementById('sumGrand');
-       try {
-           await addDoc(collection(db,"care_records"),{uid:auth.currentUser.uid,memberName:dom.user.textContent,email:auth.currentUser.email,cmsLevel:cms?cms.value:"0",grandTotal:total?total.textContent:"0",createdAt:serverTimestamp()});
-           alert("備份成功");
-       } catch(e) { alert("儲存失敗: " + e.message); }
-    };
   </script>
 </body>
 </html>
