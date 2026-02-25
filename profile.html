@@ -493,7 +493,7 @@
           // ★ 如果是新會員，觸發寄信通知管理員
           if (isNewUser) {
               // 呼叫 EmailJS，請替換 Service ID 與 Template ID
-              emailjs.send("你的_Service_ID", "你的_Template_ID", {
+              emailjs.send("service_98njugg", "template_yrc6fsq", {
                   user_name: name,
                   user_email: auth.currentUser.email,
                   user_phone: phone
