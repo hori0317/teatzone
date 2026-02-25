@@ -16,6 +16,14 @@
     })();
   </script>
 
+  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+  <script type="text/javascript">
+    (function() {
+        // ★★★ 請將下方的 "你的_Public_Key" 替換為你在 EmailJS 拿到的 Public Key ★★★
+        emailjs.init("kAwxHMzfmCI0-D7H8");
+    })();
+  </script>
+
   <style>
     /* 表單與卡片專屬樣式 */
     .form-group { text-align: left; margin-bottom: 16px; }
@@ -280,16 +288,13 @@
     function isValidTaiwanID(id) {
         if (!id) return false;
         id = id.toUpperCase();
-        // 基本正則表達式：首字大寫英文，第二字為 1/2/8/9，後面接8個數字
         if (!/^[A-Z][1289]\d{8}$/.test(id)) return false;
         
-        // 轉換首字英文字母為對應數字
         const letters = 'ABCDEFGHJKLMNPQRSTUVXYWZIO';
         const letterValue = letters.indexOf(id[0]) + 10;
         const n1 = Math.floor(letterValue / 10);
         const n2 = letterValue % 10;
         
-        // 權重計算
         const weights = [1, 9, 8, 7, 6, 5, 4, 3, 2, 1, 1];
         const digits = [n1, n2, ...id.slice(1).split('').map(Number)];
         
@@ -302,7 +307,7 @@
 
     dom.idNumber.addEventListener('input', function() {
         const val = this.value.toUpperCase();
-        this.value = val; // 強制轉大寫
+        this.value = val; 
         
         if (val === '') {
             dom.idError.style.display = 'none';
@@ -437,7 +442,7 @@
       }
     });
 
-    // --- 儲存個人基本資料 ---
+    // --- 儲存個人基本資料 (加入 EmailJS 通知) ---
     dom.btnSaveProfile.addEventListener('click', async () => {
       const name = dom.name.value.trim();
       const idNumber = dom.idNumber.value.trim().toUpperCase();
@@ -474,12 +479,37 @@
               email: auth.currentUser.email, 
               lastUpdated: serverTimestamp() 
           };
+          
+          let isNewUser = false; // ★ 判斷是否為初次註冊
+          
           if (!docSnap.exists() || !docSnap.data().createdAt) {
               data.createdAt = serverTimestamp();
+              isNewUser = true; // 標記為新會員
           }
+          
+          // 寫入資料庫
           await setDoc(userRef, data, { merge: true });
+          
+          // ★ 如果是新會員，觸發寄信通知管理員
+          if (isNewUser) {
+              // 呼叫 EmailJS，請替換 Service ID 與 Template ID
+              emailjs.send("你的_Service_ID", "你的_Template_ID", {
+                  user_name: name,
+                  user_email: auth.currentUser.email,
+                  user_phone: phone
+              }).then(
+                  function(response) { console.log("通知信寄送成功", response.status, response.text); }, 
+                  function(error) { console.log("通知信寄送失敗", error); }
+              );
+          }
+
           alert("基本資料儲存成功！");
           dom.userDisplay.textContent = name;
+          
+          // 如果是第一次註冊，填完後導向首頁
+          if (isNewUser) {
+              window.location.href = "index.html"; 
+          }
       } catch (e) { alert("儲存失敗：" + e.message); }
     });
 
