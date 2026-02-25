@@ -224,8 +224,8 @@
     // --- 載入公告列表邏輯 (已修正複合索引問題) ---
     async function loadNews() {
         try {
-            // ★ 修正重點：改為單一欄位排序，避免 Firebase 要求建立複合索引
-            const q = query(collection(db, "news"), orderBy("createdAt", "desc"));
+            // 改為依照你選擇的「日期」來排序 (新到舊)
+            const q = query(collection(db, "news"), orderBy("date", "desc"));
             const querySnapshot = await getDocs(q);
             
             dom.newsList.innerHTML = ''; // 清空列表
