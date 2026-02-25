@@ -16,6 +16,14 @@
     })();
   </script>
 
+  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+  <script type="text/javascript">
+    (function() {
+        // ★★★ 請將下方的 "你的_Public_Key" 替換為你在 EmailJS 拿到的 Public Key ★★★
+        emailjs.init("你的_Public_Key");
+    })();
+  </script>
+
   <style>
     /* 聯繫內容樣式修正 */
     .contact-info {
@@ -71,8 +79,6 @@
 
     /* ============================================================
        工具列按鈕微調：
-       將主選單完全交由 style.css 控制以保證全站 100% 一致。
-       這裡僅縮小右側工具列按鈕與間距，避免壓到主選單。
        ============================================================ */
     .actions {
         display: flex;
@@ -304,7 +310,7 @@
           
           if (!isComplete) {
              alert("⚠️ 系統偵測到您尚未完成會員資料！\n請先完成基本資料填寫，以解鎖完整功能。");
-             window.location.href = "profile.html"; // 強制跳轉至會員資料頁
+             window.location.href = "profile.html"; 
              return; 
           } else {
              if(dom.user) dom.user.textContent = docSnap.data().name;
@@ -322,7 +328,7 @@
       }
     });
 
-    // --- 留單提交邏輯 ---
+    // --- 留單提交邏輯 (加入 EmailJS 通知) ---
     if (dom.btnRecruit) {
         dom.btnRecruit.addEventListener('click', async () => {
             
@@ -358,6 +364,19 @@
                     status: 'new'
                 });
 
+                // ★★★ 觸發 EmailJS 寄信通知管理員 ★★★
+                // 請將下方的 "你的_Service_ID" 和 "你的_Template_ID" 替換成你在 EmailJS 建立好的設定
+                // 在 EmailJS 的 Template 裡面，你可以使用 {{contact_name}}, {{contact_phone}}, {{contact_feedback}}, {{contact_email}} 作為變數
+                emailjs.send("你的_Service_ID", "你的_Template_ID", {
+                    contact_name: name,
+                    contact_phone: phone,
+                    contact_feedback: feedback || "無",
+                    contact_email: auth.currentUser.email
+                }).then(
+                    function(response) { console.log("留單通知信寄送成功", response.status, response.text); }, 
+                    function(error) { console.log("留單通知信寄送失敗", error); }
+                );
+
                 alert("資料已送出！我們會盡快與您聯繫。");
                 dom.recruitName.value = "";
                 dom.recruitPhone.value = "";
@@ -375,6 +394,3 @@
             }
         });
     }
-  </script>
-</body>
-</html>
